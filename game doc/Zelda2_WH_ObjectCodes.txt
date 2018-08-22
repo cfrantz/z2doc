@@ -1,0 +1,39 @@
+00: Fairy
+01: Item
+02: Locked Door
+03: Myu
+04: Bot
+05: Bit
+06: Red Moa
+07: Blue Ache
+08: *Game crashes*
+09: *Game crashes*
+0A: Red Ache
+0B: Bubble Spawn Spot
+0C: Flying Stones Spawn Spot
+0D: Red Deeler
+0E: Blue Deeler
+0F: Bago Bago Spawn Spot
+10: ?? Single Bago Bago ??
+11: Stationary Octorock
+12: Moving Octorock
+13: Elevator
+14: Orange Moblin with Spear (can throw spear)
+15: Red Moblin with Spear (cannot throw spear)
+16: Blue Moblin with Spear (can throw spear)
+17: Orange Daira
+18: Red Daira
+19: Orange Goriya
+1A: Red Goriya
+1B: Blue Goriya
+1C: Lowder
+1D: Moby Spawn Spot
+1E: Single Moby
+1F: Megmat (Bouncy Cat)
+20: Geldarm
+21: Weak Moblin Spawn Spot
+22: Single Weak Moblin
+23: *Game crashes*
+
+There can't be anything above value 0x23. This is where the function pointer table
+at $6D8D runs into the enemy info table at $6DD5.
