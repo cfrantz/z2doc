@@ -1,0 +1,19 @@
+
+# Indexed by Enemy Type.  Each element is 16-bits, LSB first.
+# Pointers below $C000 pointed into ROM bank 4 when testing P1.
+#   May also point into other ROM banks in other contexts.
+# Enemy Type code is loaded into array at $A1
+LABEL { NAME "EnemyFunctionPointerTable";   ADDR  $6D8D;    };
+
+# Indexed by Enemy Type.  Each element is 8-bits.
+# Enemy Type code is loaded into array at $A1
+# Each element:
+#   bits 6 and 7: Color
+#                 0x00: Link colored (brown/green/flesh)
+#                 0x40: Orange
+#                 0x80: Red
+#                 0xC0: Blue
+#   bit 5: Can't be stabbed. (E.g. stabbing a shield or something.)
+#   bit 4: This enemy steals XP when it hits you. (Will always be 10 XP.)
+#   bits 3 through 0: Index into XP reward table. (Rewarded when you kill enemy.)
+LABEL { NAME "EnemyCharacteristicsTable";   ADDR  $6DD5;    };

@@ -1,0 +1,53 @@
+# Not registers but hardcoded by 6502
+
+LABEL { NAME "Stack";                   ADDR $100;      SIZE 256;   };
+
+# Audio Processing Unit (APU)
+
+LABEL { NAME "SQ1_VOL";                 ADDR  $4000;    };
+LABEL { NAME "SQ1_SWEEP";               ADDR  $4001;    };
+LABEL { NAME "SQ1_LO";                  ADDR  $4002;    };
+LABEL { NAME "SQ1_HI";                  ADDR  $4003;    };
+
+LABEL { NAME "SQ2_VOL";                 ADDR  $4004;    };
+LABEL { NAME "SQ2_SWEEP";               ADDR  $4005;    };
+LABEL { NAME "SQ2_LO";                  ADDR  $4006;    };
+LABEL { NAME "SQ2_HI";                  ADDR  $4007;    };
+
+LABEL { NAME "TRI_LINEAR";              ADDR  $4008;    };
+LABEL { NAME "TRI_LO";                  ADDR  $400A;    };
+LABEL { NAME "TRI_HI";                  ADDR  $400B;    };
+
+LABEL { NAME "NOISE_VOL";               ADDR  $400C;    };
+LABEL { NAME "NOISE_LO";                ADDR  $400E;    };
+LABEL { NAME "NOISE_HI";                ADDR  $400F;    };
+
+LABEL { NAME "DMC_FREQ";                ADDR  $4010;    };
+LABEL { NAME "DMC_RAW";                 ADDR  $4011;    };
+LABEL { NAME "DMC_START";               ADDR  $4012;    };
+LABEL { NAME "DMC_LEN";                 ADDR  $4013;    };
+
+LABEL { NAME "SND_CHN";                 ADDR  $4015;    };
+
+LABEL { NAME "APU_UNUSED";              ADDR  $4018;    SIZE 8; };
+
+# Joystick input
+
+# Must write 0x01, then 0x00 to read button state into shift register.
+# Buttons are read out one at a time in LSB, in this order:
+#  A, B, select, start, up, down, left, right
+LABEL { NAME "JOY1";                    ADDR  $4016;    };
+LABEL { NAME "JOY2_FRAMECTRL";          ADDR  $4017;    };
+
+# Picture Processing Unit (PPU)
+
+LABEL { NAME "PPUCTRL";                 ADDR  $2000;    };
+LABEL { NAME "PPUMASK";                 ADDR  $2001;    };
+LABEL { NAME "PPUSTATUS";               ADDR  $2002;    };
+LABEL { NAME "OAMADDR";                 ADDR  $2003;    };
+LABEL { NAME "OAMDATA";                 ADDR  $2004;    };
+LABEL { NAME "PPUSCROLL";               ADDR  $2005;    };
+LABEL { NAME "PPUADDR";                 ADDR  $2006;    };
+LABEL { NAME "PPUDATA";                 ADDR  $2007;    };
+LABEL { NAME "OAMDMA";                  ADDR  $4014;    };
+
