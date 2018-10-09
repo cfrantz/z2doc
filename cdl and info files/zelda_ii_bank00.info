@@ -1,0 +1,131 @@
+# Labels within ROM bank 0
+
+# Values in MagicCostTable are double as they appear in game.
+# Both LifeMeter and MagicMeter work this way.
+# CastingCost = MagicCostTable[(CurrentlyQueuedSpell * 8) + MagicLevel];
+LABEL { NAME "MagicCostTable";          ADDR  $8D7B;    SIZE 64;    };
+# LABEL { NAME "ShieldCosts";             ADDR  $8D7B;    SIZE 8;     };
+# LABEL { NAME "JumpCosts";               ADDR  $8D83;    SIZE 8;     };
+# LABEL { NAME "LifeCosts";               ADDR  $8D8B;    SIZE 8;     };
+# LABEL { NAME "FairyCosts";              ADDR  $8D93;    SIZE 8;     };
+# LABEL { NAME "FireCosts";               ADDR  $8D9B;    SIZE 8;     };
+# LABEL { NAME "ReflectCosts";            ADDR  $8DA3;    SIZE 8;     };
+# LABEL { NAME "SpellCosts";              ADDR  $8DAB;    SIZE 8;     };
+# LABEL { NAME "ThunderCosts";            ADDR  $8DB3;    SIZE 8;     };
+
+# Gets ORed into SpellsInEffectBitmask ($76F) when spell is cast.
+# Index 0 is ShieldInEffect flag, Index 1 is JumpInEffect flag, etc.
+LABEL { NAME "SpellInEffectFlags";      ADDR  $8DBB;    SIZE 8;     };
+
+# Functions within ROM bank 7
+LABEL { NAME "SeedRng";                 ADDR  $8D5C;    };
+LABEL { NAME "CastSpell";               ADDR  $8DC3;    };
+
+# Ranges within ROM bank 0
+RANGE { START $8000;    END   $80E4; TYPE ByteTable; };
+RANGE { START $80E5;    END   $81AC; TYPE Code;      };
+RANGE { START $81AD;    END   $81B0; TYPE ByteTable; };
+RANGE { START $81B1;    END   $8204; TYPE Code;      };
+RANGE { START $8205;    END   $8206; TYPE ByteTable; };
+RANGE { START $8207;    END   $8228; TYPE Code;      };
+RANGE { START $8229;    END   $8283; TYPE ByteTable; };
+RANGE { START $8284;    END   $82F5; TYPE Code;      };
+RANGE { START $82F6;    END   $82F6; TYPE ByteTable; };
+RANGE { START $82F7;    END   $84AC; TYPE Code;      };
+RANGE { START $84AD;    END   $84BE; TYPE ByteTable; };
+RANGE { START $84BF;    END   $8527; TYPE Code;      };
+RANGE { START $8528;    END   $8557; TYPE ByteTable; };
+RANGE { START $8558;    END   $87A2; TYPE Code;      };
+RANGE { START $87A3;    END   $87F2; TYPE ByteTable; };
+RANGE { START $87F3;    END   $88B8; TYPE Code;      };
+RANGE { START $88B9;    END   $88C6; TYPE ByteTable; };
+RANGE { START $88C7;    END   $88D1; TYPE Code;      };
+RANGE { START $88D2;    END   $88E7; TYPE ByteTable; };
+RANGE { START $88E8;    END   $8A17; TYPE Code;      };
+RANGE { START $8A18;    END   $8A19; TYPE ByteTable; };
+RANGE { START $8A1A;    END   $8B2B; TYPE Code;      };
+RANGE { START $8B2C;    END   $8B2D; TYPE ByteTable; };
+RANGE { START $8B2E;    END   $8C7D; TYPE Code;      };
+RANGE { START $8C7E;    END   $8C82; TYPE ByteTable; };
+RANGE { START $8C83;    END   $8CDC; TYPE Code;      };
+RANGE { START $8CDD;    END   $8CE0; TYPE ByteTable; };
+RANGE { START $8CE1;    END   $8D7A; TYPE Code;      };
+RANGE { START $8D7B;    END   $8DC2; TYPE ByteTable; };
+RANGE { START $8DC3;    END   $8E47; TYPE Code;      };
+RANGE { START $8E48;    END   $8E57; TYPE ByteTable; };
+RANGE { START $8E58;    END   $8E6C; TYPE Code;      };
+RANGE { START $8E6D;    END   $8E6E; TYPE ByteTable; };
+RANGE { START $8E6F;    END   $8E9B; TYPE Code;      };
+RANGE { START $8E9C;    END   $8ED7; TYPE ByteTable; };
+RANGE { START $8ED8;    END   $8F79; TYPE Code;      };
+RANGE { START $8F7A;    END   $8F83; TYPE ByteTable; };
+RANGE { START $8F84;    END   $8FA9; TYPE Code;      };
+RANGE { START $8FAA;    END   $8FB6; TYPE ByteTable; };
+RANGE { START $8FB7;    END   $903E; TYPE Code;      };
+RANGE { START $903F;    END   $9046; TYPE ByteTable; };
+RANGE { START $9047;    END   $90E4; TYPE Code;      };
+RANGE { START $90E5;    END   $90E9; TYPE ByteTable; };
+RANGE { START $90EA;    END   $914D; TYPE Code;      };
+RANGE { START $914E;    END   $914F; TYPE ByteTable; };
+RANGE { START $9150;    END   $91F1; TYPE Code;      };
+RANGE { START $91F2;    END   $91F3; TYPE ByteTable; };
+RANGE { START $91F4;    END   $9270; TYPE Code;      };
+RANGE { START $9271;    END   $9271; TYPE ByteTable; };
+RANGE { START $9272;    END   $92A8; TYPE Code;      };
+RANGE { START $92A9;    END   $92BE; TYPE ByteTable; };
+RANGE { START $92BF;    END   $93B0; TYPE Code;      };
+RANGE { START $93B1;    END   $93BB; TYPE ByteTable; };
+RANGE { START $93BC;    END   $946F; TYPE Code;      };
+RANGE { START $9470;    END   $9482; TYPE ByteTable; };
+RANGE { START $9483;    END   $94C2; TYPE Code;      };
+RANGE { START $94C3;    END   $94C4; TYPE ByteTable; };
+RANGE { START $94C5;    END   $962D; TYPE Code;      };
+RANGE { START $962E;    END   $968C; TYPE ByteTable; };
+RANGE { START $968D;    END   $97B8; TYPE Code;      };
+RANGE { START $97B9;    END   $97BA; TYPE ByteTable; };
+RANGE { START $97BB;    END   $9814; TYPE Code;      };
+RANGE { START $9815;    END   $981A; TYPE ByteTable; };
+RANGE { START $981B;    END   $9844; TYPE Code;      };
+RANGE { START $9845;    END   $9846; TYPE ByteTable; };
+RANGE { START $9847;    END   $9A1D; TYPE Code;      };
+RANGE { START $9A1E;    END   $9A2F; TYPE ByteTable; };
+RANGE { START $9A30;    END   $9A9F; TYPE Code;      };
+RANGE { START $9AA0;    END   $9AA7; TYPE ByteTable; };
+RANGE { START $9AA8;    END   $9AB5; TYPE Code;      };
+RANGE { START $9AB6;    END   $9AB7; TYPE ByteTable; };
+RANGE { START $9AB8;    END   $9B59; TYPE Code;      };
+RANGE { START $9B5A;    END   $9D53; TYPE ByteTable; };
+RANGE { START $9D54;    END   $9D7A; TYPE Code;      };
+RANGE { START $9D7B;    END   $9D90; TYPE ByteTable; };
+RANGE { START $9D91;    END   $9DE3; TYPE Code;      };
+RANGE { START $9DE4;    END   $9DF5; TYPE ByteTable; };
+RANGE { START $9DF6;    END   $9E1E; TYPE Code;      };
+RANGE { START $9E1F;    END   $9E79; TYPE ByteTable; };
+RANGE { START $9E7A;    END   $9FC2; TYPE Code;      };
+RANGE { START $9FC3;    END   $9FCD; TYPE ByteTable; };
+RANGE { START $9FCE;    END   $A092; TYPE Code;      };
+RANGE { START $A093;    END   $A098; TYPE ByteTable; };
+RANGE { START $A099;    END   $A13F; TYPE Code;      };
+RANGE { START $A140;    END   $A147; TYPE ByteTable; };
+RANGE { START $A148;    END   $A1A4; TYPE Code;      };
+RANGE { START $A1A5;    END   $A1DB; TYPE ByteTable; };
+RANGE { START $A1DC;    END   $A62B; TYPE Code;      };
+RANGE { START $A62C;    END   $A632; TYPE ByteTable; };
+RANGE { START $A633;    END   $A642; TYPE Code;      };
+RANGE { START $A643;    END   $A646; TYPE ByteTable; };
+RANGE { START $A647;    END   $A687; TYPE Code;      };
+RANGE { START $A688;    END   $A68A; TYPE ByteTable; };
+RANGE { START $A68B;    END   $A6B9; TYPE Code;      };
+RANGE { START $A6BA;    END   $A6D1; TYPE ByteTable; };
+RANGE { START $A6D2;    END   $A7A0; TYPE Code;      };
+RANGE { START $A7A1;    END   $A7AA; TYPE ByteTable; };
+RANGE { START $A7AB;    END   $A82F; TYPE Code;      };
+RANGE { START $A830;    END   $A859; TYPE ByteTable; };
+RANGE { START $A85A;    END   $A865; TYPE Code;      };
+RANGE { START $A866;    END   $A868; TYPE ByteTable; };
+RANGE { START $A869;    END   $A89D; TYPE Code;      };
+RANGE { START $A89E;    END   $AA07; TYPE ByteTable; };
+RANGE { START $AA08;    END   $AA3F; TYPE Code;      };
+RANGE { START $AA40;    END   $BF9C; TYPE ByteTable; };
+RANGE { START $BF9D;    END   $BFC4; TYPE Code;      };
+

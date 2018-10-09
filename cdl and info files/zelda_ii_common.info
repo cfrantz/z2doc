@@ -1,0 +1,209 @@
+# Zero Page Variables
+
+# Used to keep reloading X register when processing a single enemy.
+LABEL { NAME "EnemyArrayIndex           ADDR  $10;      };
+
+LABEL { NAME "LinkYMSB";                ADDR  $19;      };
+LABEL { NAME "EnemyYMSBs";              ADDR  $1A;      SIZE 6; };
+LABEL { NAME "ProjectileYMSBs";         ADDR  $20;      SIZE 6; };
+
+LABEL { NAME "Unknown1";                ADDR  $26;      SIZE 3; };
+
+LABEL { NAME "LinkYLSB";                ADDR  $29;      };
+LABEL { NAME "EnemyYLSBs";              ADDR  $2A;      SIZE 6; };
+LABEL { NAME "ProjectileYLSBs";         ADDR  $30;      SIZE 6; };
+
+LABEL { NAME "Unknown2";                ADDR  $36;      SIZE 5; };
+
+LABEL { NAME "LinkXMSB";                ADDR  $3B;      };
+LABEL { NAME "EnemyXMSBs";              ADDR  $3C;      SIZE 6; };
+LABEL { NAME "ProjectileXMSBs";         ADDR  $42;      SIZE 6; };
+
+LABEL { NAME "Unknown3";                ADDR  $48;      SIZE 5; };
+
+LABEL { NAME "LinkXLSB";                ADDR  $4D;      };
+LABEL { NAME "EnemyXLSBs";              ADDR  $4E;      SIZE 6; };
+LABEL { NAME "ProjectileXLSBs";         ADDR  $54;      SIZE 6; };
+
+LABEL { NAME "Unknown4";                ADDR  $5A;      SIZE 5; };
+
+LABEL { NAME "LinkFacingDirection";     ADDR  $5F;      };
+LABEL { NAME "EnemyFacingDirection";    ADDR  $60;      SIZE 6; };
+LABEL { NAME "ProjectileMoveDirection"; ADDR  $66;      SIZE 6; };
+
+LABEL { NAME "UnknownArray1";           ADDR  $6C;      SIZE 6; };
+
+LABEL { NAME "EnemyTypes";              ADDR  $A1;      SIZE 6; };
+
+# Bit 0: 1 = I am against a barrier on my right
+# Bit 1: 1 = I am against a barrier on my left
+# Bit 2: 1 = I am on the ground, 0 = I am jumping or falling
+# Bit 4: 1 = I am dealing damage
+# Bit 5: I am dead or dying ... ???  (Not always set)
+LABEL { NAME "EnemyFlags1";             ADDR  $A8;      SIZE 6; };
+
+# Bit 0: 1 if this enemy exists, 0 if no enemy here
+#   If this bit is 0, then the enemy does not render, does not damage, and does not move
+#   Setting to 1 immediately makes the enemy come back to life
+# Bit 1: 1 if enemy is dying, will cause both this bit and bit 0 to become cleared
+# Bits 2 through 6: Must be 0 or game crashes
+#   See $D5DA in ROM bank 7.  Bits 0 through 6 act as an index into an array of function
+#   pointers that has only 4 elements.  Bits 2 through 6 are not masked off.
+# Bit 7: 1 means does not interact with Link.
+#        If an enemy, then it can neither deal nor receive damage.
+#        If a townsfolk, then Link cannot talk to him/her.
+LABEL { NAME "EnemyFlags2";             ADDR  $B6;      SIZE 6; };
+
+LABEL { NAME "EnemyDataTableLookupIdx"; ADDR  $BC;      SIZE 6; };
+
+LABEL { NAME "EnemyHitpoints";          ADDR  $C2;      SIZE 6; };
+
+# 0x80 through 0x20 stop background music
+# 0x10 Item pickup fanfare (which interrupts background music)
+#      Background music resumes from beginning after this
+# 0x08 Encounter/cave (louder, unused ??)
+# 0x04 Encounter/cave
+# 0x02 Overworld without intro
+# 0x01 Overworld with intro
+LABEL { NAME "StartBackgroundThemeFlag";ADDR  $EB;      };
+
+# 0x80 = Boss defeated (or door unlock when repeated once)
+# 0x40 = Great barrier raise
+# 0x20 = Unused sound effect
+# 0x10 = Raft ??
+# 0x08 = Flute ??
+# 0x04 = Spell cast
+# 0x02 = Sword hitting impenetrable object
+# 0x01 = Death (also stops background music)
+LABEL { NAME "SoundEffectFlags1";       ADDR  $EC;      };
+
+# 0x80 = Sword hitting nothing (alternative, unused ??)
+# 0x20 = Sword hitting nothing (swish sound effect)
+# 0x10 = Sword scoring a hit
+# 0x04 = Block breaking
+# 0x02 = Block dropping (the ones you can break with the glove)
+LABEL { NAME "SoundEffectFlags2";       ADDR  $ED;      };
+
+# 0x10 = Projectile hitting shield
+# 0x08 = Menu open
+# 0x04 = ??
+# 0x02 = Overworld encounter (followed automatically by encounter/cave theme)
+# 0x01 = Fall into pit (also stops background music)
+LABEL { NAME "SoundEffectFlags3";       ADDR  $EE;      };
+
+# 0x40 = Low life alert
+# 0x20 = Palace elevator
+# 0x10 = Increment XP, Life, or Magic
+# 0x08 = Beam sword
+# 0x04 = Enemy death
+# 0x02 = Fairy
+LABEL { NAME "SoundEffectFlags4";       ADDR  $EF;      };
+
+# Order from bit 7 to bit 0 is
+#  A, B, select, start, up, down, left, right
+# Bits in $F5 and $F6 will be set for one frame only.
+LABEL { NAME "Controller1ButtonsJustPressed";   ADDR  $F5;      };
+LABEL { NAME "Controller2ButtonsJustPressed";   ADDR  $F6;      };
+LABEL { NAME "Controller1ButtonsHeldDown";      ADDR  $F7;      };
+LABEL { NAME "Controller2ButtonsHeldDown";      ADDR  $F8;      };
+
+# Other variables
+
+# Non-zero when enemy is stunned.
+# Loaded when enemy is hit by sword. Number of frames remaining for stunned state.
+# Enemy does not move or deal damage while stunned.
+LABEL { NAME "EnemyStunCount";          ADDR $40E;      SIZE 6; };
+
+# When an enemy is called and a drop is earned, a value from the small item or
+# large item drop table is written into this array.
+LABEL { NAME "ItemDropRelated";         ADDR $48E;      SIZE 6; };
+
+# Non-zero immediately performs death animation and causes death
+# Set by anything that causes death (e.g. LifeMeter reaching 0)
+LABEL { NAME "LinkDeadFlag";            ADDR  $494;     };
+
+LABEL { NAME "RNG_Output";              ADDR  $51A;     SIZE 9; };
+
+# For menus and dialogs?
+# 0 = Closed, 4 = Opening, 5 = Open, 7 = Closing
+LABEL { NAME "MenuState";               ADDR  $524;     };
+
+LABEL { NAME "MagicMeterWorkingCopy";   ADDR  $564;     };
+LABEL { NAME "LifeMeterWorkingCopy";    ADDR  $565;     };
+LABEL { NAME "SmallDropCount";          ADDR  $5DF;     };
+LABEL { NAME "LargeDropCount";          ADDR  $5E0;     };
+LABEL { NAME "XPBeingSubtracted";       ADDR  $5E8;     };
+LABEL { NAME "NumLives";                ADDR  $700;     };
+
+# Multiplied by 2 as it's added to the respective meter.
+# Each decrement of this value adds two to the meter.
+# These values modified by blue jar, red jar, life lady, and magic lady
+LABEL { NAME "MagicBeingAdded";         ADDR  $70C;     };
+LABEL { NAME "LifeBeingAdded";          ADDR  $70D;     };
+
+# If non-zero, damage is halved. Will be 0x16 after casting shield.
+LABEL { NAME "ShieldInEffectFlag";      ADDR  $70F;     };
+
+# 0 = Shield, 1 = Jump, etc.
+LABEL { NAME "CurrentlyQueuedSpell";    ADDR  $749;     };
+
+# Cannot cast spell if non-zero. Entering start menu resets this to 0.
+# 1 = Shield, 2 = Jump, etc.
+LABEL { NAME "LastSpellCast";           ADDR  $74A;     };
+
+# When set to 0x20, only link will flash, e.g. spells Shield through Fire
+# When set to 0xA0, both link and screen will flash, e.g. speels Reflect through Thunder
+LABEL { NAME "FlashAnimationFlags";     ADDR  $74B;     };
+
+# Life and Magic meters are not automatically updated to match $773 and $774
+# OR in 0x10 to cause Current XP to update
+# OR in 0x40 to cause Life Meter to update
+# OR in 0x80 to cause Magic Meter to update
+LABEL { NAME "MeterNeedsUpdateFlags";   ADDR  $74F;     };
+
+# Works together with $74F. Not exactly sure how this is used.
+LABEL { NAME "MeterUpdateWorkingData";  ADDR  $750;     };
+
+LABEL { NAME "XPBeingAddedMSB";         ADDR  $755;     };
+LABEL { NAME "XPBeingAddedLSB";         ADDR  $756;     };
+LABEL { NAME "ROMBankSelection";        ADDR  $769;     };
+
+# 0x20 for Reflect, 0x10 for Fire, 0x08 for Fairy, 0x02 for Jump, 0x01 for Shield
+# ShieldInEffectFlag @$70F actually controls damage rate.
+LABEL { NAME "SpellsInEffectBitmask";   ADDR  $76F;     };
+
+LABEL { NAME "NextLevelXPMSB";          ADDR  $770;     };
+LABEL { NAME "NextLevelXPLSB";          ADDR  $771;     };
+LABEL { NAME "MagicMeter";              ADDR  $773;     };
+LABEL { NAME "LifeMeter";               ADDR  $774;     };
+LABEL { NAME "CurrentXPMSB";            ADDR  $775;     };
+LABEL { NAME "CurrentXPLSB";            ADDR  $776;     };
+LABEL { NAME "AttackLevel";             ADDR  $777;     };
+LABEL { NAME "MagicLevel";              ADDR  $778;     };
+LABEL { NAME "LifeLevel";               ADDR  $779;     };
+
+# Shield at $77B, Jump at $77C, etc.
+# 0x01 if you have the spell, 0x00 if you don't 
+LABEL { NAME "SpellInventory";          ADDR  $77B;     SIZE 8; };
+
+# Can only be 4 through 8.
+# Determines max magic meter.
+LABEL { NAME "NumMagicContainers";      ADDR  $783;     };
+
+# Can only be 4 through 8.
+# Determines max life meter.
+LABEL { NAME "NumLifeContainers";       ADDR  $784;     };
+
+# Candle at $785, Glvoe at $786, etc.
+# 0x01 if you hav ethe item, 0x00 if you don't
+LABEL { NAME "ItemInventory";           ADDR  $785;     SIZE 8; };
+
+LABEL { NAME "NumKeysInInventory";      ADDR  $793;     };
+LABEL { NAME "NumGemsInInventory";      ADDR  $794;     };
+
+# OR in 0x10 to enable downthrust
+# OR in 0x04 to enable upthrust
+LABEL { NAME "SwordTechniques";         ADDR  $796;     };
+
+# Variables in cartridge RAM
+

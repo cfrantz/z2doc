@@ -1,0 +1,39 @@
+00: Fairy
+01: Room Item (Candle, Key, etc.)
+02: Locked Door
+03: Myu
+04: Bot
+05: Invisible Red Jar
+06: Slow Bubble
+07: Orange Moa
+08: Nothing ?
+09: Block (breakable with glove)
+0A: Ra Spawn Spot (Sine-wave horse heads)
+0B: Kobold (Tinsuit) Spawn Spot
+0C: Single Kobold (Kobold spawn spot will create these)
+0D: Dripping Column Top (can spawn bots)
+0E: Fast Bubble
+0F: Bago Bago Spawn Spot
+10: Nothing ?
+11: Stationary Blue Arnel (Snake)
+12: Moving Blue Arnel
+13: Elevator
+14: Nothing ?
+15: Palace Gem
+16: Projectile Shooting Ra (shoots right, invisible, needs to be placed over Ra decoration)
+17: Projectile Shooting Mau (shoots left, invisible, needs to be placed over Mau decoration)
+18: Orange Ironknuckle
+19: Red Ironknuckle
+1A: Blue Ironknuckle
+1B: Mau Spawn Spot (Square-wave fox heads, shoots projectiles)
+1C: Single Mau ?
+1D: Margo (Orange fire shooting wizard)
+1E: Gooma (Doomrattler)
+1F: Red Stalfos (Can't jump)
+20: Nothing ?
+21: Nothing ?
+22: Flying helmet from Helmethead
+23: Blue Stalfos (Jumping, downthrust)
+
+There can't be anything above value 0x23. This is where the function pointer table
+at $6D8D runs into the enemy info table at $6DD5.
