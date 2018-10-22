@@ -5,8 +5,9 @@
 local running = true;
 local tick = emu.framecount();
 local sizetable = 0xe8fa;
-local hitbox = {r=255,g=0,b=0,a=64};
+local swordbox = {r=255,g=0,b=0,a=64};
 local shieldbox = {r=0,g=255,b=0,a=64};
+local hitbox = {r=0,g=0,b=255,a=64};
 
 while (running) do
     local ypos = {};
@@ -20,14 +21,19 @@ while (running) do
     local linkfacing = 0; -- 0=right, 1=left
     local gamestate;
     local x, y, w, h;
+    local swordx, swordy;
+    local controller;
 
     gamestate = memory.readbyte(0x736);
     if (gamestate == 0x0b) then
         -- gamestate 0x0b is sideview areas.
+        controller = memory.readbyte(0x80);
         scroll = memory.readword(0x72c, 0x72a);
         exists[0] = 1;
         linkstanding = memory.readbyte(0x17)
         linkfacing = memory.readbyte(0x9f) - 1;
+        swordx = memory.readbyte(0x47e);
+        swordy = memory.readbyte(0x480);
         for i=0,13 do
             ypos[i] = memory.readbyte(0x29 + i);
             xpos[i] = memory.readword(0x4d + i, 0x3b + i);
@@ -73,6 +79,22 @@ while (running) do
         w = 5;
         h = 12;
         gui.rect(xscr[0]+x, ypos[0]+y, xscr[0]+x+w, ypos[0]+y+h, shieldbox);
+
+        -- Compute sword hit box
+        if swordy ~= 0xF8 then
+            w = 14; h = 3;
+            if swordx > xscr[0] then
+                x = -8;
+            else
+                x = 2;
+            end
+            if controller == 0x09 then
+                y = 0;
+            else
+                y = 7;
+            end
+            gui.rect(swordx+x, swordy+y, swordx+x+w, swordy+y+h, swordbox);
+        end
 
         -- The rest of the hitboxes
         for i=1,13 do
