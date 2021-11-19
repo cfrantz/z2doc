@@ -37,13 +37,82 @@ global_symbols:
   0x4d: link_xpos
   0x4e: enemy_xpos
   0x54: projectile_xpos
-  0x700: num_lives
+  0x5f: sideview_exit_side
+  0x60: enemy_facing_dir
+  0x66: projectile_facing_dir
+  0x70: link_xvel
+  0x71: enemy_xvel
+  0x77: projectile_velocity
+  0x86: overworld_spawn_type
+  0x8d: projectile_flag
+  0x9f: link_facing_dir
+  0xa1: enemy_id
+  0xa7: wall_hit_detect_maybe
+  0xaf: enemy_ai
+  0xb6: enemy_exist
+  0xbc: enemy_ram_idx
+  0xc2: enemy_hp
+  0xd1: sidview_width_maybe
+  0xe9: sound_fx_dmc
+  0xea: sound_pause
+  0xeb: sound_song
+  0xec: sound_fx1
+  0xed: sound_fx2
+  0xee: sound_fx3
+  0xef: sound_fx4
+  0xf5: controller1_buttons
+  0xf6: controller2_buttons
+  0xf7: controller1_held
+  0xf8: controller2_held
+  0x302: ppu_macro0_ram
+  0x363: ppu_macro1_ram
+  0x40e: enemy_stun_timer
+  0x48e: enemy_item_id
+  0x524: menu_state
   0x561: area
   0x56b: town_code
   0x56c: palace_code
+  0x700: num_lives
   0x706: overworld
   0x707: world
+  0x70c: link_magic_refill
+  0x70d: link_life_refill
+  0x755: link_xp_add_hi
+  0x756: link_xp_add_lo
+  0x736: game_mode
   0x769: bank
+  0x76c: game_routine
+  0x770: next_xp_hi
+  0x771: next_xp_lo
+  0x773: link_mp
+  0x774: link_hp
+  0x775: link_xp_hi
+  0x776: link_xp_lo
+  0x777: link_level_atk
+  0x778: link_level_magic
+  0x779: link_level_life
+  0x77b: link_has_shield
+  0x77c: link_has_jump
+  0x77d: link_has_life
+  0x77e: link_has_fairy
+  0x77f: link_has_fire
+  0x780: link_has_reflect
+  0x781: link_has_spell
+  0x782: link_has_thunder
+  0x783: link_magic_containers
+  0x784: link_heart_containers
+  0x785: link_has_candle
+  0x786: link_has_glove
+  0x787: link_has_raft
+  0x788: link_has_boots
+  0x789: link_has_flute
+  0x78a: link_has_cross
+  0x78b: link_has_hammer
+  0x78c: link_has_magic_key
+  0x793: link_num_keys
+  0x794: link_num_crystals
+  0x79f: link_num_deaths
+  0x7a0: link_name
   0x2000: PPUCTRL
   0x2001: PPUMASK
   0x2002: PPUSTATUS
@@ -95,9 +164,9 @@ segment:
       - Code: [0x8558, 0x87a2]
       - Bytes: [0x87a3, 0x87f2]
       - Code: [0x87f3, 0x88b8]
-      - Bytes: [0x88b9, 0x88c6]
+      - Words: [0x88b9, 0x88c6]
       - Code: [0x88c7, 0x88d1]
-      - Bytes: [0x88d2, 0x88e7]
+      - Words: [0x88d2, 0x88e7]
       - Code: [0x88e8, 0x8a17]
       - Bytes: [0x8a18, 0x8a19]
       - Code: [0x8a1a, 0x8b2b]
@@ -109,17 +178,19 @@ segment:
       - Code: [0x8ce1, 0x8d7a]
       - Bytes: [0x8d7b, 0x8dc2]
       - Code: [0x8dc3, 0x8e47]
-      - Bytes: [0x8e48, 0x8e57]
+      - Words: [0x8e48, 0x8e57]
       - Code: [0x8e58, 0x8e6c]
       - Bytes: [0x8e6d, 0x8e6e]
       - Code: [0x8e6f, 0x8e9b]
-      - Bytes: [0x8e9c, 0x8ed7]
+      - Bytes: [0x8e9c, 0x8ed1]
+      - Words: [0x8ed2, 0x8ed7]
       - Code: [0x8ed8, 0x8f79]
       - Bytes: [0x8f7a, 0x8f83]
       - Code: [0x8f84, 0x8fa9]
       - Bytes: [0x8faa, 0x8fb6]
       - Code: [0x8fb7, 0x903e]
-      - Bytes: [0x903f, 0x9046]
+      - Words: [0x903f, 0x9044]
+      - Bytes: [0x9045, 0x9046]
       - Code: [0x9047, 0x90e4]
       - Bytes: [0x90e5, 0x90e9]
       - Code: [0x90ea, 0x914d]
@@ -145,19 +216,23 @@ segment:
       - Code: [0x981b, 0x9844]
       - Bytes: [0x9845, 0x9846]
       - Code: [0x9847, 0x9a1d]
-      - Bytes: [0x9a1e, 0x9a2f]
+      - Words: [0x9a1e, 0x9a2f]
       - Code: [0x9a30, 0x9a9f]
       - Bytes: [0x9aa0, 0x9aa7]
       - Code: [0x9aa8, 0x9ab5]
       - Bytes: [0x9ab6, 0x9ab7]
       - Code: [0x9ab8, 0x9b59]
-      - Bytes: [0x9b5a, 0x9d53]
+      - Words: [0x9b5a, 0x9ba9]
+      - Bytes: [0x9baa, 0x9d4d]
+      - Words: [0x9d4e, 0x9d53]
       - Code: [0x9d54, 0x9d7a]
-      - Bytes: [0x9d7b, 0x9d90]
+      - Words: [0x9d7b, 0x9d90]
       - Code: [0x9d91, 0x9de3]
-      - Bytes: [0x9de4, 0x9df5]
+      - Words: [0x9de4, 0x9df5]
       - Code: [0x9df6, 0x9e1e]
-      - Bytes: [0x9e1f, 0x9e79]
+      - Bytes: [0x9e1f, 0x9e25]
+      - Words: [0x9e26, 0x9e31]
+      - Bytes: [0x9e32, 0x9e79]
       - Code: [0x9e7a, 0x9fc2]
       - Bytes: [0x9fc3, 0x9fcd]
       - Code: [0x9fce, 0xa092]
@@ -177,7 +252,8 @@ segment:
       - Code: [0xa6d2, 0xa7a0]
       - Bytes: [0xa7a1, 0xa7aa]
       - Code: [0xa7ab, 0xa82f]
-      - Bytes: [0xa830, 0xa859]
+      - Words: [0xa830, 0xa835]
+      - Bytes: [0xa836, 0xa859]
       - Code: [0xa85a, 0xa865]
       - Bytes: [0xa866, 0xa868]
       - Code: [0xa869, 0xa89d]
@@ -1948,7 +2024,8 @@ segment:
       ----------------------------------------------------------------------
     range:
       - Code: [0xc000, 0xc03c]
-      - Bytes: [0xc03d, 0xc05f]
+      - Words: [0xc03d, 0xc05c]
+      - Bytes: [0xc05d, 0xc05f]
       - Code: [0xc060, 0xc22a]
       - Bytes: [0xc22b, 0xc232]
       - Code: [0xc233, 0xc23c]
@@ -2340,7 +2417,7 @@ segment:
       0xF17E: {symbol: Enemy_Routines2_Ache_and_Acheman}
       0xF26C: {symbol: Tables_for_Various_Bitmasks2}
       0xF27D: {symbol: code51}
-      0xF300: {symbol: UNKNOWN2}
+      0xF300: {symbol: dmc_samples}
       0xFD82: {symbol: code52}
       0xFDCB: {symbol: Continue_Save_Screen_Tile_Mappings}
       0xFE76: {symbol: code53}
@@ -2368,6 +2445,7 @@ segment:
         header: |-
           ----------------------------------------------------------------------
           IRQ entry point
+          This isn't valid code, but this is where the irq vector points.
           ----------------------------------------------------------------------
         symbol: irq
       0xfffa:
