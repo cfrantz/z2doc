@@ -193,7 +193,7 @@ impl CodeRange {
             output.push(symbol);
         }
         let mut instruction = format!(
-            "    {:<40}; {:04X} {:<6} ;",
+            "    {:<40}; {:04X} {:<6}   ;",
             i.mnemonic.replace("@", &operand),
             i.addr,
             hex

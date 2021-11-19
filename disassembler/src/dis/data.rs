@@ -12,8 +12,8 @@ impl DataBytesRange {
         DataBytesRange { start, end }
     }
 
-    fn maybe_newline(n: usize, addr: u16, bytes: &[u8]) {
-        if n == 0 {
+    fn maybe_newline(want: bool, n: usize, addr: u16, bytes: &[u8]) {
+        if n == 0 || !want {
             return;
         }
         let n = n % 8;
@@ -26,7 +26,7 @@ impl DataBytesRange {
 
         let n = if n == 0 { 8 } else { n };
         println!(
-            "; {:04X} {}",
+            "; {:04X} {} ;",
             addr,
             std::str::from_utf8(&bytes[..n]).unwrap()
         )
@@ -49,7 +49,7 @@ impl DataBytesRange {
         for addr in self.start..=self.end {
             if let Some(comment) = segment.address.get(&addr) {
                 if !comment.header.is_empty() {
-                    Self::maybe_newline(n, start, &bytes);
+                    Self::maybe_newline(n % 8 != 0, n, start, &bytes);
                     n = 0;
                     start = addr;
                     for line in comment.header.split('\n') {
@@ -59,7 +59,7 @@ impl DataBytesRange {
             }
             if let Some(symbol) = symtab.get_label(segment.prgbank, addr) {
                 symtab.promote(segment.prgbank, addr, Some(&symbol));
-                Self::maybe_newline(n, start, &bytes);
+                Self::maybe_newline(n % 8 != 0, n, start, &bytes);
                 n = 0;
                 start = addr;
                 println!("{}:", symbol);
@@ -69,15 +69,15 @@ impl DataBytesRange {
             let data = rom[fofs];
             bytes[n % 8] = Self::maybe_printable(data);
             if n % 8 == 0 {
-                Self::maybe_newline(n, start, &bytes);
                 start = addr;
                 print!("    .byte ${:02X}", data);
             } else {
                 print!(",${:02X}", data);
             }
             n += 1;
+            Self::maybe_newline(n % 8 == 0, n, start, &bytes);
         }
-        Self::maybe_newline(n, start, &bytes);
+        Self::maybe_newline(n % 8 != 0, n, start, &bytes);
     }
 }
 
