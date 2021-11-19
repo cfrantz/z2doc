@@ -30,6 +30,11 @@ global_symbols:
   0x8000: MMC1_CONFIG
   0xA000: MMC1_CHR
   0xE000: MMC1_PRG
+  0x9C65: bank4_ik_something0_fixme
+  0x9C6C: bank4_ik_something1_fixme
+  0x9C70: bank4_ik_something2_fixme
+  0x9B6E: bank2_lizafos_something0_fixme
+  0x99F7: bank1_goriya_something0_fixme
 segment:
   - name: "ines_header"
     cpu_range: [0, 0]
@@ -227,7 +232,7 @@ segment:
       0x9847: {symbol: Check_for_Fire_Spell}
       0x984E: {symbol: Check_if_Life_is_Full}
       0x9901: {symbol: set_sound_effect_to_Flame}
-      0x9A1E: {symbol: unknown_pointer_table2}
+      0x9A1E: {symbol: unknown_pointer_table4}
       0x9A30: {symbol: unknown22}
       0x9AA0: {symbol: unknown23}
       0x9AA8: {symbol: unknown24}
@@ -723,6 +728,7 @@ segment:
       0x9CBE: {symbol: code17}
       0x9D0D: {symbol: table9}
       0x9D13: {symbol: code18}
+      0x9D2A: {symbol: lizalfos_table0}
       0x9D32: {symbol: Enemy_Routines2_Lizalfos__Rock_Tossing}
       0x9DAC: {symbol: Enemy_Routines2_Tektite}
       0x9DDE: {symbol: Enemy_Routines2_Girobokku}
@@ -1246,7 +1252,6 @@ segment:
       0x97E1: {symbol: Enemy_Routines1_Guma}
       0x9815: {symbol: Table_related_to_Horsehead}
       0x981D: {symbol: Enemy_Routines1_Horsehead}
-      0x9867: {symbol: table4 = * + $0001}
       0x986A: {symbol: code6}
       0x98AA: {symbol: Enemy_Init_Routines_Bubble__Slow}
       0x98AE: {symbol: Enemy_Init_Routines_Bubble__Fast}
@@ -1260,7 +1265,6 @@ segment:
       0x9A8B: {symbol: Enemy_Routines_Crystal}
       0x9AAA: {symbol: table5}
       0x9AD4: {symbol: Enemy_Routines_Crystal_Slot}
-      0x9AE0: {symbol: Pointer_table_for_Crystal_Placement_Animation_Routines = * + $0001}
       0x9AEB: {symbol: Related_to_placing_crystal_onto_statue}
       0x9B2B: {symbol: Crystal_Flying_Up}
       0x9B89: {symbol: Table_for_Crystal_Flashing_Colors_maybe}
@@ -1270,7 +1274,7 @@ segment:
       0x9C8C: {symbol: Enemy_Routines_Iron_Knuckle}
       0x9E35: {symbol: table7}
       0x9E45: {symbol: Enemy_Routines1_Iron_Knuckle}
-      0x9EBA: {symbol: table8 = * + $0002}
+      0x9EBD: {symbol: table_9EBD}
       0x9EC1: {symbol: Enemy_Routines_Tinsuit_Generator}
       0x9EE0: {symbol: UNUSED_9EE0}
       0xA000: {symbol: Area_Pointers_Palaces_Type_B_}
@@ -1298,12 +1302,13 @@ segment:
       0xAB98: {symbol: Enemy_Routines_Falling_Block_Generator}
       0xABE9: {symbol: Enemy_Routines_Falling_Block}
       0xAC00: {symbol: Related_to_Falling_Blocks}
-      0xACCE: {symbol: table12 = * + $0002}
+      0xACD1: {symbol: table_ACD1}
       0xACD9: {symbol: code13}
       0xAD29: {symbol: Related_to_Helmethead_maybe0}
       0xAD90: {symbol: Related_to_Helmethead_maybe1}
       0xAE2C: {symbol: table_AE2C}
       0xAE47: {symbol: table_AE47}
+      0xAF22: {symbol: maybe_ik_table}
       0xAFB4: {symbol: table_AFB4}
       0xB115: {symbol: table_B115}
       0xB139: {symbol: table_B139_looks_like_pointer}
@@ -1312,6 +1317,7 @@ segment:
       0xB398: {symbol: table_B398}
       0xB55D: {symbol: table_B55D}
       0xB7B0: {symbol: Enemy_Routines1_Bubble}
+      0xB7BF: {symbol: Mago_Table}
       0xB7C5: {symbol: Enemy_Routines_Mago}
       0xB833: {symbol: Enemy_Routines1_Ra_Flying_Unicorn_Head}
       0xB83E: {symbol: Enemy_Routines_Hidden_Red_Jar}
@@ -1323,7 +1329,7 @@ segment:
       0xB909: {symbol: Enemy_Routines_Moa}
       0xB9BF: {symbol: Enemy_Routines_Dripping_Column}
       0xB9F4: {symbol: Enemy_Init_Routines_Ra_Unicorn_Head}
-      0xBA15: {symbol: table14 = * + $0002}
+      0xBA18: {symbol: Ra_Position_Table}
       0xBA20: {symbol: Enemy_Routines_Ra_Unicorn_Head}
       0xBA57: {symbol: Enemy_Routines_Guma}
       0xBAC3: {symbol: Enemy_Routines_Helmethead__Gooma}
@@ -1341,6 +1347,7 @@ segment:
       0xBDCE: {symbol: table_BDCE}
       0xBDD0: {symbol: Enemy_Routines1_Floating_Helmet}
       0xBDED: {symbol: Enemy_Routines1_Stalfos}
+      0xBDEB: {symbol: direction_table0}
       0xBE7B: {symbol: Enemy_Routines1_Mago}
       0xBF00: {symbol: Palettes_for_Palaces1}
       0xBF10: {symbol: Palettes_for_Palaces2}
@@ -1685,7 +1692,7 @@ segment:
       0x9900: {symbol: dark_link_AI_movement_maybe__table}
       0x990C: {symbol: dark_link_AI_movement_maybe1}
       0x99DC: {symbol: table_99DC}
-      0x9A45: {symbol: table_9A45}
+      0x9A4A: {symbol: table_9A4A}
       0x9A85: {symbol: table_9A85}
       0x9D2C: {symbol: Enemy_Routines1_Fokka}
       0x9E6B: {symbol: Enemy_Routines1_Fokkeru}
@@ -2164,7 +2171,6 @@ segment:
       0xD39A: {symbol: UNUSED_D39A}
       0xD3CA: {symbol: table13}
       0xD548: {symbol: Flying_Blade_Disappearing__maybe}
-      0xD58C: {symbol: table14 = * + $0002}
       0xD5A7: {symbol: code21}
       0xD5F1: {symbol: pointer_table15}
       0xD5F9: {symbol: table15}

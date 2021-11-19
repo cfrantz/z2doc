@@ -54,7 +54,7 @@ impl CodeRange {
                 | AddressingMode::AbsoluteX
                 | AddressingMode::AbsoluteY
                 | AddressingMode::Indirect => {
-                    symtab.maybe_put(segment.prgbank, operand, &format!("L{:04X}", operand));
+                    symtab.synthetic_put(segment.prgbank, operand, &format!("L{:04X}", operand));
                 }
                 AddressingMode::Relative => {
                     let mut disp = operand;
@@ -62,38 +62,84 @@ impl CodeRange {
                         disp |= 0xFF00;
                     }
                     let operand = (addr + 2).wrapping_add(disp);
-                    symtab.maybe_put(segment.prgbank, operand, &format!("L{:04X}", operand));
+                    symtab.synthetic_put(segment.prgbank, operand, &format!("L{:04X}", operand));
                 }
                 _ => {}
             };
-            self.instruction.push(Instruction {
-                addr: addr,
-                opcode: i,
-                mnemonic: NAMES[i as usize],
-                operand: operand,
-                mode: info.mode,
-            });
-            addr += size;
+            if i == 0x2C
+                && (symtab.get(segment.prgbank, addr + 1).is_some()
+                    || symtab.get(segment.prgbank, addr + 2).is_some())
+            {
+                self.instruction.push(Instruction {
+                    addr: addr,
+                    opcode: i,
+                    mnemonic: ".byte $2C ; BIT used as a skip",
+                    operand: operand,
+                    mode: info.mode,
+                });
+                addr += 1;
+            } else {
+                self.instruction.push(Instruction {
+                    addr: addr,
+                    opcode: i,
+                    mnemonic: NAMES[i as usize],
+                    operand: operand,
+                    mode: info.mode,
+                });
+                addr += size;
+            }
         }
         Ok(())
     }
 
     fn to_text_one(&self, i: &Instruction, segment: &nesfile::Segment, symtab: &Symtab) -> String {
         let (operand, hex) = match i.mode {
-            AddressingMode::Absolute
-            | AddressingMode::AbsoluteX
-            | AddressingMode::AbsoluteY
-            | AddressingMode::Indirect => (
-                symtab
-                    .get(segment.prgbank, i.operand)
-                    .unwrap_or(format!("${:04X}", i.operand)),
-                format!(
-                    "{:02X}{:02X}{:02X}",
-                    i.opcode,
-                    i.operand & 0xFF,
-                    i.operand >> 8
-                ),
-            ),
+            AddressingMode::Absolute | AddressingMode::AbsoluteX | AddressingMode::AbsoluteY => {
+                let symbol = if i.mnemonic.starts_with("ST") && i.operand >= 0x8000 {
+                    // Hack: stores >= 0x8000 are usually mapper hardware
+                    symtab.get(None, i.operand)
+                } else {
+                    symtab.get_offset(segment.prgbank, i.operand)
+                };
+                //                let symbol = symtab.get_offset(segment.prgbank, i.operand);
+                symtab.promote(
+                    segment.prgbank,
+                    i.operand,
+                    symbol.as_ref().map(String::as_str),
+                );
+                (
+                    format!(
+                        "{}{}",
+                        // CA65 uses "a:" to represent an abs address override.
+                        if i.operand < 256 { "a:" } else { "" },
+                        symbol.unwrap_or(format!("${:04X}", i.operand))
+                    ),
+                    format!(
+                        "{:02X}{:02X}{:02X}",
+                        i.opcode,
+                        i.operand & 0xFF,
+                        i.operand >> 8
+                    ),
+                )
+            }
+            AddressingMode::Indirect => {
+                let symbol = symtab.get_offset(segment.prgbank, i.operand);
+                symtab.promote(
+                    segment.prgbank,
+                    i.operand,
+                    symbol.as_ref().map(String::as_str),
+                );
+                (
+                    symbol.unwrap_or(format!("${:04X}", i.operand)),
+                    format!(
+                        "{:02X}{:02X}{:02X}",
+                        i.opcode,
+                        i.operand & 0xFF,
+                        i.operand >> 8
+                    ),
+                )
+            }
+
             AddressingMode::Accumulator | AddressingMode::Implied => {
                 (String::default(), format!("{:02X}", i.opcode))
             }
@@ -105,29 +151,39 @@ impl CodeRange {
             | AddressingMode::IndirectIndexed
             | AddressingMode::ZeroPage
             | AddressingMode::ZeroPageX
-            | AddressingMode::ZeroPageY => (
-                symtab
-                    .get(segment.prgbank, i.operand)
-                    .unwrap_or(format!("${:02X}", i.operand)),
-                format!("{:02X}{:02X}", i.opcode, i.operand),
-            ),
+            | AddressingMode::ZeroPageY => {
+                let symbol = symtab.get_offset(segment.prgbank, i.operand);
+                symtab.promote(
+                    segment.prgbank,
+                    i.operand,
+                    symbol.as_ref().map(String::as_str),
+                );
+                (
+                    symbol.unwrap_or(format!("${:02X}", i.operand)),
+                    format!("{:02X}{:02X}", i.opcode, i.operand),
+                )
+            }
             AddressingMode::Relative => {
                 let mut disp = i.operand;
                 if disp & 0x80 == 0x80 {
                     disp |= 0xFF00;
                 }
                 let operand = (i.addr + 2).wrapping_add(disp);
+                let symbol = symtab.get_label(segment.prgbank, operand);
+                symtab.promote(
+                    segment.prgbank,
+                    operand,
+                    symbol.as_ref().map(String::as_str),
+                );
                 (
-                    symtab
-                        .get(segment.prgbank, operand)
-                        .unwrap_or(format!("${:04X}", operand)),
+                    symbol.unwrap_or(format!("${:04X}", operand)),
                     format!("{:02X}{:02X}", i.opcode, i.operand),
                 )
             }
         };
 
         let mut output = Vec::new();
-        if let Some(mut symbol) = symtab.get(segment.prgbank, i.addr) {
+        if let Some(mut symbol) = symtab.get_label(segment.prgbank, i.addr) {
             symbol.push_str(":");
             output.push(symbol);
         }

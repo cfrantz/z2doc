@@ -16,9 +16,6 @@ pub enum Range {
 }
 
 impl Range {
-    pub fn code(start: u16, end: u16) -> Self {
-        Range::Code(CodeRange::new(start, end))
-    }
     pub fn bytes(start: u16, end: u16) -> Self {
         Range::Bytes(DataBytesRange::new(start, end))
     }
@@ -53,23 +50,6 @@ pub struct Rom {
     symtab: Symtab,
 }
 
-#[derive(Debug, Clone, Copy)]
-enum SegDecode {
-    None,
-    Code,
-    Data,
-}
-
-impl From<bool> for SegDecode {
-    fn from(b: bool) -> Self {
-        if b {
-            SegDecode::Code
-        } else {
-            SegDecode::Data
-        }
-    }
-}
-
 impl Rom {
     pub fn new(romfile: &Path) -> Result<Self> {
         let mut rom = Rom::default();
@@ -78,8 +58,7 @@ impl Rom {
         Ok(rom)
     }
 
-    fn process_segment(&mut self, info: &nesfile::NesFile, s: &nesfile::Segment) -> Result<()> {
-        let mut start = 0u32;
+    fn process_segment(&mut self, _info: &nesfile::NesFile, s: &nesfile::Segment) -> Result<()> {
         let mut seg = Segment::default();
         let mut addr = s.fofs_to_cpu(s.file_range.start) as u32;
         // cpu addr is a 16-bit word, but we want a half-open range [start, end).
@@ -105,7 +84,7 @@ impl Rom {
                     }
                 };
             } else {
-                start = addr;
+                let start = addr;
                 while addr < end && s.get_range(addr as u16)?.is_none() {
                     addr += 1;
                 }
@@ -144,6 +123,9 @@ impl Rom {
     }
 
     pub fn to_text(&self, info: &nesfile::NesFile) {
+        for (addr, sym) in self.symtab.get_globals().iter() {
+            println!("{} = ${:04x}", sym, addr);
+        }
         for (seg, nesseg) in self.segment.iter().zip(&info.segment) {
             if !nesseg.header.is_empty() {
                 for line in nesseg.header.split('\n') {
@@ -151,6 +133,7 @@ impl Rom {
                 }
             }
 
+            println!(".segment \"{}\"", nesseg.name);
             for range in &seg.range {
                 range.to_text(&self.rom, nesseg, &self.symtab);
             }

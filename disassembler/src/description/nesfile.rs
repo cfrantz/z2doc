@@ -39,12 +39,15 @@ pub struct Segment {
 }
 
 impl Segment {
+    #[allow(dead_code)]
     pub fn is_bytes(&self, address: u16) -> bool {
         self.range.iter().any(|x| x.is_bytes(address))
     }
+    #[allow(dead_code)]
     pub fn is_words(&self, address: u16) -> bool {
         self.range.iter().any(|x| x.is_words(address))
     }
+    #[allow(dead_code)]
     pub fn is_code(&self, address: u16) -> bool {
         self.range.iter().any(|x| x.is_code(address))
     }
