@@ -1,28 +1,33 @@
+use num_traits::identities::{one, zero};
+use num_traits::Num;
 use serde::de::Deserializer;
 use serde::ser::Serializer;
 use serde::{Deserialize, Serialize};
-use std::ops::Range;
+use std::ops::RangeInclusive;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
-struct MyRange<T>(T, T);
+#[derive(Debug, Serialize, Deserialize)]
+struct MyRangeInclusive<T: Num>(T, T);
 
-pub fn serialize<S, T>(r: &Range<T>, ser: S) -> Result<S::Ok, S::Error>
+impl<T: Num> Default for MyRangeInclusive<T> {
+    fn default() -> Self {
+        MyRangeInclusive(one(), zero())
+    }
+}
+
+pub fn serialize<S, T>(r: &RangeInclusive<T>, ser: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
-    T: Serialize + Copy,
+    T: Serialize + Copy + Num,
 {
-    let r = MyRange(r.start, r.end);
+    let r = MyRangeInclusive(*r.start(), *r.end());
     r.serialize(ser)
 }
 
-pub fn deserialize<'de, D, T>(deser: D) -> Result<Range<T>, D::Error>
+pub fn deserialize<'de, D, T>(deser: D) -> Result<RangeInclusive<T>, D::Error>
 where
     D: Deserializer<'de>,
-    T: Deserialize<'de> + Copy,
+    T: Deserialize<'de> + Copy + Num,
 {
-    let r = MyRange::deserialize(deser)?;
-    Ok(Range {
-        start: r.0,
-        end: r.1,
-    })
+    let r = MyRangeInclusive::deserialize(deser)?;
+    Ok(RangeInclusive::new(r.0, r.1))
 }

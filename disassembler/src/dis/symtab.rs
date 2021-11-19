@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 
 #[derive(Debug, Hash, PartialEq, Eq, PartialOrd, Ord)]
 struct BankAddress(Option<i16>, u16);
@@ -12,15 +12,25 @@ struct Symbol {
     symbol: String,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Symtab {
-    highbank_range: Range<usize>,
+    highbank_range: RangeInclusive<usize>,
     highbank: Option<i16>,
     table: RefCell<HashMap<BankAddress, Symbol>>,
 }
 
+impl Default for Symtab {
+    fn default() -> Self {
+        Symtab {
+            highbank_range: RangeInclusive::new(0xFFFF, 0),
+            highbank: None,
+            table: RefCell::default(),
+        }
+    }
+}
+
 impl Symtab {
-    pub fn set_highbank(&mut self, range: Range<usize>, bank: Option<i16>) {
+    pub fn set_highbank(&mut self, range: RangeInclusive<usize>, bank: Option<i16>) {
         self.highbank_range = range;
         self.highbank = bank;
     }

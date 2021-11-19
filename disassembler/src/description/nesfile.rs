@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 use std::path::PathBuf;
 
 use crate::description::range;
@@ -17,7 +17,7 @@ pub struct NesFile {
     pub segment: Vec<Segment>,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Segment {
     pub name: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -28,14 +28,24 @@ pub struct Segment {
     pub header: String,
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub footer: String,
-    #[serde(skip_serializing_if = "Range::is_empty", with = "range")]
-    pub file_range: Range<usize>,
-    #[serde(skip_serializing_if = "Range::is_empty", with = "range")]
-    pub cpu_range: Range<usize>,
+    #[serde(skip_serializing_if = "RangeInclusive::is_empty", with = "range")]
+    pub file_range: RangeInclusive<usize>,
+    #[serde(skip_serializing_if = "RangeInclusive::is_empty", with = "range")]
+    pub cpu_range: RangeInclusive<usize>,
     #[serde(default)]
     pub range: Vec<DataRange>,
     #[serde(default)]
     pub address: HashMap<u16, Comment>,
+}
+
+impl Default for Segment {
+    fn default() -> Self {
+        Segment {
+            file_range: RangeInclusive::new(1, 0),
+            cpu_range: RangeInclusive::new(1, 0),
+            ..Default::default()
+        }
+    }
 }
 
 impl Segment {
@@ -61,10 +71,10 @@ impl Segment {
         }
     }
     pub fn fofs_to_cpu(&self, fofs: usize) -> u16 {
-        (fofs + self.cpu_range.start - self.file_range.start) as u16
+        (fofs + *self.cpu_range.start() - *self.file_range.start()) as u16
     }
     pub fn cpu_to_fofs(&self, address: u16) -> usize {
-        (address as usize) + self.file_range.start - self.cpu_range.start
+        (address as usize) + *self.file_range.start() - *self.cpu_range.start()
     }
 }
 

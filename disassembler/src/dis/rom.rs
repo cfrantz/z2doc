@@ -60,27 +60,27 @@ impl Rom {
 
     fn process_segment(&mut self, _info: &nesfile::NesFile, s: &nesfile::Segment) -> Result<()> {
         let mut seg = Segment::default();
-        let mut addr = s.fofs_to_cpu(s.file_range.start) as u32;
+        let mut addr = s.fofs_to_cpu(*s.file_range.start()) as u32;
         // cpu addr is a 16-bit word, but we want a half-open range [start, end).
-        let end = s.fofs_to_cpu(s.file_range.end - 1) as u32 + 1;
+        let end = s.fofs_to_cpu(*s.file_range.end()) as u32 + 1;
         log::info!("segment: {:?} start={:x?} end={:x?}", s.name, addr, end);
         while addr < end {
             let range = s.get_range(addr as u16)?;
             if let Some(r) = range {
                 addr = match r {
                     nesfile::DataRange::Code(a, b) => {
-                        let mut code = CodeRange::new(*a, *b - 1);
+                        let mut code = CodeRange::new(*a, *b);
                         code.disassemble(&self.rom, s, &self.symtab)?;
                         seg.range.push(Range::Code(code));
-                        *b as u32
+                        *b as u32 + 1
                     }
                     nesfile::DataRange::Bytes(a, b) => {
-                        seg.range.push(Range::bytes(*a, *b - 1));
-                        *b as u32
+                        seg.range.push(Range::bytes(*a, *b));
+                        *b as u32 + 1
                     }
                     nesfile::DataRange::Words(a, b) => {
-                        seg.range.push(Range::words(*a, *b - 1));
-                        *b as u32
+                        seg.range.push(Range::words(*a, *b));
+                        *b as u32 + 1
                     }
                 };
             } else {

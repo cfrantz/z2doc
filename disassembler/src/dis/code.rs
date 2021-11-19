@@ -39,7 +39,7 @@ impl CodeRange {
             let fofs = segment.cpu_to_fofs(addr);
             let i = rom[fofs];
             let info = &INFO[i as usize];
-            let (operand, size) = match info.size {
+            let (operand, mut size) = match info.size {
                 0 => {
                     log::warn!("Illegal instruction at {} ${:04x}", segment.name, addr);
                     (0, 1)
@@ -77,7 +77,7 @@ impl CodeRange {
                     operand: operand,
                     mode: info.mode,
                 });
-                addr += 1;
+                size = 1;
             } else {
                 self.instruction.push(Instruction {
                     addr: addr,
@@ -86,8 +86,13 @@ impl CodeRange {
                     operand: operand,
                     mode: info.mode,
                 });
-                addr += size;
             }
+            let next = addr.wrapping_add(size);
+            if next < addr {
+                // Address wrapped, we are done.
+                break;
+            }
+            addr = next;
         }
         Ok(())
     }
