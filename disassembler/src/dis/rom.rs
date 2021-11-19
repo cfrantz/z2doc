@@ -123,6 +123,11 @@ impl Rom {
     }
 
     pub fn to_text(&self, info: &nesfile::NesFile) {
+        if !info.header.is_empty() {
+            for line in info.header.split('\n') {
+                println!("; {}", line);
+            }
+        }
         for (addr, sym) in self.symtab.get_globals().iter() {
             println!("{} = ${:04x}", sym, addr);
         }

@@ -1,4 +1,30 @@
-name: "Zelda II: The Adventure of Link"
+header: |-
+  ----------------------------------------------------------------------
+  Disassembly of "Zelda II: The Adventure of Link"
+
+  This disassembly represents a ton of work from lots of hackers and
+  reverse engineers.  The following people have contributed directly
+  or indirectly to this effort:
+    Trax
+    Lemmy
+    CF207
+    BGT
+    Fon2D2
+
+  This file will assemble to a binary-identical version of the PRG
+  banks present in zelda2.nes[1].
+
+    $ cargo run -- -d zelda2.yaml zelda2.nes >z2.asm
+    $ ca65 -o z2.o z2.asm
+    $ ld65 -o z2.nes -C zelda2.cfg z2.o
+
+  The file `z2.nes` will be 131088 bytes and have a SHA256 sum of
+  b1f7782d6099e3da158f45e9b32112c3ee361bd3c74f1fc14db88ec8eeaa1850.
+
+
+  [1]: The original `zelda2.nes` is 262160 bytes and has a SHA256 sum of
+       ad8c0fbcf092bf84b48e69fd3964eea4ed91bfe62abc352943d537979782680c.
+  ----------------------------------------------------------------------
 global_symbols:
   0x12: frame
   0x29: link_ypos
