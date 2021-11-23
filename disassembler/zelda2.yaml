@@ -1,3 +1,30 @@
+title: "Zelda II: The Adventure of Link"
+css_style: |-
+  td {
+    font-family: monospace;
+    white-space: pre;
+  }
+  a.asm-symbol {
+    text-decoration: none;
+  }
+  .asm-comment {
+    color: gray;
+  }
+  .asm-label {
+    color: blue;
+    font-weight: bold;
+  }
+  .asm-addr {
+    font-style: italic;
+    color: green;
+  }
+  .asm-const {
+    color: sienna;
+  }
+  .asm-directive {
+    color: red;
+    font-weight: bold;
+  }
 header: |-
   ----------------------------------------------------------------------
   Disassembly of "Zelda II: The Adventure of Link"

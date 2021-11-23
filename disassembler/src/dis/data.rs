@@ -1,5 +1,9 @@
+use itertools::Itertools;
+use std::iter::FromIterator;
+
 use crate::description::nesfile;
 use crate::dis::symtab::Symtab;
+use crate::output::{self, Format};
 
 #[derive(Debug, Default)]
 pub struct DataBytesRange {
@@ -12,72 +16,70 @@ impl DataBytesRange {
         DataBytesRange { start, end }
     }
 
-    fn maybe_newline(want: bool, n: usize, addr: u16, bytes: &[u8]) {
-        if n == 0 || !want {
-            return;
-        }
-        let n = n % 8;
-        if n != 0 {
-            for _ in 0..(8 - n) {
-                print!("    ");
-            }
-        }
-        print!("   ");
-
-        let n = if n == 0 { 8 } else { n };
-        println!(
-            "; {:04X} {} ;",
-            addr,
-            std::str::from_utf8(&bytes[..n]).unwrap()
-        )
-    }
-
-    fn maybe_printable(v: u8) -> u8 {
+    fn as_ascii(v: &u8) -> char {
         // FIXME: nes games don't use ascii encoding.
-        if v >= 32 && v < 127 {
-            v
+        if *v >= 32 && *v < 127 {
+            *v as char
         } else {
-            b'.'
+            '.'
         }
     }
 
-    pub fn to_text(&self, rom: &[u8], segment: &nesfile::Segment, symtab: &Symtab) {
-        let mut n = 0;
-        let mut start = self.start;
-        let mut bytes = [0u8; 8];
-
-        for addr in self.start..=self.end {
-            if let Some(comment) = segment.address.get(&addr) {
-                if !comment.header.is_empty() {
-                    Self::maybe_newline(n % 8 != 0, n, start, &bytes);
-                    n = 0;
-                    start = addr;
-                    for line in comment.header.split('\n') {
-                        println!("; {}", line);
-                    }
+    pub fn to_text(
+        &self,
+        fmt: Format,
+        rom: &[u8],
+        segment: &nesfile::Segment,
+        symtab: &Symtab,
+    ) -> Vec<String> {
+        let mut ret = Vec::new();
+        let mut addr = self.start;
+        loop {
+            let mut end = addr;
+            for i in (addr + 1)..=std::cmp::min(addr + 7, self.end) {
+                if symtab.get_label(segment.prgbank, i).is_some() {
+                    break;
                 }
+                end = i;
             }
-            if let Some(symbol) = symtab.get_label(segment.prgbank, addr) {
-                symtab.promote(segment.prgbank, addr, Some(&symbol));
-                Self::maybe_newline(n % 8 != 0, n, start, &bytes);
-                n = 0;
-                start = addr;
-                println!("{}:", symbol);
-            }
+            let a = segment.cpu_to_fofs(addr);
+            let b = segment.cpu_to_fofs(end);
+            let bytes = &rom[a..=b];
+            let operand = bytes.iter().map(|b| format!("${:02X}", b)).join(",");
+            let hexdump = String::from_iter(bytes.iter().map(Self::as_ascii));
+            let label = symtab.get_label(segment.prgbank, addr);
 
-            let fofs = segment.cpu_to_fofs(addr);
-            let data = rom[fofs];
-            bytes[n % 8] = Self::maybe_printable(data);
-            if n % 8 == 0 {
-                start = addr;
-                print!("    .byte ${:02X}", data);
+            if let Some(comment) = segment.address.get(&addr) {
+                ret.extend(output::commentblock(fmt, &comment.header));
+                if let Some(l) = &label {
+                    symtab.promote(segment.prgbank, addr, Some(l));
+                    ret.push(output::label(fmt, l));
+                }
+                ret.push(output::instruction(
+                    fmt,
+                    ".byte @",
+                    &operand,
+                    None,
+                    addr,
+                    &hexdump,
+                    &comment.comment,
+                ));
+                ret.extend(output::commentblock(fmt, &comment.footer));
             } else {
-                print!(",${:02X}", data);
+                if let Some(l) = &label {
+                    symtab.promote(segment.prgbank, addr, Some(l));
+                    ret.push(output::label(fmt, l));
+                }
+                ret.push(output::instruction(
+                    fmt, ".byte @", &operand, None, addr, &hexdump, "",
+                ));
             }
-            n += 1;
-            Self::maybe_newline(n % 8 == 0, n, start, &bytes);
+            if end == self.end {
+                break;
+            }
+            addr = end.wrapping_add(1);
         }
-        Self::maybe_newline(n % 8 != 0, n, start, &bytes);
+        ret
     }
 }
 
@@ -92,27 +94,54 @@ impl DataWordsRange {
         DataWordsRange { start, end }
     }
 
-    pub fn to_text(&self, rom: &[u8], segment: &nesfile::Segment, symtab: &Symtab) {
+    pub fn to_text(
+        &self,
+        fmt: Format,
+        rom: &[u8],
+        segment: &nesfile::Segment,
+        symtab: &Symtab,
+    ) -> Vec<String> {
+        let mut ret = Vec::new();
         for addr in (self.start..=self.end).step_by(2) {
             let fofs = segment.cpu_to_fofs(addr);
-            if let Some(comment) = segment.address.get(&addr) {
-                if !comment.header.is_empty() {
-                    for line in comment.header.split('\n') {
-                        println!("; {}", line);
-                    }
-                }
-            }
-            if let Some(symbol) = symtab.get_label(segment.prgbank, addr) {
-                symtab.promote(segment.prgbank, addr, Some(&symbol));
-                println!("{}:", symbol);
-            }
             let value = (rom[fofs] as u16) | (rom[fofs + 1] as u16) << 8;
-            if let Some(symbol) = symtab.get(segment.prgbank, value) {
-                symtab.promote(segment.prgbank, value, Some(&symbol));
-                println!("    .word {}", symbol);
+            let operand = format!("${:04X}", value);
+            let hex = format!("{:02X}{:02X}", rom[fofs], rom[fofs + 1]);
+            let symbol = symtab.get(segment.prgbank, value);
+            let label = symtab.get_label(segment.prgbank, addr);
+
+            if let Some(comment) = segment.address.get(&addr) {
+                ret.extend(output::commentblock(fmt, &comment.header));
+                if let Some(l) = &label {
+                    symtab.promote(segment.prgbank, addr, Some(l));
+                    ret.push(output::label(fmt, l));
+                }
+                ret.push(output::instruction(
+                    fmt,
+                    ".word @",
+                    &operand,
+                    symbol.as_ref().map(String::as_str),
+                    addr,
+                    &hex,
+                    &comment.comment,
+                ));
+                ret.extend(output::commentblock(fmt, &comment.footer));
             } else {
-                println!("    .word ${:04X}", value);
+                if let Some(l) = &label {
+                    symtab.promote(segment.prgbank, addr, Some(l));
+                    ret.push(output::label(fmt, l));
+                }
+                ret.push(output::instruction(
+                    fmt,
+                    ".word @",
+                    &operand,
+                    symbol.as_ref().map(String::as_str),
+                    addr,
+                    &hex,
+                    "",
+                ));
             }
         }
+        ret
     }
 }

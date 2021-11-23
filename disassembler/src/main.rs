@@ -5,9 +5,11 @@ use structopt::StructOpt;
 
 mod description;
 mod dis;
+mod output;
 
 use description::nesfile::NesFile;
 use dis::rom::Rom;
+use output::Format;
 
 #[derive(Debug, StructOpt)]
 struct Opts {
@@ -16,6 +18,9 @@ struct Opts {
 
     #[structopt(short, long, help = "Parse descriprtion file only")]
     parse: bool,
+
+    #[structopt(short, long, possible_values=&Format::variants(), case_insensitive=true, default_value="text")]
+    format: Format,
 
     #[structopt(long, default_value = "off")]
     logging: LevelFilter,
@@ -43,6 +48,9 @@ fn main() -> Result<()> {
     let mut rom = Rom::new(&nesfile)?;
     rom.process(&desc)?;
 
-    rom.to_text(&desc);
+    let lines = rom.to_text(opts.format, &desc);
+    for line in output::document(opts.format, &desc.title, &desc.css_style, lines) {
+        println!("{}", line);
+    }
     Ok(())
 }

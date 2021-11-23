@@ -8,6 +8,8 @@ use crate::description::range;
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct NesFile {
+    pub title: String,
+    pub css_style: String,
     pub header: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nesfile: Option<PathBuf>,

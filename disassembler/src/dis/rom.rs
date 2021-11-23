@@ -7,6 +7,7 @@ use std::path::Path;
 use crate::dis::code::CodeRange;
 use crate::dis::data::{DataBytesRange, DataWordsRange};
 use crate::dis::symtab::Symtab;
+use crate::output::{self, Format};
 
 #[derive(Debug)]
 pub enum Range {
@@ -23,11 +24,17 @@ impl Range {
         Range::Words(DataWordsRange::new(start, end))
     }
 
-    pub fn to_text(&self, rom: &[u8], segment: &nesfile::Segment, symtab: &Symtab) {
+    pub fn to_text(
+        &self,
+        fmt: Format,
+        rom: &[u8],
+        segment: &nesfile::Segment,
+        symtab: &Symtab,
+    ) -> Vec<String> {
         match self {
-            Range::Code(x) => x.to_text(segment, symtab),
-            Range::Bytes(x) => x.to_text(rom, segment, symtab),
-            Range::Words(x) => x.to_text(rom, segment, symtab),
+            Range::Code(x) => x.to_text(fmt, segment, symtab),
+            Range::Bytes(x) => x.to_text(fmt, rom, segment, symtab),
+            Range::Words(x) => x.to_text(fmt, rom, segment, symtab),
         }
     }
 }
@@ -122,32 +129,23 @@ impl Rom {
         Ok(())
     }
 
-    pub fn to_text(&self, info: &nesfile::NesFile) {
-        if !info.header.is_empty() {
-            for line in info.header.split('\n') {
-                println!("; {}", line);
-            }
-        }
+    pub fn to_text(&self, fmt: Format, info: &nesfile::NesFile) -> Vec<String> {
+        let mut ret = Vec::new();
+        ret.extend(output::commentblock(fmt, &info.header));
         for (addr, sym) in self.symtab.get_globals().iter() {
-            println!("{} = ${:04x}", sym, addr);
+            ret.push(output::equate(fmt, sym, &format!("${:04x}", addr)));
         }
         for (seg, nesseg) in self.segment.iter().zip(&info.segment) {
-            if !nesseg.header.is_empty() {
-                for line in nesseg.header.split('\n') {
-                    println!("; {}", line);
-                }
-            }
-
-            println!(".segment \"{}\"", nesseg.name);
+            ret.extend(output::commentblock(fmt, &nesseg.header));
+            ret.push(output::directive(
+                fmt,
+                &format!(".segment \"{}\"", nesseg.name),
+            ));
             for range in &seg.range {
-                range.to_text(&self.rom, nesseg, &self.symtab);
+                ret.extend(range.to_text(fmt, &self.rom, nesseg, &self.symtab));
             }
-
-            if !nesseg.footer.is_empty() {
-                for line in nesseg.footer.split('\n') {
-                    println!("; {}", line);
-                }
-            }
+            ret.extend(output::commentblock(fmt, &nesseg.footer));
         }
+        ret
     }
 }

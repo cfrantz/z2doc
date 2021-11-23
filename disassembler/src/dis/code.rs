@@ -1,6 +1,7 @@
 use crate::description::nesfile;
 use crate::dis::cpu6502::*;
 use crate::dis::symtab::Symtab;
+use crate::output::{self, Format};
 use anyhow::Result;
 
 #[derive(Debug, Default)]
@@ -97,8 +98,14 @@ impl CodeRange {
         Ok(())
     }
 
-    fn to_text_one(&self, i: &Instruction, segment: &nesfile::Segment, symtab: &Symtab) -> String {
-        let (operand, hex) = match i.mode {
+    fn to_text_one(
+        &self,
+        fmt: Format,
+        i: &Instruction,
+        segment: &nesfile::Segment,
+        symtab: &Symtab,
+    ) -> Vec<String> {
+        let (operand, symbol, hex) = match i.mode {
             AddressingMode::Absolute | AddressingMode::AbsoluteX | AddressingMode::AbsoluteY => {
                 let symbol = if i.mnemonic.starts_with("ST") && i.operand >= 0x8000 {
                     // Hack: stores >= 0x8000 are usually mapper hardware
@@ -106,19 +113,19 @@ impl CodeRange {
                 } else {
                     symtab.get_offset(segment.prgbank, i.operand)
                 };
-                //                let symbol = symtab.get_offset(segment.prgbank, i.operand);
                 symtab.promote(
                     segment.prgbank,
                     i.operand,
                     symbol.as_ref().map(String::as_str),
                 );
                 (
+                    // CA65 uses "a:" to represent an absolute address override.
                     format!(
-                        "{}{}",
-                        // CA65 uses "a:" to represent an abs address override.
+                        "{}${:04X}",
                         if i.operand < 256 { "a:" } else { "" },
-                        symbol.unwrap_or(format!("${:04X}", i.operand))
+                        i.operand
                     ),
+                    symbol.map(|s| format!("{}{}", if i.operand < 256 { "a:" } else { "" }, s)),
                     format!(
                         "{:02X}{:02X}{:02X}",
                         i.opcode,
@@ -135,7 +142,8 @@ impl CodeRange {
                     symbol.as_ref().map(String::as_str),
                 );
                 (
-                    symbol.unwrap_or(format!("${:04X}", i.operand)),
+                    format!("${:04X}", i.operand),
+                    symbol,
                     format!(
                         "{:02X}{:02X}{:02X}",
                         i.opcode,
@@ -146,10 +154,11 @@ impl CodeRange {
             }
 
             AddressingMode::Accumulator | AddressingMode::Implied => {
-                (String::default(), format!("{:02X}", i.opcode))
+                (String::default(), None, format!("{:02X}", i.opcode))
             }
             AddressingMode::Immediate => (
                 format!("${:02X}", i.operand),
+                None,
                 format!("{:02X}{:02X}", i.opcode, i.operand),
             ),
             AddressingMode::IndexedIndirect
@@ -164,7 +173,8 @@ impl CodeRange {
                     symbol.as_ref().map(String::as_str),
                 );
                 (
-                    symbol.unwrap_or(format!("${:02X}", i.operand)),
+                    format!("${:02X}", i.operand),
+                    symbol,
                     format!("{:02X}{:02X}", i.opcode, i.operand),
                 )
             }
@@ -181,50 +191,48 @@ impl CodeRange {
                     symbol.as_ref().map(String::as_str),
                 );
                 (
-                    symbol.unwrap_or(format!("${:04X}", operand)),
+                    format!("${:04X}", operand),
+                    symbol,
                     format!("{:02X}{:02X}", i.opcode, i.operand),
                 )
             }
         };
 
-        let mut output = Vec::new();
-        if let Some(mut symbol) = symtab.get_label(segment.prgbank, i.addr) {
-            symbol.push_str(":");
-            output.push(symbol);
+        let mut ret = Vec::new();
+        if let Some(symbol) = symtab.get_label(segment.prgbank, i.addr) {
+            ret.push(output::label(fmt, &symbol));
         }
-        let mut instruction = format!(
-            "    {:<40}; {:04X} {:<6}   ;",
-            i.mnemonic.replace("@", &operand),
-            i.addr,
-            hex
-        );
-
         if let Some(comment) = segment.address.get(&i.addr) {
-            if !comment.header.is_empty() {
-                for (j, line) in comment.header.split('\n').enumerate() {
-                    output.insert(j, format!("; {}", line));
-                }
-            }
-            if !comment.comment.is_empty() {
-                instruction.push(' ');
-                instruction.push_str(&comment.comment);
-            }
-            output.push(instruction);
-            if !comment.footer.is_empty() {
-                for line in comment.footer.split('\n') {
-                    output.push(format!("; {}", line));
-                }
-            }
+            ret.extend(output::commentblock(fmt, &comment.header));
+            ret.push(output::instruction(
+                fmt,
+                i.mnemonic,
+                &operand,
+                symbol.as_ref().map(String::as_str),
+                i.addr,
+                &hex,
+                &comment.comment,
+            ));
+            ret.extend(output::commentblock(fmt, &comment.footer));
         } else {
-            output.push(instruction);
+            ret.push(output::instruction(
+                fmt,
+                i.mnemonic,
+                &operand,
+                symbol.as_ref().map(String::as_str),
+                i.addr,
+                &hex,
+                "",
+            ));
         }
-        output.join("\n")
+        ret
     }
 
-    pub fn to_text(&self, segment: &nesfile::Segment, symtab: &Symtab) {
+    pub fn to_text(&self, fmt: Format, segment: &nesfile::Segment, symtab: &Symtab) -> Vec<String> {
+        let mut ret = Vec::new();
         for i in &self.instruction {
-            let text = self.to_text_one(i, segment, symtab);
-            println!("{}", text);
+            ret.extend(self.to_text_one(fmt, i, segment, symtab));
         }
+        ret
     }
 }
