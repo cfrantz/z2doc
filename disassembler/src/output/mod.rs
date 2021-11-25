@@ -8,6 +8,9 @@ pub enum Format {
 }
 }
 
+// Length of a line before the comment block.
+const LINE_LEN: usize = 50;
+
 pub fn comment(fmt: Format, comment: &str) -> String {
     match fmt {
         Format::Text => format!("; {}", comment),
@@ -36,10 +39,19 @@ pub fn commentblock(fmt: Format, block: &str) -> Vec<String> {
 pub fn symbolref(fmt: Format, symbol: &str) -> String {
     match fmt {
         Format::Text => symbol.to_string(),
-        Format::Html => format!(
-            "<a href=\"#{}\" class=\"asm-symbol\">{}</a>",
-            symbol, symbol
-        ),
+        Format::Html => {
+            let (symbol, extra) = if let Some(i) = symbol.find('+') {
+                symbol.split_at(i)
+            } else if let Some(i) = symbol.find('-') {
+                symbol.split_at(i)
+            } else {
+                (symbol, "")
+            };
+            format!(
+                "<a href=\"#{}\" class=\"asm-symbol\">{}</a>{}",
+                symbol, symbol, extra
+            )
+        }
     }
 }
 
@@ -67,15 +79,33 @@ fn address(fmt: Format, value: &str) -> String {
     }
 }
 
-pub fn equate(fmt: Format, symbol: &str, value: &str) -> String {
+pub fn equate(fmt: Format, symbol: &str, value: &str, cmt: &str) -> String {
+    let vlen = value.len();
     let value = constant(fmt, value);
-    match fmt {
-        Format::Text => format!("{} = {}", symbol, value),
-        Format::Html => format!(
-            "<span id=\"{}\" class=\"asm-label\">{}</span> = {}",
-            symbol, symbol, value
-        ),
-    }
+    let mut line = match fmt {
+        Format::Text => {
+            let mut line = format!("{} = {}", symbol, value);
+            for _ in line.len()..LINE_LEN {
+                line.push(' ');
+            }
+            line
+        }
+        Format::Html => {
+            let mut line = format!(
+                "<span id=\"{}\" class=\"asm-label\">{}</span> = {}",
+                symbol, symbol, value
+            );
+            let len = symbol.len() + 3 + vlen;
+            line.push_str("<span>");
+            for _ in len..LINE_LEN {
+                line.push(' ');
+            }
+            line.push_str("</span>");
+            line
+        }
+    };
+    line.push_str(&comment(fmt, cmt));
+    line
 }
 
 pub fn instruction(
@@ -87,7 +117,6 @@ pub fn instruction(
     hex: &str,
     cmt: &str,
 ) -> String {
-    const LEN: usize = 50;
     let (operand, n) = if let Some(s) = symbol {
         (symbolref(fmt, s), s.len())
     } else {
@@ -101,7 +130,7 @@ pub fn instruction(
         Format::Text => {
             let mut i = String::from("    ");
             i.push_str(&mnemonic.replace("@", &operand));
-            for _ in i.len()..LEN {
+            for _ in i.len()..LINE_LEN {
                 i.push(' ');
             }
             i
@@ -111,7 +140,7 @@ pub fn instruction(
             let m = if mnemonic.contains('@') { 1 } else { 0 };
             i.push_str(&mnemonic.replace("@", &operand));
             i.push_str("</span>");
-            for _ in mnemonic.len() + n - m..LEN {
+            for _ in mnemonic.len() + n - m..LINE_LEN {
                 i.push(' ');
             }
             i

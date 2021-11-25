@@ -1,5 +1,5 @@
 use crate::description::nesfile;
-use anyhow::{anyhow, Result};
+use anyhow::{anyhow, ensure, Result};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
@@ -109,7 +109,12 @@ impl Rom {
             .set_highbank(last.cpu_range.clone(), last.prgbank);
 
         for (addr, symbol) in info.global_symbols.iter() {
-            self.symtab.put(None, *addr, &symbol);
+            ensure!(
+                !symbol.symbol.is_empty(),
+                "No symbol for address 0x{:04x}",
+                addr
+            );
+            self.symtab.put(None, *addr, &symbol.symbol);
         }
         for segment in info.segment.iter() {
             for (addr, comment) in segment.address.iter() {
@@ -132,8 +137,16 @@ impl Rom {
     pub fn to_text(&self, fmt: Format, info: &nesfile::NesFile) -> Vec<String> {
         let mut ret = Vec::new();
         ret.extend(output::commentblock(fmt, &info.header));
-        for (addr, sym) in self.symtab.get_globals().iter() {
-            ret.push(output::equate(fmt, sym, &format!("${:04x}", addr)));
+        for (addr, _) in self.symtab.get_globals().iter() {
+            let symbol = &info.global_symbols[addr];
+            ret.extend(output::commentblock(fmt, &symbol.header));
+            ret.push(output::equate(
+                fmt,
+                &symbol.symbol,
+                &format!("${:04x}", addr),
+                &symbol.comment,
+            ));
+            ret.extend(output::commentblock(fmt, &symbol.footer));
         }
         for (seg, nesseg) in self.segment.iter().zip(&info.segment) {
             ret.extend(output::commentblock(fmt, &nesseg.header));

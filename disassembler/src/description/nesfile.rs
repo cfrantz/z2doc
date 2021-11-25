@@ -14,7 +14,7 @@ pub struct NesFile {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nesfile: Option<PathBuf>,
     #[serde(default)]
-    pub global_symbols: HashMap<u16, String>,
+    pub global_symbols: HashMap<u16, Comment>,
     #[serde(default)]
     pub segment: Vec<Segment>,
 }

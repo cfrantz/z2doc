@@ -53,110 +53,143 @@ header: |-
        ad8c0fbcf092bf84b48e69fd3964eea4ed91bfe62abc352943d537979782680c.
   ----------------------------------------------------------------------
 global_symbols:
-  0x12: frame
-  0x29: link_ypos
-  0x2a: enemy_ypos
-  0x30: projectile_ypos
-  0x36: swordbeam_ypos
-  0x3b: link_page
-  0x3c: enemy_page
-  0x42: projectile_page
-  0x4d: link_xpos
-  0x4e: enemy_xpos
-  0x54: projectile_xpos
-  0x5f: sideview_exit_side
-  0x60: enemy_facing_dir
-  0x66: projectile_facing_dir
-  0x70: link_xvel
-  0x71: enemy_xvel
-  0x77: projectile_velocity
-  0x86: overworld_spawn_type
-  0x8d: projectile_flag
-  0x9f: link_facing_dir
-  0xa1: enemy_id
-  0xa7: wall_hit_detect_maybe
-  0xaf: enemy_ai
-  0xb6: enemy_exist
-  0xbc: enemy_ram_idx
-  0xc2: enemy_hp
-  0xd1: sidview_width_maybe
-  0xe9: sound_fx_dmc
-  0xea: sound_pause
-  0xeb: sound_song
-  0xec: sound_fx1
-  0xed: sound_fx2
-  0xee: sound_fx3
-  0xef: sound_fx4
-  0xf5: controller1_buttons
-  0xf6: controller2_buttons
-  0xf7: controller1_held
-  0xf8: controller2_held
-  0x302: ppu_macro0_ram
-  0x363: ppu_macro1_ram
-  0x40e: enemy_stun_timer
-  0x48e: enemy_item_id
-  0x524: menu_state
-  0x561: area
-  0x56b: town_code
-  0x56c: palace_code
-  0x700: num_lives
-  0x706: overworld
-  0x707: world
-  0x70c: link_magic_refill
-  0x70d: link_life_refill
-  0x755: link_xp_add_hi
-  0x756: link_xp_add_lo
-  0x736: game_mode
-  0x769: bank
-  0x76c: game_routine
-  0x770: next_xp_hi
-  0x771: next_xp_lo
-  0x773: link_mp
-  0x774: link_hp
-  0x775: link_xp_hi
-  0x776: link_xp_lo
-  0x777: link_level_atk
-  0x778: link_level_magic
-  0x779: link_level_life
-  0x77b: link_has_shield
-  0x77c: link_has_jump
-  0x77d: link_has_life
-  0x77e: link_has_fairy
-  0x77f: link_has_fire
-  0x780: link_has_reflect
-  0x781: link_has_spell
-  0x782: link_has_thunder
-  0x783: link_magic_containers
-  0x784: link_heart_containers
-  0x785: link_has_candle
-  0x786: link_has_glove
-  0x787: link_has_raft
-  0x788: link_has_boots
-  0x789: link_has_flute
-  0x78a: link_has_cross
-  0x78b: link_has_hammer
-  0x78c: link_has_magic_key
-  0x793: link_num_keys
-  0x794: link_num_crystals
-  0x79f: link_num_deaths
-  0x7a0: link_name
-  0x2000: PPUCTRL
-  0x2001: PPUMASK
-  0x2002: PPUSTATUS
-  0x2003: OAMADDR
-  0x2004: OAMDATA
-  0x2005: PPUSCROLL
-  0x2006: PPUADDR
-  0x2007: PPUDATA
-  0x4014: OAMDMA
-  0x8000: MMC1_CONFIG
-  0xA000: MMC1_CHR
-  0xE000: MMC1_PRG
-  0x9C65: bank4_ik_something0_fixme
-  0x9C6C: bank4_ik_something1_fixme
-  0x9C70: bank4_ik_something2_fixme
-  0x9B6E: bank2_lizafos_something0_fixme
-  0x99F7: bank1_goriya_something0_fixme
+  0x12:
+    comment: Global frame counter
+    symbol: frame
+  0x29:
+    header: |-
+      ----------------------------------------------------------------------
+      Y positions for Link, enemies and projectiles
+      ----------------------------------------------------------------------
+    comment: Link's Y position
+    symbol: link_ypos
+  0x2a:
+    comment: Enemy Y positions (array of 6)
+    symbol: enemy_ypos
+  0x30:
+    comment: Projectile Y positions (array of 6)
+    symbol: projectile_ypos
+  0x36:
+    symbol: swordbeam_ypos
+  0x3b:
+    header: |-
+      ----------------------------------------------------------------------
+      Page positions for Link, enemies and projectiles (e.g. X-pos highbyte)
+      ----------------------------------------------------------------------
+    comment: Link's page position
+    symbol: link_page
+  0x3c:
+    comment: Enemy page positions (array of 6)
+    symbol: enemy_page
+  0x42:
+    comment: Projectile page positions (array of 6)
+    symbol: projectile_page
+  0x4d:
+    header: |-
+      ----------------------------------------------------------------------
+      X positions for Link, enemies and projectiles
+      ----------------------------------------------------------------------
+    comment: Link's X position
+    symbol: link_xpos
+  0x4e:
+    comment: Enemy X positions (array of 6)
+    symbol: enemy_xpos
+  0x54:
+    comment: Projectile X positions (array of 6)
+    symbol: projectile_xpos
+  0x5f: {symbol: sideview_exit_side}
+  0x60: {symbol: enemy_facing_dir}
+  0x66: {symbol: projectile_facing_dir}
+  0x70: {symbol: link_xvel}
+  0x71: {symbol: enemy_xvel}
+  0x77: {symbol: projectile_velocity}
+  0x86: {symbol: overworld_spawn_type}
+  0x8d: {symbol: projectile_flag}
+  0x9f: {symbol: link_facing_dir}
+  0xa1: {symbol: enemy_id}
+  0xa7: {symbol: wall_hit_detect_maybe}
+  0xaf: {symbol: enemy_ai}
+  0xb6: {symbol: enemy_exist}
+  0xbc: {symbol: enemy_ram_idx}
+  0xc2: {symbol: enemy_hp}
+  0xd1: {symbol: sidview_width_maybe}
+  0xe9: {symbol: sound_fx_dmc}
+  0xea: {symbol: sound_pause}
+  0xeb: {symbol: sound_song}
+  0xec: {symbol: sound_fx1}
+  0xed: {symbol: sound_fx2}
+  0xee: {symbol: sound_fx3}
+  0xef: {symbol: sound_fx4}
+  0xf5: {symbol: controller1_buttons}
+  0xf6: {symbol: controller2_buttons}
+  0xf7: {symbol: controller1_held}
+  0xf8: {symbol: controller2_held}
+  0x302: {symbol: ppu_macro0_ram}
+  0x363: {symbol: ppu_macro1_ram}
+  0x40e: {symbol: enemy_stun_timer}
+  0x48e: {symbol: enemy_item_id}
+  0x524: {symbol: menu_state}
+  0x561: {symbol: area}
+  0x56b: {symbol: town_code}
+  0x56c: {symbol: palace_code}
+  0x700: {symbol: num_lives}
+  0x706: {symbol: overworld}
+  0x707: {symbol: world}
+  0x70c: {symbol: link_magic_refill}
+  0x70d: {symbol: link_life_refill}
+  0x755: {symbol: link_xp_add_hi}
+  0x756: {symbol: link_xp_add_lo}
+  0x736: {symbol: game_mode}
+  0x769: {symbol: bank}
+  0x76c: {symbol: game_routine}
+  0x770: {symbol: next_xp_hi}
+  0x771: {symbol: next_xp_lo}
+  0x773: {symbol: link_mp}
+  0x774: {symbol: link_hp}
+  0x775: {symbol: link_xp_hi}
+  0x776: {symbol: link_xp_lo}
+  0x777: {symbol: link_level_atk}
+  0x778: {symbol: link_level_magic}
+  0x779: {symbol: link_level_life}
+  0x77b: {symbol: link_has_shield}
+  0x77c: {symbol: link_has_jump}
+  0x77d: {symbol: link_has_life}
+  0x77e: {symbol: link_has_fairy}
+  0x77f: {symbol: link_has_fire}
+  0x780: {symbol: link_has_reflect}
+  0x781: {symbol: link_has_spell}
+  0x782: {symbol: link_has_thunder}
+  0x783: {symbol: link_magic_containers}
+  0x784: {symbol: link_heart_containers}
+  0x785: {symbol: link_has_candle}
+  0x786: {symbol: link_has_glove}
+  0x787: {symbol: link_has_raft}
+  0x788: {symbol: link_has_boots}
+  0x789: {symbol: link_has_flute}
+  0x78a: {symbol: link_has_cross}
+  0x78b: {symbol: link_has_hammer}
+  0x78c: {symbol: link_has_magic_key}
+  0x793: {symbol: link_num_keys}
+  0x794: {symbol: link_num_crystals}
+  0x79f: {symbol: link_num_deaths}
+  0x7a0: {symbol: link_name}
+  0x2000: {symbol: PPUCTRL}
+  0x2001: {symbol: PPUMASK}
+  0x2002: {symbol: PPUSTATUS}
+  0x2003: {symbol: OAMADDR}
+  0x2004: {symbol: OAMDATA}
+  0x2005: {symbol: PPUSCROLL}
+  0x2006: {symbol: PPUADDR}
+  0x2007: {symbol: PPUDATA}
+  0x4014: {symbol: OAMDMA}
+  0x8000: {symbol: MMC1_CONFIG}
+  0xA000: {symbol: MMC1_CHR}
+  0xE000: {symbol: MMC1_PRG}
+  0x9C65: {symbol: bank4_ik_something0_fixme}
+  0x9C6C: {symbol: bank4_ik_something1_fixme}
+  0x9C70: {symbol: bank4_ik_something2_fixme}
+  0x9B6E: {symbol: bank2_lizafos_something0_fixme}
+  0x99F7: {symbol: bank1_goriya_something0_fixme}
 segment:
   - name: "ines_header"
     cpu_range: [0, 0]
