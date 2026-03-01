@@ -2,7 +2,7 @@
 
 # Introduction
 
-This program will be a disassembly analysis program for 8-bit Nintendo Entertainment System (NES) games.  The program will consist of two main parts: a backend web server (written in rust) and a frontend user interface using web technologies (html, css, javascript).  The program will allow the user to view the disassembly of a NES game and edit the disassembly metadata (symbol names, comments, etc).  User edits will be sent to the backend system and stored in a database of disassembly metadata.  The backend system will maintain the database of metadata and will be able to use that metadata to update the disassembly displayed to the user.
+This program will be a disassembly analysis program for 8-bit Nintendo Entertainment System (NES) games.  The program will consist of two main parts: a backend web server (written in rust) and a frontend user interface using web technologies (html, css, javascript, and the Alpine.js framework).  The program will allow the user to view the disassembly of a NES game and edit the disassembly metadata (symbol names, comments, etc).  User edits will be sent to the backend system and stored in a database of disassembly metadata.  The backend system will maintain the database of metadata, serialized as JSON5 text files on the filesystem to support hexadecimal values and comments. The backend will use that metadata to update the disassembly displayed to the user.
 
 # Backend
 
@@ -54,13 +54,13 @@ In dark-mode:
 * The comment text should be light grey.  
 * Symbol names should be blue.  The blue color should be applied both when symbols are displayed alone on a single line and when a symbol is displayed as part of an operand.
 
-The backend should maintain display theme data structures and use them to build an appropriate theming cascading style sheet that is served dynamically to the front end.  The theme data structures should be serializable and saved in a separate user configuration file (JSON or YAML) on disk, independent of the disassembly metadata database. This allows different users to maintain their own themes. A theme editor in the front-end is currently out-of-scope.
+The backend should maintain display theme data structures and use them to build an appropriate theming cascading style sheet that is served dynamically to the front end.  The theme data structures should be serializable and saved in a separate user configuration file (JSON5) on disk, independent of the disassembly metadata database. This allows different users to maintain their own themes. A theme editor in the front-end is currently out-of-scope.
 
 # Database
 
-In this document, the term “database” is being used generically and doesn’t necessarily imply a specific database technology like SQL.  In fact, I prefer that the database be maintained in a set of JSON or YAML text files.
+In this document, the term “database” is being used generically and doesn’t necessarily imply a specific database technology like SQL.  In fact, I prefer that the database be maintained in a set of JSON5 text files.
 
-I expect that the data structures held by the database to be plain rust data structures and that the rust `serde` crate will be used to serialize and deserialize the database between the text representation and the in-memory runtime representation.
+I expect that the data structures held by the database to be plain rust data structures and that the rust `serde` crate, along with a JSON5 library, will be used to serialize and deserialize the database between the text representation and the in-memory runtime representation.
 In order to facilitate disassembly, the database should be able to represent symbols and comments that are associated with cpu addresses.  Some of those cpu addresses (namely those in the ROM region) are subject to the bank switching scheme of the mapper, and thus should also be categorized by bank.  The data associated with each cpu address is any combination of a symbol name, a comment or a block comment. Non-banked addresses (RAM, PPU, APU, and other peripherals) are stored in a "global" section. An initial template database file should be provided, pre-populated with definitions for the standard NES registers ($2000-$4017).
 
 The database should also encode whether or not a given address region contains code, data as bytes or data as words.  The program should assume any address region not defined contains data as bytes.
