@@ -69,6 +69,7 @@ impl DisassemblyInfo {
 pub struct ThemeConfig {
     pub name: String,
     pub background: String,
+    pub text: String,
     pub address: String,
     pub hex: String,
     pub instruction: String,

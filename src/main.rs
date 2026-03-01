@@ -171,6 +171,10 @@ async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
     let theme = state.themes.get(&*active_name).unwrap();
     (ContentType::CSS, format!(
         "body {{ background-color: {}; color: {}; }}\n\
+         .header {{ background-color: {}; color: {}; border-bottom-color: {}; }}\n\
+         select {{ background-color: {}; color: {}; border-color: {}; }}\n\
+         .grid-header {{ background-color: {}; color: {}; border-color: {}; }}\n\
+         .grid-header .grid-cell {{ border-color: {}; }}\n\
          .address {{ color: {}; }}\n\
          .hex {{ color: {}; }}\n\
          .instruction {{ color: {}; }}\n\
@@ -182,6 +186,10 @@ async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
          a.symbol {{ color: {}; }}\n\
          a:hover {{ text-decoration: underline; }}\n",
         theme.background, theme.instruction,
+        theme.background, theme.text, theme.address,
+        theme.background, theme.text, theme.address,
+        theme.background, theme.text, theme.address,
+        theme.address,
         theme.address, theme.hex, theme.instruction, theme.opcode,
         theme.instruction, theme.comment, theme.symbol, theme.symbol
     ))
@@ -276,6 +284,7 @@ async fn rocket() -> _ {
     themes.insert("Light".to_string(), ThemeConfig {
         name: "Light".to_string(),
         background: "#FFFFFF".to_string(),
+        text: "#000000".to_string(),
         address: "#808080".to_string(),
         hex: "#808080".to_string(),
         instruction: "#000000".to_string(),
@@ -286,6 +295,7 @@ async fn rocket() -> _ {
     themes.insert("Dark".to_string(), ThemeConfig {
         name: "Dark".to_string(),
         background: "#202020".to_string(),
+        text: "#FFFFFF".to_string(),
         address: "#909090".to_string(),
         hex: "#909090".to_string(),
         instruction: "#FFFFFF".to_string(),

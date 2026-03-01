@@ -1,6 +1,7 @@
 {
   "name": "Default Dark",
   "background": "#202020",
+  "text": "#FFFFFF",
   "address": "#909090",
   "hex": "#909090",
   "instruction": "#FFFFFF",
