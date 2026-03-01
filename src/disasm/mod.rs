@@ -477,54 +477,38 @@ pub fn disassemble_bank(
                 let mut pc = *range.start() as u32;
                 let end = *range.end() as u32;
                 while pc <= end {
-                    let mut count = 0;
-                    let mut words_str = String::new();
-                    let mut hex_bytes = String::new();
                     let start_pc = pc;
+                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
+                    if offset + 1 >= rom_data.len() { break; }
 
-                    while pc <= end && count < 4 {
-                        if count > 0 && has_symbol(db, bank_id, pc as u16) {
-                            break;
-                        }
+                    let low = rom_data[offset];
+                    let high = rom_data[offset + 1];
+                    let val = (high as u16) << 8 | (low as u16);
 
-                        let offset = (pc.wrapping_sub(base_address as u32)) as usize;
-                        if offset + 1 >= rom_data.len() { break; }
+                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false);
+                    let annotation = get_annotation(db, bank_id, start_pc as u16);
+                    
+                    // A word is a target if it's a known symbol or valid address
+                    let (target_bank, target_addr) = resolve_target(Some(AddressingMode::Absolute), val as u32, pc as u16, db, bank_id);
 
-                        let low = rom_data[offset];
-                        let high = rom_data[offset + 1];
-                        let val = (high as u16) << 8 | (low as u16);
+                    lines.push(DisassemblyLine {
+                        address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
+                        address: start_pc as u16,
+                        bank: Some(bank_id),
+                        bytes: format!("{:02X} {:02X}", low, high),
+                        opcode: ".word".to_string(),
+                        operand_prefix: String::new(),
+                        operand_main: main,
+                        operand_suffix: String::new(),
+                        operand_is_symbol: is_sym,
+                        symbol: annotation.symbol,
+                        comment: annotation.comment,
+                        block_comment: annotation.block_comment,
+                        target_bank,
+                        target_address: target_addr,
+                    });
 
-                        if !words_str.is_empty() { words_str.push_str(", "); }
-                        words_str.push_str(&format!("${:04X}", val));
-
-                        if !hex_bytes.is_empty() { hex_bytes.push(' '); }
-                        hex_bytes.push_str(&format!("{:02X} {:02X}", low, high));
-
-                        pc += 2;
-                        count += 1;
-                    }
-
-                    if count > 0 {
-                        let annotation = get_annotation(db, bank_id, start_pc as u16);
-                        lines.push(DisassemblyLine {
-                            address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
-                            address: start_pc as u16,
-                            bank: Some(bank_id),
-                            bytes: hex_bytes,
-                            opcode: ".word".to_string(),
-                            operand_prefix: String::new(),
-                            operand_main: words_str,
-                            operand_suffix: String::new(),
-                            operand_is_symbol: false,
-                            symbol: annotation.symbol,
-                            comment: annotation.comment,
-                            block_comment: annotation.block_comment,
-                            target_bank: None,
-                            target_address: None,
-                        });
-                    } else {
-                        break;
-                    }
+                    pc += 2;
                 }
             }
         }
