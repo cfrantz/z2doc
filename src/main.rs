@@ -2,6 +2,7 @@
 
 mod models;
 mod disasm;
+mod database;
 
 use rocket::fs::NamedFile;
 use std::path::{Path, PathBuf};
