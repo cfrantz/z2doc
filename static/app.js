@@ -113,10 +113,17 @@ document.addEventListener('alpine:init', () => {
             await this.fetchThemes();
             
             // Load saved column widths
-            const saved = localStorage.getItem(this.metadata.name + '.colWidths');
-            if (saved) {
-                this.colWidths = JSON.parse(saved);
+            const savedWidths = localStorage.getItem(this.metadata.name + '.colWidths');
+            if (savedWidths) {
+                this.colWidths = JSON.parse(savedWidths);
             }
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('activeTheme');
+            if (savedTheme && this.themes.includes(savedTheme)) {
+                this.currentTheme = savedTheme;
+            }
+            await this.setTheme();
 
             // Handle initial hash or fetch default
             if (window.location.hash) {
@@ -185,6 +192,7 @@ document.addEventListener('alpine:init', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: this.currentTheme })
             });
+            localStorage.setItem('activeTheme', this.currentTheme);
             // Force CSS reload by appending timestamp
             const link = document.getElementById('theme-link');
             link.href = '/api/theme.css?t=' + new Date().getTime();

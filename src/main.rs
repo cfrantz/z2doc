@@ -294,19 +294,17 @@ async fn rocket() -> _ {
         symbol: "#268bd2".to_string(),
     });
 
-    let mut active_theme = "Dark".to_string();
-
     if theme_path.exists() {
-        let user_theme = database::load_theme(&theme_path).expect("Failed to load user theme");
-        themes.insert("User".to_string(), user_theme);
-        active_theme = "User".to_string();
+        if let Ok(user_theme) = database::load_theme(&theme_path) {
+            themes.insert(user_theme.name.clone(), user_theme);
+        }
     }
 
     let state = Arc::new(AppState {
         db: RwLock::new(db),
         db_path,
         themes,
-        active_theme: RwLock::new(active_theme),
+        active_theme: RwLock::new("Dark".to_string()),
         theme_path,
         rom_data,
         rom_path,
