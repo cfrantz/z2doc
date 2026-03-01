@@ -27,6 +27,8 @@ pub struct BankInfo {
     pub region: Vec<RegionInfo>,
     // Symbol and comment information for ROM code and data.
     pub address: SectionInfo,
+    // The CPU address where this bank is typically mapped.
+    pub mapped_at: Option<u16>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

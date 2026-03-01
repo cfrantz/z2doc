@@ -134,6 +134,7 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
 
     if let Some(bank_id) = req.bank_id {
         let bank = db.bank.entry(bank_id).or_insert_with(|| crate::models::BankInfo {
+            mapped_at: Some(0x8000),
             region: Vec::new(),
             address: std::collections::BTreeMap::new(),
         });
@@ -153,23 +154,24 @@ async fn rocket() -> _ {
     let rom_path = cli.rom_path;
     let db_path = cli.db_path.unwrap_or_else(|| {
         let mut p = rom_path.clone();
-        p.set_extension("json5");
+        p.set_extension("json");
         p
     });
-    let theme_path = cli.theme_path.unwrap_or_else(|| PathBuf::from("theme.json5"));
+    let theme_path = cli.theme_path.unwrap_or_else(|| PathBuf::from("theme.json"));
 
     let rom_data = fs::read(&rom_path).expect("Failed to read ROM file");
     
     let db = if db_path.exists() {
         database::load_db(&db_path).expect("Failed to load database")
     } else {
-        let template_path = Path::new("templates/default_db.json5");
+        let template_path = Path::new("templates/default_db.json");
         let mut default_db = database::load_db(template_path).expect("Failed to load default template");
         
         if !default_db.bank.contains_key(&0) {
             default_db.bank.insert(0, crate::models::BankInfo {
                 region: vec![crate::models::RegionInfo::Code(0x8000..=0xBFFF)],
                 address: std::collections::BTreeMap::new(),
+                mapped_at: Some(0x8000),
             });
         }
         

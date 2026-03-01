@@ -1,0 +1,23 @@
+{
+  "mapper_window_size": 16,
+  "global": {
+    "8192": { "symbol": "PPUCTRL", "comment": "PPU Control Register" },
+    "8193": { "symbol": "PPUMASK", "comment": "PPU Mask Register" },
+    "8194": { "symbol": "PPUSTATUS", "comment": "PPU Status Register" },
+    "8195": { "symbol": "OAMADDR", "comment": "OAM Address Port" },
+    "8196": { "symbol": "OAMDATA", "comment": "OAM Data Port" },
+    "8197": { "symbol": "PPUSCROLL", "comment": "PPU Scroll Port" },
+    "8198": { "symbol": "PPUADDR", "comment": "PPU Address Port" },
+    "8199": { "symbol": "PPUDATA", "comment": "PPU Data Port" },
+    "16404": { "symbol": "OAMDMA", "comment": "OAM DMA Register" },
+    "16406": { "symbol": "JOY1", "comment": "Controller 1 Port" },
+    "16407": { "symbol": "JOY2", "comment": "Controller 2 Port" }
+  },
+  "bank": {
+    "0": {
+      "region": [],
+      "address": {},
+      "mapped_at": 32768
+    }
+  }
+}

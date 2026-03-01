@@ -321,15 +321,6 @@ pub fn disassemble_bank(
         None => return lines,
     };
 
-    let mapper_size = db.mapper_window_size as usize * 1024;
-    // Simple mapping: bank 0 maps to $8000, bank 1 to $C000 (for 16K)
-    // For 8K: 0->$8000, 1->$A000, 2->$C000, 3->$E000
-    let base_address = match mapper_size {
-        8192 => 0x8000 + (bank_id as u16 % 4) * 0x2000,
-        16384 => if bank_id % 2 == 0 { 0x8000 } else { 0xC000 },
-        _ => 0x8000,
-    };
-
     let mut regions = bank_info.region.clone();
     regions.sort_by_key(|r| match r {
         RegionInfo::Code(range) => *range.start(),
@@ -337,12 +328,27 @@ pub fn disassemble_bank(
         RegionInfo::Words(range) => *range.start(),
     });
 
+    // Detect base address from BankInfo::mapped_at or regions
+    let mut base_address = bank_info.mapped_at.unwrap_or(0x8000);
+    if bank_info.mapped_at.is_none() {
+        if let Some(first_region) = regions.first() {
+            let start = match first_region {
+                RegionInfo::Code(r) => *r.start(),
+                RegionInfo::Bytes(r) => *r.start(),
+                RegionInfo::Words(r) => *r.start(),
+            };
+            // Align to mapper window boundaries (8K or 16K)
+            let window_size = db.mapper_window_size as u16 * 1024;
+            base_address = (start / window_size) * window_size;
+        }
+    }
+
     for region in regions {
         match region {
             RegionInfo::Code(range) => {
                 let mut pc = *range.start();
                 while pc <= *range.end() {
-                    let offset = (pc - base_address) as usize;
+                    let offset = (pc.wrapping_sub(base_address)) as usize;
                     if offset >= rom_data.len() { break; }
 
                     let opcode = rom_data[offset];
@@ -400,7 +406,7 @@ pub fn disassemble_bank(
                             break;
                         }
 
-                        let offset = (pc - base_address) as usize;
+                        let offset = (pc.wrapping_sub(base_address)) as usize;
                         if offset >= rom_data.len() { break; }
 
                         let val = rom_data[offset];
@@ -447,7 +453,7 @@ pub fn disassemble_bank(
                             break;
                         }
 
-                        let offset = (pc - base_address) as usize;
+                        let offset = (pc.wrapping_sub(base_address)) as usize;
                         if offset + 1 >= rom_data.len() { break; }
 
                         let low = rom_data[offset];
