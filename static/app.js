@@ -44,9 +44,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         async updateAnnotation(line, field, value) {
-            const processedValue = (field === 'comment' || field === 'block_comment') 
-                ? this.stripSemicolons(value) 
-                : value;
+            const processedValue = this.stripDecorations(field, value);
 
             // Only update if value actually changed to avoid redundant saves
             if (line[field] === processedValue || (line[field] === null && processedValue === "")) return;
@@ -89,18 +87,28 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
-        stripSemicolons(text) {
+        stripDecorations(field, text) {
             if (!text) return text;
-            return text.split('\n').map(line => {
-                let l = line.trimStart();
-                if (l.startsWith(';')) {
-                    l = l.substring(1);
-                    if (l.startsWith(' ')) {
-                        l = l.substring(1);
-                    }
+            if (field === 'symbol') {
+                let v = text.trim();
+                if (v.endsWith(':')) {
+                    v = v.slice(0, -1);
                 }
-                return l;
-            }).join('\n').trimEnd();
+                return v;
+            }
+            if (field === 'comment' || field === 'block_comment') {
+                return text.split('\n').map(line => {
+                    let l = line.trimStart();
+                    if (l.startsWith(';')) {
+                        l = l.substring(1);
+                        if (l.startsWith(' ')) {
+                            l = l.substring(1);
+                        }
+                    }
+                    return l;
+                }).join('\n').trimEnd();
+            }
+            return text;
         }
     }));
 });
