@@ -1,6 +1,7 @@
 #[macro_use] extern crate rocket;
 
 mod models;
+mod disasm;
 
 use rocket::fs::NamedFile;
 use std::path::{Path, PathBuf};
