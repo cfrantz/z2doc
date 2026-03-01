@@ -27,6 +27,17 @@ document.addEventListener('alpine:init', () => {
         themes: [],
         currentTheme: 'Dark',
 
+        // Resizing state
+        resizing: null,
+        startX: 0,
+        startWidth: 0,
+        colWidths: {
+            addr: 100,
+            hex: 200,
+            op: 60,
+            operand: 150
+        },
+
         async init() {
             await this.fetchMetadata();
             await this.fetchThemes();
@@ -109,6 +120,31 @@ document.addEventListener('alpine:init', () => {
             if (element) {
                 element.scrollIntoView();
             }
+        },
+
+        startResizing(col, e) {
+            this.resizing = col;
+            this.startX = e.pageX;
+            this.startWidth = this.colWidths[col];
+        },
+
+        resize(e) {
+            if (!this.resizing) return;
+            const diff = e.pageX - this.startX;
+            this.colWidths[this.resizing] = Math.max(20, this.startWidth + diff);
+        },
+
+        stopResizing() {
+            this.resizing = null;
+        },
+
+        get gridStyles() {
+            return {
+                '--col-addr': `${this.colWidths.addr}px`,
+                '--col-hex': `${this.colWidths.hex}px`,
+                '--col-op': `${this.colWidths.op}px`,
+                '--col-operand': `${this.colWidths.operand}px`
+            };
         },
 
         stripDecorations(field, text) {
