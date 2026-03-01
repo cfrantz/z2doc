@@ -44,15 +44,19 @@ document.addEventListener('alpine:init', () => {
         },
 
         async updateAnnotation(line, field, value) {
+            const processedValue = (field === 'comment' || field === 'block_comment') 
+                ? this.stripSemicolons(value) 
+                : value;
+
             // Only update if value actually changed to avoid redundant saves
-            if (line[field] === value || (line[field] === null && value === "")) return;
+            if (line[field] === processedValue || (line[field] === null && processedValue === "")) return;
 
             const req = {
                 bank_id: field === 'symbol' && line.bank === null ? null : parseInt(this.currentBank),
                 address: line.address,
-                symbol: field === 'symbol' ? value : line.symbol,
-                comment: field === 'comment' ? value : line.comment,
-                block_comment: field === 'block_comment' ? value : line.block_comment
+                symbol: field === 'symbol' ? processedValue : line.symbol,
+                comment: field === 'comment' ? processedValue : line.comment,
+                block_comment: field === 'block_comment' ? processedValue : line.block_comment
             };
 
             // Convert empty strings to null for the backend
@@ -83,6 +87,20 @@ document.addEventListener('alpine:init', () => {
             if (element) {
                 element.scrollIntoView();
             }
+        },
+
+        stripSemicolons(text) {
+            if (!text) return text;
+            return text.split('\n').map(line => {
+                let l = line.trimStart();
+                if (l.startsWith(';')) {
+                    l = l.substring(1);
+                    if (l.startsWith(' ')) {
+                        l = l.substring(1);
+                    }
+                }
+                return l;
+            }).join('\n').trimEnd();
         }
     }));
 });
