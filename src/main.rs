@@ -5,6 +5,7 @@ mod disasm;
 mod database;
 
 use crate::models::{DisassemblyInfo, DisassemblyLine, ThemeConfig};
+use rocket::http::ContentType;
 use clap::Parser;
 use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
@@ -106,20 +107,23 @@ async fn get_disassembly(bank_id: u8, state: &State<Arc<AppState>>) -> Json<Vec<
 }
 
 #[get("/api/theme.css")]
-async fn get_theme_css(state: &State<Arc<AppState>>) -> String {
+async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
     let theme = state.theme.read().await;
-    format!(
+    (ContentType::CSS, format!(
         "body {{ background-color: {}; color: {}; }}\n\
          .address {{ color: {}; }}\n\
          .hex {{ color: {}; }}\n\
          .instruction {{ color: {}; }}\n\
          .opcode {{ color: {}; }}\n\
+         .operand {{ color: {}; }}\n\
          .comment {{ color: {}; }}\n\
-         .symbol {{ color: {}; }}\n",
+         .symbol {{ color: {}; }}\n\
+         a {{ color: {}; text-decoration: none; }}\n\
+         a:hover {{ text-decoration: underline; }}\n",
         theme.background, theme.instruction,
         theme.address, theme.hex, theme.instruction, theme.opcode,
-        theme.comment, theme.symbol
-    )
+        theme.instruction, theme.comment, theme.symbol, theme.symbol
+    ))
 }
 
 #[post("/api/annotation", data = "<req>")]

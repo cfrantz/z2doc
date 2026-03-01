@@ -64,7 +64,7 @@
                                x-text="line.operand"></a>
                         </template>
                         <template x-if="!line.target_address">
-                            <span x-text="line.operand"></span>
+                            <span :class="line.operand.match(/^[A-Za-z_]/) ? 'symbol' : 'operand'" x-text="line.operand"></span>
                         </template>
                     </td>
                     <td class="comment" contenteditable
