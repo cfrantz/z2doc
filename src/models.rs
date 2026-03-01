@@ -23,6 +23,8 @@ pub type SectionInfo = BTreeMap<u16, AnnotationInfo>;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct BankInfo {
+    // Optional title for the bank (e.g. "West Hyrule")
+    pub title: Option<String>,
     // List of code and data regions to aid disassembly.
     pub region: Vec<RegionInfo>,
     // Symbol and comment information for ROM code and data.

@@ -47,7 +47,7 @@ pub struct Metadata {
     pub name: String,
     pub title: String,
     pub rom_file: String,
-    pub total_banks: u8,
+    pub banks: BTreeMap<u8, String>,
     pub mapper_window_size: u8,
 }
 
@@ -84,17 +84,25 @@ async fn get_metadata(state: &State<Arc<AppState>>) -> Json<Metadata> {
         .to_string();
 
     let prg_banks_16k = state.rom_data[4];
-    let total_banks = match db.mapper_window_size {
+    let num_banks = match db.mapper_window_size {
         8 => prg_banks_16k * 2,
         16 => prg_banks_16k,
         _ => prg_banks_16k,
     };
 
+    let mut banks = BTreeMap::new();
+    for i in 0..num_banks {
+        let title = db.bank.get(&i)
+            .and_then(|b| b.title.clone())
+            .unwrap_or_else(|| String::new());
+        banks.insert(i, title);
+    }
+
     Json(Metadata {
         name: db.name.clone(),
         title: db.title.clone(),
         rom_file: rom_name,
-        total_banks,
+        banks,
         mapper_window_size: db.mapper_window_size,
     })
 }
@@ -166,6 +174,7 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
 
     if let Some(bank_id) = req.bank_id {
         let bank = db.bank.entry(bank_id).or_insert_with(|| crate::models::BankInfo {
+            title: None,
             mapped_at: Some(0x8000),
             region: Vec::new(),
             address: std::collections::BTreeMap::new(),
@@ -201,6 +210,7 @@ async fn rocket() -> _ {
         
         if !default_db.bank.contains_key(&0) {
             default_db.bank.insert(0, crate::models::BankInfo {
+                title: Some("HUD & Overworld".to_string()),
                 region: vec![crate::models::RegionInfo::Code(0x8000..=0xBFFF)],
                 address: std::collections::BTreeMap::new(),
                 mapped_at: Some(0x8000),
@@ -210,7 +220,6 @@ async fn rocket() -> _ {
         default_db
     };
 
-    // Initialize defaults for name and title if missing
     if db.name.is_empty() {
         db.name = rom_path.file_stem()
             .and_then(|s| s.to_str())
@@ -224,7 +233,6 @@ async fn rocket() -> _ {
             .to_string();
     }
 
-    // Save if we updated defaults or it's a new file
     database::save_db(&db_path, &db).expect("Failed to save database");
 
     let mut themes = BTreeMap::new();

@@ -98,8 +98,8 @@
             <div>
                 Bank:
                 <select x-model="currentBank" @change="changeBank()">
-                    <template x-for="i in Array.from({length: metadata.total_banks}, (_, i) => i)">
-                        <option :value="i" x-text="'$' + i.toString(16).padStart(2, '0')"></option>
+                    <template x-for="(title, id) in metadata.banks" :key="id">
+                        <option :value="id" x-text="'$' + parseInt(id).toString(16).toUpperCase().padStart(2, '0') + (title ? ': ' + title : '')"></option>
                     </template>
                 </select>
             </div>
