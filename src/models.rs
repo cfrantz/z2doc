@@ -64,7 +64,7 @@ pub struct ThemeConfig {
 pub struct DisassemblyLine {
     pub address_label: String, // e.g., "$02:$8354"
     pub address: u16,
-    pub bank: Option<u8>,
+    pub bank: i16, // -1 for Global, 0-255 for PRG banks
     pub bytes: String,
     pub opcode: String,
     pub operand_prefix: String,

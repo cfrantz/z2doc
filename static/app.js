@@ -92,7 +92,7 @@ document.addEventListener('alpine:init', () => {
             if (line[field] === processedValue || (line[field] === null && processedValue === "")) return;
 
             const req = {
-                bank_id: field === 'symbol' && line.bank === null ? null : parseInt(this.currentBank),
+                bank_id: line.bank === -1 ? null : parseInt(this.currentBank),
                 address: line.address,
                 symbol: field === 'symbol' ? processedValue : line.symbol,
                 comment: field === 'comment' ? processedValue : line.comment,

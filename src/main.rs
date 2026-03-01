@@ -97,6 +97,7 @@ async fn get_metadata(state: &State<Arc<AppState>>) -> Json<Metadata> {
             .unwrap_or_else(|| String::new());
         banks.insert(i, title);
     }
+    banks.insert(255, "Global Symbols".to_string());
 
     Json(Metadata {
         name: db.name.clone(),
@@ -111,6 +112,29 @@ async fn get_metadata(state: &State<Arc<AppState>>) -> Json<Metadata> {
 async fn get_disassembly(bank_id: u8, state: &State<Arc<AppState>>) -> Json<Vec<DisassemblyLine>> {
     let db = state.db.read().await;
     
+    if bank_id == 255 {
+        let mut lines = Vec::new();
+        for (addr, anno) in &db.global {
+            lines.push(DisassemblyLine {
+                address: *addr,
+                address_label: format!("${:04X}", addr),
+                bank: -1,
+                bytes: String::new(),
+                opcode: String::new(),
+                operand_prefix: String::new(),
+                operand_main: String::new(),
+                operand_suffix: String::new(),
+                operand_is_symbol: false,
+                symbol: anno.symbol.clone(),
+                comment: anno.comment.clone(),
+                block_comment: anno.block_comment.clone(),
+                target_bank: None,
+                target_address: None,
+            });
+        }
+        return Json(lines);
+    }
+
     let mapper_size = db.mapper_window_size as usize * 1024;
     let rom_offset = 16 + (bank_id as usize * mapper_size);
     let rom_end = (rom_offset + mapper_size).min(state.rom_data.len());

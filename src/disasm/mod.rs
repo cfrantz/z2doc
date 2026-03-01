@@ -457,7 +457,7 @@ pub fn disassemble_bank(
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, pc),
                         address: pc as u16,
-                        bank: Some(bank_id),
+                        bank: bank_id as i16,
                         bytes,
                         opcode: mnemonic.to_string(),
                         operand_prefix: prefix,
@@ -516,7 +516,7 @@ pub fn disassemble_bank(
                         lines.push(DisassemblyLine {
                             address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
                             address: start_pc as u16,
-                            bank: Some(bank_id),
+                            bank: bank_id as i16,
                             bytes: hex_bytes,
                             opcode: ".byt".to_string(),
                             operand_prefix: String::new(),
@@ -559,7 +559,7 @@ pub fn disassemble_bank(
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
                         address: start_pc as u16,
-                        bank: Some(bank_id),
+                        bank: bank_id as i16,
                         bytes: format!("{:02X} {:02X}", low, high),
                         opcode: ".word".to_string(),
                         operand_prefix: String::new(),
