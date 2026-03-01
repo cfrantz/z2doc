@@ -3,7 +3,7 @@
 ## 1. Project Structure
 The project will be a combined Rust/Web application using the following structure:
 ```text
-z2doc/
+docusemmbler/
 ├── Cargo.toml
 ├── src/
 │   ├── main.rs         // Rocket entry point and API routes
