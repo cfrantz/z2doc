@@ -12,6 +12,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 use serde::Serialize;
 use std::fs;
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -22,11 +23,11 @@ struct Cli {
     /// Path to the NES ROM file
     rom_path: PathBuf,
 
-    /// Path to the database file (defaults to <rom_path>.json5)
+    /// Path to the database file (defaults to <rom_path>.json)
     #[arg(short, long)]
     db_path: Option<PathBuf>,
 
-    /// Path to the theme configuration file (defaults to theme.json5)
+    /// Path to the theme configuration file (defaults to theme.json)
     #[arg(short, long)]
     theme_path: Option<PathBuf>,
 }
@@ -34,7 +35,8 @@ struct Cli {
 pub struct AppState {
     pub db: RwLock<DisassemblyInfo>,
     pub db_path: PathBuf,
-    pub theme: RwLock<ThemeConfig>,
+    pub themes: BTreeMap<String, ThemeConfig>,
+    pub active_theme: RwLock<String>,
     pub theme_path: PathBuf,
     pub rom_data: Vec<u8>,
     pub rom_path: PathBuf,
@@ -54,6 +56,11 @@ pub struct AnnotationRequest {
     pub symbol: Option<String>,
     pub comment: Option<String>,
     pub block_comment: Option<String>,
+}
+
+#[derive(serde::Deserialize)]
+pub struct ThemeRequest {
+    pub name: String,
 }
 
 #[get("/")]
@@ -106,9 +113,25 @@ async fn get_disassembly(bank_id: u8, state: &State<Arc<AppState>>) -> Json<Vec<
     Json(lines)
 }
 
+#[get("/api/themes")]
+async fn get_themes(state: &State<Arc<AppState>>) -> Json<Vec<String>> {
+    Json(state.themes.keys().cloned().collect())
+}
+
+#[post("/api/themes/active", data = "<req>")]
+async fn set_active_theme(req: Json<ThemeRequest>, state: &State<Arc<AppState>>) -> Result<(), String> {
+    if !state.themes.contains_key(&req.name) {
+        return Err("Theme not found".to_string());
+    }
+    let mut active = state.active_theme.write().await;
+    *active = req.name.clone();
+    Ok(())
+}
+
 #[get("/api/theme.css")]
 async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
-    let theme = state.theme.read().await;
+    let active_name = state.active_theme.read().await;
+    let theme = state.themes.get(&*active_name).unwrap();
     (ContentType::CSS, format!(
         "body {{ background-color: {}; color: {}; }}\n\
          .address {{ color: {}; }}\n\
@@ -183,27 +206,41 @@ async fn rocket() -> _ {
         default_db
     };
 
-    let theme = if theme_path.exists() {
-        database::load_theme(&theme_path).expect("Failed to load theme")
-    } else {
-        let default_theme = ThemeConfig {
-            name: "Default Dark".to_string(),
-            background: "#202020".to_string(),
-            address: "#909090".to_string(),
-            hex: "#909090".to_string(),
-            instruction: "#FFFFFF".to_string(),
-            opcode: "#FFFFFF".to_string(),
-            comment: "#909090".to_string(),
-            symbol: "#0000FF".to_string(),
-        };
-        database::save_theme(&theme_path, &default_theme).expect("Failed to save initial theme");
-        default_theme
-    };
+    let mut themes = BTreeMap::new();
+    themes.insert("Light".to_string(), ThemeConfig {
+        name: "Light".to_string(),
+        background: "#FFFFFF".to_string(),
+        address: "#808080".to_string(),
+        hex: "#808080".to_string(),
+        instruction: "#000000".to_string(),
+        opcode: "#000000".to_string(),
+        comment: "#808080".to_string(),
+        symbol: "#0000FF".to_string(),
+    });
+    themes.insert("Dark".to_string(), ThemeConfig {
+        name: "Dark".to_string(),
+        background: "#202020".to_string(),
+        address: "#909090".to_string(),
+        hex: "#909090".to_string(),
+        instruction: "#FFFFFF".to_string(),
+        opcode: "#FFFFFF".to_string(),
+        comment: "#909090".to_string(),
+        symbol: "#0000FF".to_string(),
+    });
+
+    let mut active_theme = "Dark".to_string();
+
+    if theme_path.exists() {
+        let user_theme = database::load_theme(&theme_path).expect("Failed to load user theme");
+        themes.insert("User".to_string(), user_theme);
+        active_theme = "User".to_string();
+    }
 
     let state = Arc::new(AppState {
         db: RwLock::new(db),
         db_path,
-        theme: RwLock::new(theme),
+        themes,
+        active_theme: RwLock::new(active_theme),
         theme_path,
         rom_data,
         rom_path,
@@ -211,5 +248,5 @@ async fn rocket() -> _ {
 
     rocket::build()
         .manage(state)
-        .mount("/", routes![index, static_files, get_metadata, get_disassembly, update_annotation, get_theme_css])
+        .mount("/", routes![index, static_files, get_metadata, get_disassembly, update_annotation, get_theme_css, get_themes, set_active_theme])
 }

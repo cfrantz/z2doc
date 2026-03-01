@@ -19,9 +19,3 @@ pub fn load_theme<P: AsRef<Path>>(path: P) -> Result<ThemeConfig, String> {
     let theme: ThemeConfig = serde_json::from_str(&content).map_err(|e| e.to_string())?;
     Ok(theme)
 }
-
-pub fn save_theme<P: AsRef<Path>>(path: P, theme: &ThemeConfig) -> Result<(), String> {
-    let content = serde_json::to_string_pretty(theme).map_err(|e| e.to_string())?;
-    fs::write(path, content).map_err(|e| e.to_string())?;
-    Ok(())
-}

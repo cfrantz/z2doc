@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NES Disassembly Tool</title>
-    <link rel="stylesheet" href="/api/theme.css">
+    <link rel="stylesheet" href="/api/theme.css" id="theme-link">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         body { font-family: monospace; padding: 20px; }
@@ -24,13 +24,23 @@
 <body x-data="disasmApp">
     <div class="header">
         <h1>z2doc: <span x-text="metadata.rom_file"></span></h1>
-        <div>
-            Bank:
-            <select x-model="currentBank" @change="fetchDisassembly()">
-                <template x-for="i in Array.from({length: metadata.total_banks}, (_, i) => i)">
-                    <option :value="i" x-text="'$' + i.toString(16).padStart(2, '0')"></option>
-                </template>
-            </select>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div>
+                Bank:
+                <select x-model="currentBank" @change="fetchDisassembly()">
+                    <template x-for="i in Array.from({length: metadata.total_banks}, (_, i) => i)">
+                        <option :value="i" x-text="'$' + i.toString(16).padStart(2, '0')"></option>
+                    </template>
+                </select>
+            </div>
+            <div>
+                Theme:
+                <select x-model="currentTheme" @change="setTheme()">
+                    <template x-for="theme in themes">
+                        <option :value="theme" x-text="theme"></option>
+                    </template>
+                </select>
+            </div>
         </div>
     </div>
 

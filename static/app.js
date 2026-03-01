@@ -3,10 +3,32 @@ document.addEventListener('alpine:init', () => {
         metadata: { rom_file: '', total_banks: 0, mapper_window_size: 0 },
         currentBank: 0,
         disassembly: [],
+        themes: [],
+        currentTheme: 'Dark',
 
         async init() {
             await this.fetchMetadata();
+            await this.fetchThemes();
             await this.fetchDisassembly();
+        },
+
+        async fetchThemes() {
+            const response = await fetch('/api/themes');
+            this.themes = await response.json();
+            if (this.themes.includes('User')) {
+                this.currentTheme = 'User';
+            }
+        },
+
+        async setTheme() {
+            await fetch('/api/themes/active', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: this.currentTheme })
+            });
+            // Force CSS reload by appending timestamp
+            const link = document.getElementById('theme-link');
+            link.href = '/api/theme.css?t=' + new Date().getTime();
         },
 
         async fetchMetadata() {
