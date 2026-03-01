@@ -1,4 +1,25 @@
 document.addEventListener('alpine:init', () => {
+    Alpine.data('editField', () => ({
+        editing: false,
+        startEdit() {
+            this.editing = true;
+            this.$nextTick(() => {
+                this.$el.focus();
+                // Place cursor at end
+                const range = document.createRange();
+                const sel = window.getSelection();
+                range.selectNodeContents(this.$el);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            });
+        },
+        stopEdit(line, field) {
+            this.editing = false;
+            this.$root.__x.$data.updateAnnotation(line, field, this.$el.innerText);
+        }
+    }));
+
     Alpine.data('disasmApp', () => ({
         metadata: { rom_file: '', total_banks: 0, mapper_window_size: 0 },
         currentBank: 0,

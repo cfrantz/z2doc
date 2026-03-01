@@ -9,7 +9,7 @@
     <style>
         body { font-family: monospace; padding: 20px; }
         .disassembly-table { border-collapse: collapse; width: 100%; }
-        .disassembly-table td { padding: 2px 8px; vertical-align: top; }
+        .disassembly-table td { padding: 2px 8px; vertical-align: top; position: relative; }
         .address { width: 100px; user-select: none; }
         .hex { width: 200px; user-select: none; }
         .opcode { width: 60px; }
@@ -17,6 +17,15 @@
         .comment { min-width: 200px; white-space: pre-wrap; }
         .symbol-line { color: var(--symbol-color); font-weight: bold; }
         [contenteditable]:focus { outline: 1px solid #4a90e2; background: rgba(74, 144, 226, 0.1); }
+        .editable-container { cursor: text; min-height: 1.2em; padding-left: 4px; }
+        .edit-icon { 
+            position: absolute; left: -12px; top: 2px; 
+            opacity: 0; pointer-events: none; font-size: 14px;
+            background: #444; padding: 0px 4px; border-radius: 3px; color: #fff;
+            z-index: 10; line-height: 1.2em;
+        }
+        td:hover > .edit-icon { opacity: 0.7; }
+        .editable-container[contenteditable="true"] .edit-icon { display: none; }
         .header { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
         select { background: #333; color: #fff; border: 1px solid #666; padding: 4px; }
     </style>
@@ -50,17 +59,29 @@
                 <!-- Block Comment -->
                 <template x-if="line.block_comment">
                     <tr>
-                        <td colspan="5" class="comment" contenteditable 
-                            @blur="updateAnnotation(line, 'block_comment', $event.target.innerText)"
-                            x-text="line.block_comment.split('\n').map(l => '; ' + l).join('\n')"></td>
+                        <td colspan="5">
+                            <div class="comment editable-container" x-data="editField"
+                                :contenteditable="editing"
+                                @click="if(!editing) startEdit()"
+                                @blur="stopEdit(line, 'block_comment')"
+                                x-text="line.block_comment.split('\n').map(l => '; ' + l).join('\n')">
+                            </div>
+                            <span class="edit-icon">✎</span>
+                        </td>
                     </tr>
                 </template>
                 <!-- Symbol -->
                 <template x-if="line.symbol">
                     <tr>
-                        <td colspan="5" class="symbol" contenteditable
-                            @blur="updateAnnotation(line, 'symbol', $event.target.innerText)"
-                            x-text="line.symbol + ':'"></td>
+                        <td colspan="5">
+                            <div class="symbol editable-container" x-data="editField"
+                                :contenteditable="editing"
+                                @click="if(!editing) startEdit()"
+                                @blur="stopEdit(line, 'symbol')"
+                                x-text="line.symbol + ':'">
+                            </div>
+                            <span class="edit-icon">✎</span>
+                        </td>
                     </tr>
                 </template>
                 <!-- Instruction -->
@@ -69,9 +90,15 @@
                     <td class="hex" x-text="line.bytes"></td>
                     <td class="opcode" x-text="line.opcode"></td>
                     <td class="operand"><span x-text="line.operand_prefix"></span><template x-if="line.target_address"><a href="#" @click.prevent="navigate(line.target_bank, line.target_address)" :class="line.operand_is_symbol ? 'symbol' : ''" x-text="line.operand_main"></a></template><template x-if="!line.target_address"><span :class="line.operand_is_symbol ? 'symbol' : ''" x-text="line.operand_main"></span></template><span x-text="line.operand_suffix"></span></td>
-                    <td class="comment" contenteditable
-                        @blur="updateAnnotation(line, 'comment', $event.target.innerText)"
-                        x-text="line.comment ? '; ' + line.comment : ''"></td>
+                    <td class="comment-cell">
+                        <div class="comment editable-container" x-data="editField"
+                            :contenteditable="editing"
+                            @click="if(!editing) startEdit()"
+                            @blur="stopEdit(line, 'comment')"
+                            x-text="line.comment ? '; ' + line.comment : ''">
+                        </div>
+                        <span class="edit-icon">✎</span>
+                    </td>
                 </tr>
             </tbody>
         </template>
