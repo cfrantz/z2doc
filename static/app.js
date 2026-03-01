@@ -2,6 +2,8 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('editField', () => ({
         editing: false,
         isPending: false,
+        originalValue: '',
+        cancelled: false,
         
         init() {
             window.addEventListener('disassembly-fetched', () => {
@@ -11,12 +13,14 @@ document.addEventListener('alpine:init', () => {
 
         startEdit() {
             this.editing = true;
+            this.cancelled = false;
             this.$nextTick(() => {
                 const editable = this.$el.getAttribute('contenteditable') === 'true' 
                     ? this.$el 
                     : this.$el.querySelector('[contenteditable="true"]');
                 
                 if (editable) {
+                    this.originalValue = editable.innerText;
                     editable.focus();
                     const range = document.createRange();
                     const sel = window.getSelection();
@@ -26,7 +30,21 @@ document.addEventListener('alpine:init', () => {
                 }
             });
         },
+        cancelEdit() {
+            this.cancelled = true;
+            const editable = this.$el.getAttribute('contenteditable') === 'true' 
+                ? this.$el 
+                : this.$el.querySelector('[contenteditable="true"]');
+            if (editable) {
+                editable.innerText = this.originalValue;
+                editable.blur();
+            }
+        },
         stopEdit(line, field) {
+            if (this.cancelled) {
+                this.editing = false;
+                return;
+            }
             this.editing = false;
             const newValue = this.$el.innerText;
             const processedValue = this.stripDecorations(field, newValue);

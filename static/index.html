@@ -161,6 +161,7 @@
                                 @click="if(!editing) startEdit()"
                                 @blur="stopEdit(line, 'block_comment')"
                                 @keydown.enter.ctrl.prevent="$el.blur()"
+                                @keydown.escape="cancelEdit()"
                                 :class="{ 'pending': isPending }"
                                 x-text="line.block_comment.split('\n').map(l => '; ' + l).join('\n')">
                             </div>
@@ -178,6 +179,7 @@
                                         @click="if(!editing) startEdit()"
                                         @blur="stopEdit(line, 'symbol')"
                                         @keydown.enter.prevent="$el.blur()"
+                                        @keydown.escape="cancelEdit()"
                                         @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el, line: line, type: 'symbol' })"
                                         :class="{ 'pending': isPending }"
                                         x-text="line.symbol + ':'">
@@ -205,6 +207,7 @@
                                               contenteditable="true"
                                               @blur="stopEdit({ address: line.target_address, bank: line.target_bank === null ? -1 : line.target_bank }, 'symbol')"
                                               @keydown.enter.prevent="$el.blur()"
+                                              @keydown.escape="cancelEdit()"
                                               x-text="line.operand_main"></span>
                                     </span>
                                 </template>
@@ -221,6 +224,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    @keydown.escape="cancelEdit()"
                                     :class="{ 'pending': isPending }"
                                     x-text="line.comment ? '; ' + line.comment : ''">
                                 </div>
@@ -239,6 +243,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'symbol')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    @keydown.escape="cancelEdit()"
                                     :class="{ 'pending': isPending }"
                                     x-text="line.symbol || '???'">
                                 </div>
@@ -251,6 +256,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    @keydown.escape="cancelEdit()"
                                     :class="{ 'pending': isPending }"
                                     x-text="line.comment ? '; ' + line.comment : ''">
                                 </div>
