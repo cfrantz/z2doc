@@ -281,7 +281,7 @@ async fn rocket() -> _ {
         instruction: "#000000".to_string(),
         opcode: "#000000".to_string(),
         comment: "#808080".to_string(),
-        symbol: "#0000FF".to_string(),
+        symbol: "#268bd2".to_string(),
     });
     themes.insert("Dark".to_string(), ThemeConfig {
         name: "Dark".to_string(),
@@ -291,7 +291,7 @@ async fn rocket() -> _ {
         instruction: "#FFFFFF".to_string(),
         opcode: "#FFFFFF".to_string(),
         comment: "#909090".to_string(),
-        symbol: "#0000FF".to_string(),
+        symbol: "#268bd2".to_string(),
     });
 
     let mut active_theme = "Dark".to_string();
