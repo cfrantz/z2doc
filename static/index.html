@@ -142,7 +142,7 @@
                 </template>
                 <!-- Symbol -->
                 <template x-if="line.symbol">
-                    <div class="grid-cell full-width">
+                    <div class="grid-cell full-width" :id="'sym-' + line.address">
                         <div class="symbol editable-container" x-data="editField"
                             :contenteditable="editing"
                             @click="if(!editing) startEdit()"

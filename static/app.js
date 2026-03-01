@@ -116,17 +116,23 @@ document.addEventListener('alpine:init', () => {
         },
 
         navigate(targetBank, targetAddress) {
+            const scroll = (addr) => {
+                const symElement = document.getElementById(`sym-${addr}`);
+                if (symElement) {
+                    symElement.scrollIntoView();
+                } else {
+                    const addrElement = document.getElementById(`addr-${addr}`);
+                    if (addrElement) addrElement.scrollIntoView();
+                }
+            };
+
             if (targetBank !== null && targetBank !== this.currentBank) {
                 this.currentBank = targetBank;
                 this.fetchDisassembly().then(() => {
-                    this.$nextTick(() => {
-                        const element = document.getElementById(`addr-${targetAddress}`);
-                        if (element) element.scrollIntoView();
-                    });
+                    this.$nextTick(() => scroll(targetAddress));
                 });
             } else {
-                const element = document.getElementById(`addr-${targetAddress}`);
-                if (element) element.scrollIntoView();
+                scroll(targetAddress);
             }
         },
 
