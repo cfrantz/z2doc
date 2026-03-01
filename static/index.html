@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NES Disassembly Tool</title>
+    <link rel="stylesheet" href="/api/theme.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .disassembly-table { border-collapse: collapse; width: 100%; }
+        .disassembly-table td { padding: 2px 8px; vertical-align: top; }
+        .address { width: 100px; }
+        .hex { width: 120px; }
+        .opcode { width: 60px; }
+        .operand { width: 150px; }
+        .comment { min-width: 200px; }
+        .symbol-line { color: var(--symbol-color); font-weight: bold; }
+        [contenteditable]:focus { outline: 1px solid #4a90e2; background: rgba(74, 144, 226, 0.1); }
+        .header { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
+        select { background: #333; color: #fff; border: 1px solid #666; padding: 4px; }
+    </style>
+</head>
+<body x-data="disasmApp">
+    <div class="header">
+        <h1>z2doc: <span x-text="metadata.rom_file"></span></h1>
+        <div>
+            Bank:
+            <select x-model="currentBank" @change="fetchDisassembly()">
+                <template x-for="i in Array.from({length: metadata.total_banks}, (_, i) => i)">
+                    <option :value="i" x-text="'$' + i.toString(16).padStart(2, '0')"></option>
+                </template>
+            </select>
+        </div>
+    </div>
+
+    <table class="disassembly-table">
+        <template x-for="line in disassembly" :key="line.address_label">
+            <tbody>
+                <!-- Block Comment -->
+                <template x-if="line.block_comment">
+                    <tr>
+                        <td colspan="5" class="comment" contenteditable 
+                            @blur="updateAnnotation(line, 'block_comment', $event.target.innerText)"
+                            x-text="line.block_comment"></td>
+                    </tr>
+                </template>
+                <!-- Symbol -->
+                <template x-if="line.symbol">
+                    <tr>
+                        <td colspan="5" class="symbol" contenteditable
+                            @blur="updateAnnotation(line, 'symbol', $event.target.innerText)"
+                            x-text="line.symbol"></td>
+                    </tr>
+                </template>
+                <!-- Instruction -->
+                <tr :id="'addr-' + line.address">
+                    <td class="address" x-text="line.address_label"></td>
+                    <td class="hex" x-text="line.bytes"></td>
+                    <td class="opcode" x-text="line.opcode"></td>
+                    <td class="operand">
+                        <template x-if="line.target_address">
+                            <a href="#" @click.prevent="navigate(line.target_bank, line.target_address)" 
+                               x-text="line.operand"></a>
+                        </template>
+                        <template x-if="!line.target_address">
+                            <span x-text="line.operand"></span>
+                        </template>
+                    </td>
+                    <td class="comment" contenteditable
+                        @blur="updateAnnotation(line, 'comment', $event.target.innerText)"
+                        x-text="line.comment || ''"></td>
+                </tr>
+            </tbody>
+        </template>
+    </table>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

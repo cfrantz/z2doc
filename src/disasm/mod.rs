@@ -348,14 +348,14 @@ pub fn disassemble_bank(
                     let opcode = rom_data[offset];
                     let instr = &OPCODES[opcode as usize];
                     
+                    let mut op_val: u32 = 0;
                     let (bytes, mnemonic, operand, length) = match instr {
                         Some(i) => {
                             let len = i.mode.operand_length();
                             let mut b = format!("{:02X}", opcode);
-                            let mut op_val: u32 = 0;
                             for j in 1..=len {
-                                if offset + j as usize < rom_data.len() {
-                                    let byte = rom_data[offset + j as usize];
+                                if offset + (j as usize) < rom_data.len() {
+                                    let byte = rom_data[offset + (j as usize)];
                                     b.push_str(&format!(" {:02X}", byte));
                                     op_val |= (byte as u32) << (8 * (j - 1));
                                 }
@@ -368,6 +368,8 @@ pub fn disassemble_bank(
                     };
 
                     let annotation = get_annotation(db, bank_id, pc);
+                    let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc, db, bank_id);
+
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, pc),
                         address: pc,
@@ -378,7 +380,8 @@ pub fn disassemble_bank(
                         symbol: annotation.symbol,
                         comment: annotation.comment,
                         block_comment: annotation.block_comment,
-                        is_target: false,
+                        target_bank,
+                        target_address: target_addr,
                     });
 
                     pc += length;
@@ -423,7 +426,8 @@ pub fn disassemble_bank(
                             symbol: annotation.symbol,
                             comment: annotation.comment,
                             block_comment: annotation.block_comment,
-                            is_target: false,
+                            target_bank: None,
+                            target_address: None,
                         });
                     } else {
                         break; 
@@ -472,7 +476,8 @@ pub fn disassemble_bank(
                             symbol: annotation.symbol,
                             comment: annotation.comment,
                             block_comment: annotation.block_comment,
-                            is_target: false,
+                            target_bank: None,
+                            target_address: None,
                         });
                     } else {
                         break;
@@ -483,6 +488,41 @@ pub fn disassemble_bank(
     }
 
     lines
+}
+
+fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8) -> (Option<u8>, Option<u16>) {
+    let mode = match mode {
+        Some(m) => m,
+        None => return (None, None),
+    };
+
+    let target_addr = match mode {
+        AddressingMode::ZeroPage | AddressingMode::ZeroPageX | AddressingMode::ZeroPageY => Some(value as u16),
+        AddressingMode::Absolute | AddressingMode::AbsoluteX | AddressingMode::AbsoluteY => Some(value as u16),
+        AddressingMode::Relative => {
+            let offset = value as i8;
+            Some(pc.wrapping_add(2).wrapping_add(offset as u16))
+        }
+        _ => None,
+    };
+
+    if let Some(addr) = target_addr {
+        // If it's a global address, it's not a bank target
+        if db.global.contains_key(&addr) {
+             return (None, Some(addr));
+        }
+        // If it's in the current bank
+        if let Some(bank) = db.bank.get(&bank_id) {
+            if bank.address.contains_key(&addr) {
+                return (Some(bank_id), Some(addr));
+            }
+        }
+        // Check other banks? 
+        // For now, only resolve to current bank or global.
+        return (None, Some(addr));
+    }
+
+    (None, None)
 }
 
 fn has_symbol(db: &DisassemblyInfo, bank_id: u8, address: u16) -> bool {

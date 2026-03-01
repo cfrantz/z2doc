@@ -63,5 +63,6 @@ pub struct DisassemblyLine {
     pub symbol: Option<String>,
     pub comment: Option<String>,
     pub block_comment: Option<String>,
-    pub is_target: bool, // For hyperlinking
+    pub target_bank: Option<u8>,
+    pub target_address: Option<u16>,
 }
