@@ -191,23 +191,30 @@ async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
 async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppState>>) -> Result<(), String> {
     let mut db = state.db.write().await;
     
-    let info = crate::models::AnnotationInfo {
-        symbol: req.symbol.clone(),
-        comment: req.comment.clone(),
-        block_comment: req.block_comment.clone(),
-    };
+    let bank_id = req.bank_id;
+    let address = req.address;
 
-    if let Some(bank_id) = req.bank_id {
-        let bank = db.bank.entry(bank_id).or_insert_with(|| crate::models::BankInfo {
+    let entry = if let Some(id) = bank_id {
+        let bank = db.bank.entry(id).or_insert_with(|| crate::models::BankInfo {
             title: None,
             is_fixed: false,
             mapped_at: Some(0x8000),
             region: Vec::new(),
             address: std::collections::BTreeMap::new(),
         });
-        bank.address.insert(req.address, info);
+        bank.address.entry(address).or_default()
     } else {
-        db.global.insert(req.address, info);
+        db.global.entry(address).or_default()
+    };
+
+    if let Some(ref sym) = req.symbol {
+        entry.symbol = if sym.is_empty() { None } else { Some(sym.clone()) };
+    }
+    if let Some(ref comm) = req.comment {
+        entry.comment = if comm.is_empty() { None } else { Some(comm.clone()) };
+    }
+    if let Some(ref bc) = req.block_comment {
+        entry.block_comment = if bc.is_empty() { None } else { Some(bc.clone()) };
     }
 
     database::save_db(&state.db_path, &db).map_err(|e| e.to_string())?;

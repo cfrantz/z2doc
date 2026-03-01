@@ -1,27 +1,59 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('editField', () => ({
         editing: false,
+        
         startEdit() {
             this.editing = true;
             this.$nextTick(() => {
-                this.$el.focus();
-                // Place cursor at end
-                const range = document.createRange();
-                const sel = window.getSelection();
-                range.selectNodeContents(this.$el);
-                range.collapse(false);
-                sel.removeAllRanges();
-                sel.addRange(range);
+                const editable = this.$el.getAttribute('contenteditable') === 'true' 
+                    ? this.$el 
+                    : this.$el.querySelector('[contenteditable="true"]');
+                
+                if (editable) {
+                    editable.focus();
+                    const range = document.createRange();
+                    const sel = window.getSelection();
+                    range.selectNodeContents(editable);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
             });
         },
         stopEdit(line, field) {
             this.editing = false;
-            this.$dispatch('update-annotation', { line, field, value: this.$el.innerText });
+            const newValue = this.$el.innerText;
+            const processedValue = this.stripDecorations(field, newValue);
+            
+            // Update local state immediately if possible
+            if (line[field] !== undefined) {
+                line[field] = processedValue;
+            }
+            
+            this.$dispatch('update-annotation', { line, field, value: newValue });
+        },
+        stripDecorations(field, text) {
+            if (!text) return text;
+            if (field === 'symbol') {
+                let v = text.trim();
+                if (v.endsWith(':')) v = v.slice(0, -1);
+                return v;
+            }
+            if (field === 'comment' || field === 'block_comment') {
+                return text.split('\n').map(line => {
+                    let l = line.trimStart();
+                    if (l.startsWith(';')) {
+                        l = l.substring(1);
+                        if (l.startsWith(' ')) l = l.substring(1);
+                    }
+                    return l;
+                }).join('\n').trimEnd();
+            }
+            return text;
         }
     }));
 
     Alpine.data('disasmApp', () => ({
-        metadata: { name: '', title: '', rom_file: '', total_banks: 0, mapper_window_size: 0 },
+        metadata: { name: '', title: '', rom_file: '', total_banks: 0, mapper_window_size: 0, banks: {} },
         currentBank: 0,
         disassembly: [],
         themes: [],
@@ -36,6 +68,14 @@ document.addEventListener('alpine:init', () => {
             hex: 200,
             op: 60,
             operand: 150
+        },
+
+        // Context Menu state
+        contextMenu: {
+            show: false,
+            x: 0,
+            y: 0,
+            target: null
         },
 
         async init() {
@@ -127,23 +167,25 @@ document.addEventListener('alpine:init', () => {
         },
 
         async updateAnnotation(line, field, value) {
+            // stripDecorations is shared via editField, but we need it here too
             const processedValue = this.stripDecorations(field, value);
 
-            // Only update if value actually changed to avoid redundant saves
-            if (line[field] === processedValue || (line[field] === null && processedValue === "")) return;
+            // Determine correct bank_id
+            let bank_id = null;
+            if (line.bank === -1) {
+                bank_id = null; // Global
+            } else if (line.bank !== undefined && line.bank !== null) {
+                bank_id = line.bank;
+            } else {
+                bank_id = parseInt(this.currentBank);
+                if (bank_id === 255) bank_id = null;
+            }
 
             const req = {
-                bank_id: line.bank === -1 ? null : parseInt(this.currentBank),
+                bank_id: bank_id,
                 address: line.address,
-                symbol: field === 'symbol' ? processedValue : line.symbol,
-                comment: field === 'comment' ? processedValue : line.comment,
-                block_comment: field === 'block_comment' ? processedValue : line.block_comment
+                [field]: processedValue === null ? "" : processedValue
             };
-
-            // Convert empty strings to null for the backend
-            if (req.symbol === "") req.symbol = null;
-            if (req.comment === "") req.comment = null;
-            if (req.block_comment === "") req.block_comment = null;
 
             const response = await fetch('/api/annotation', {
                 method: 'POST',
@@ -157,7 +199,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         navigate(targetBank, targetAddress) {
-            const bankId = targetBank === null ? 255 : targetBank;
+            const bankId = targetBank === null || targetBank === -1 ? 255 : targetBank;
             const bankHex = bankId.toString(16).toUpperCase().padStart(2, '0');
             const addrHex = targetAddress.toString(16).toUpperCase().padStart(4, '0');
             window.location.hash = `bank-${bankHex}-addr-${addrHex}`;
@@ -167,6 +209,7 @@ document.addEventListener('alpine:init', () => {
             if (this.resizing) return;
             
             const container = document.getElementById('disasm-container');
+            if (!container) return;
             const cells = container.querySelectorAll('.grid-cell.address');
             let topAddr = null;
             
@@ -183,7 +226,6 @@ document.addEventListener('alpine:init', () => {
                 const bankHex = parseInt(this.currentBank).toString(16).toUpperCase().padStart(2, '0');
                 const addrHex = parseInt(topAddr).toString(16).toUpperCase().padStart(4, '0');
                 const newHash = `#bank-${bankHex}-addr-${addrHex}`;
-                // Use replaceState to update the URL as we scroll without creating history entries
                 history.replaceState(null, null, newHash);
             }
         },
@@ -220,9 +262,7 @@ document.addEventListener('alpine:init', () => {
             if (!text) return text;
             if (field === 'symbol') {
                 let v = text.trim();
-                if (v.endsWith(':')) {
-                    v = v.slice(0, -1);
-                }
+                if (v.endsWith(':')) v = v.slice(0, -1);
                 return v;
             }
             if (field === 'comment' || field === 'block_comment') {
@@ -230,9 +270,7 @@ document.addEventListener('alpine:init', () => {
                     let l = line.trimStart();
                     if (l.startsWith(';')) {
                         l = l.substring(1);
-                        if (l.startsWith(' ')) {
-                            l = l.substring(1);
-                        }
+                        if (l.startsWith(' ')) l = l.substring(1);
                     }
                     return l;
                 }).join('\n').trimEnd();

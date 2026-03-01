@@ -82,6 +82,17 @@
         }
         .grid-cell:hover > .edit-icon { opacity: 0.7; }
         .editable-container[contenteditable="true"] .edit-icon { display: none; }
+
+        .context-menu {
+            position: fixed; background: #333; border: 1px solid #555;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5); z-index: 1000;
+            display: flex; flex-direction: column; padding: 4px 0; min-width: 150px;
+        }
+        .context-menu button {
+            background: none; border: none; color: #eee; padding: 8px 16px;
+            text-align: left; cursor: pointer; font-family: inherit; font-size: 14px;
+        }
+        .context-menu button:hover { background: #4a90e2; color: #fff; }
         
         .header { margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
         select { background: #333; color: #fff; border: 1px solid #666; padding: 4px; }
@@ -89,9 +100,19 @@
 </head>
 <body x-data="disasmApp" 
       @update-annotation.window="updateAnnotation($event.detail.line, $event.detail.field, $event.detail.value)"
+      @show-menu.window="contextMenu = { show: true, x: $event.detail.x, y: $event.detail.y, target: $event.detail.target }"
       @mousemove="if(resizing) resize($event)"
       @mouseup="stopResizing()"
+      @click="contextMenu.show = false"
       :class="resizing ? 'resizing' : ''">
+
+    <!-- Custom Context Menu -->
+    <div x-show="contextMenu.show" 
+         class="context-menu" 
+         :style="`left: ${contextMenu.x}px; top: ${contextMenu.y}px;`"
+         @click.away="contextMenu.show = false">
+        <button @click="contextMenu.target.dispatchEvent(new CustomEvent('edit-symbol', { bubbles: true })); contextMenu.show = false">Rename Symbol</button>
+    </div>
     
     <div class="header">
         <h1 style="margin-top: 0;">z2doc: <span x-text="metadata.title"></span></h1>
@@ -131,7 +152,7 @@
                     <!-- Block Comment (Always shows) -->
                     <template x-if="line.block_comment">
                         <div class="grid-cell full-width">
-                            <div class="comment editable-container" x-data="editField"
+                            <div class="comment editable-container" x-data="editField" @edit-symbol="startEdit()"
                                 :contenteditable="editing"
                                 @click="if(!editing) startEdit()"
                                 @blur="stopEdit(line, 'block_comment')"
@@ -147,7 +168,7 @@
                             <!-- Symbol -->
                             <template x-if="line.symbol">
                                 <div class="grid-cell full-width" :id="'sym-' + line.address">
-                                    <div class="symbol editable-container" x-data="editField"
+                                    <div class="symbol editable-container" x-data="editField" @edit-symbol="startEdit()"
                                         :contenteditable="editing"
                                         @click="if(!editing) startEdit()"
                                         @blur="stopEdit(line, 'symbol')"
@@ -161,9 +182,33 @@
                             <div class="grid-cell address" x-text="line.address_label" :id="'addr-' + line.address"></div>
                             <div class="grid-cell hex" x-text="line.bytes"></div>
                             <div class="grid-cell opcode" x-text="line.opcode"></div>
-                            <div class="grid-cell operand"><span x-text="line.operand_prefix"></span><template x-if="line.target_address"><a href="#" @click.prevent="navigate(line.target_bank, line.target_address)" :class="line.operand_is_symbol ? 'symbol' : ''" :title="line.operand_is_symbol ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" x-text="line.operand_main"></a></template><template x-if="!line.target_address"><span :class="line.operand_is_symbol ? 'symbol' : ''" :title="line.operand_is_symbol && line.target_address ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" x-text="line.operand_main"></span></template><span x-text="line.operand_suffix"></span></div>
+                            <div class="grid-cell operand">
+                                <span x-text="line.operand_prefix"></span>
+                                <template x-if="line.target_address">
+                                    <span x-data="editField" @edit-symbol="startEdit()" style="display: contents;">
+                                        <a href="#" x-show="!editing"
+                                           @click.prevent="navigate(line.target_bank, line.target_address)" 
+                                           @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el })"
+                                           :class="line.operand_is_symbol ? 'symbol' : ''" 
+                                           :title="line.operand_is_symbol ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" 
+                                           x-text="line.operand_main"></a>
+                                        <span x-show="editing"
+                                              class="symbol"
+                                              contenteditable="true"
+                                              @blur="stopEdit({ address: line.target_address, bank: line.target_bank === null ? -1 : line.target_bank }, 'symbol')"
+                                              @keydown.enter.prevent="$el.blur()"
+                                              x-text="line.operand_main"></span>
+                                    </span>
+                                </template>
+                                <template x-if="!line.target_address">
+                                    <span :class="line.operand_is_symbol ? 'symbol' : ''" 
+                                          :title="line.operand_is_symbol && line.target_address ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" 
+                                          x-text="line.operand_main"></span>
+                                </template>
+                                <span x-text="line.operand_suffix"></span>
+                            </div>
                             <div class="grid-cell comment-cell">
-                                <div class="comment editable-container" x-data="editField"
+                                <div class="comment editable-container" x-data="editField" @edit-symbol="startEdit()"
                                     :contenteditable="editing"
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
@@ -180,7 +225,7 @@
                         <div style="display: contents">
                             <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;"
                                  :id="'addr-' + line.address">
-                                <div class="symbol editable-container" x-data="editField"
+                                <div class="symbol editable-container" x-data="editField" @edit-symbol="startEdit()"
                                     :contenteditable="editing"
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'symbol')"
@@ -191,7 +236,7 @@
                                 <span class="edit-icon">✎</span>
                             </div>
                             <div class="grid-cell comment-cell">
-                                <div class="comment editable-container" x-data="editField"
+                                <div class="comment editable-container" x-data="editField" @edit-symbol="startEdit()"
                                     :contenteditable="editing"
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
