@@ -1,7 +1,14 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('editField', () => ({
         editing: false,
+        isPending: false,
         
+        init() {
+            window.addEventListener('disassembly-fetched', () => {
+                this.isPending = false;
+            });
+        },
+
         startEdit() {
             this.editing = true;
             this.$nextTick(() => {
@@ -29,6 +36,7 @@ document.addEventListener('alpine:init', () => {
                 line[field] = processedValue;
             }
             
+            this.isPending = true;
             this.$dispatch('update-annotation', { line, field, value: newValue });
         },
         stripDecorations(field, text) {
@@ -171,6 +179,7 @@ document.addEventListener('alpine:init', () => {
             const response = await fetch(`/api/disassembly/${this.currentBank}`);
             this.disassembly = await response.json();
             this.displayedBank = parseInt(this.currentBank);
+            window.dispatchEvent(new CustomEvent('disassembly-fetched'));
         },
 
         async changeBank() {

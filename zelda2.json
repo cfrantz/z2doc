@@ -5071,7 +5071,7 @@
           "comment": "0x3faa $BF9A 4C 00 C0"
         },
         "49053": {
-          "symbol": "set_mmc1_config_register",
+          "symbol": "mapper_set_config",
           "comment": "0x3fad $BF9D 8D 00 80",
           "block_comment": "----------------------------------------------------------------------------\nbank0_Set_Mapper_Parameters_at_0x8000:"
         },
@@ -5103,7 +5103,7 @@
           "comment": "0x3fc0 $BFB0 60"
         },
         "49073": {
-          "symbol": "Set_Mapper_Parameters_at_0xA000",
+          "symbol": "mapper_load_chrbank",
           "comment": "0x3fc1 $BFB1 8D 00 A0",
           "block_comment": "----------------------------------------------------------------------------\nbank0_Set_Mapper_Parameters_at_0xA000:"
         },
@@ -33316,7 +33316,7 @@
           "comment": "Load Bank 0"
         },
         "57371": {
-          "symbol": "bank7_Turn_Palaces_into_Stone_Bank_1",
+          "symbol": "bank7_Turn_Palaces_into_Stone",
           "comment": "Load Bank $0769"
         },
         "57377": {

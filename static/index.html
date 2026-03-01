@@ -71,6 +71,7 @@
         .hex { user-select: none; }
         .comment { white-space: pre-wrap; }
         .full-width { grid-column: 1 / -1; }
+        .pending { text-decoration: line-through; opacity: 0.6; pointer-events: none; }
         
         [contenteditable]:focus { outline: 1px solid #4a90e2; background: rgba(74, 144, 226, 0.1); }
         .editable-container { cursor: text; min-height: 1.2em; padding-left: 4px; }
@@ -157,6 +158,7 @@
                                 @click="if(!editing) startEdit()"
                                 @blur="stopEdit(line, 'block_comment')"
                                 @keydown.enter.ctrl.prevent="$el.blur()"
+                                :class="{ 'pending': isPending }"
                                 x-text="line.block_comment.split('\n').map(l => '; ' + l).join('\n')">
                             </div>
                             <span class="edit-icon">✎</span>
@@ -173,6 +175,7 @@
                                         @click="if(!editing) startEdit()"
                                         @blur="stopEdit(line, 'symbol')"
                                         @keydown.enter.prevent="$el.blur()"
+                                        :class="{ 'pending': isPending }"
                                         x-text="line.symbol + ':'">
                                     </div>
                                     <span class="edit-icon">✎</span>
@@ -189,7 +192,7 @@
                                         <a href="#" x-show="!editing"
                                            @click.prevent="navigate(line.target_bank, line.target_address)" 
                                            @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el })"
-                                           :class="line.operand_is_symbol ? 'symbol' : ''" 
+                                           :class="{ 'symbol': line.operand_is_symbol, 'pending': isPending }" 
                                            :title="line.operand_is_symbol ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" 
                                            x-text="line.operand_main"></a>
                                         <span x-show="editing"
@@ -213,6 +216,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    :class="{ 'pending': isPending }"
                                     x-text="line.comment ? '; ' + line.comment : ''">
                                 </div>
                                 <span class="edit-icon">✎</span>
@@ -230,6 +234,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'symbol')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    :class="{ 'pending': isPending }"
                                     x-text="line.symbol || '???'">
                                 </div>
                                 <span style="margin-left: 8px;"> = <span x-text="line.address_label"></span></span>
@@ -241,6 +246,7 @@
                                     @click="if(!editing) startEdit()"
                                     @blur="stopEdit(line, 'comment')"
                                     @keydown.enter.prevent="$el.blur()"
+                                    :class="{ 'pending': isPending }"
                                     x-text="line.comment ? '; ' + line.comment : ''">
                                 </div>
                                 <span class="edit-icon">✎</span>
