@@ -1,4 +1,5 @@
 use crate::models::{AnnotationInfo, DisassemblyInfo, DisassemblyLine, RegionInfo};
+use std::collections::HashSet;
 
 #[derive(Debug, Clone, Copy)]
 pub enum AddressingMode {
@@ -346,6 +347,52 @@ pub fn disassemble_bank(
     let bank_start = base_address as u32;
     let bank_end = bank_start + mapper_size - 1;
 
+    // First Pass: Collect all target addresses in ROM region ($8000-$FFFF)
+    let mut targets = HashSet::new();
+    for region in &regions {
+        match region {
+            RegionInfo::Code(range) => {
+                let mut pc = *range.start() as u32;
+                let end = *range.end() as u32;
+                while pc <= end {
+                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
+                    if offset >= rom_data.len() { break; }
+                    let opcode = rom_data[offset];
+                    if let Some(instr) = &OPCODES[opcode as usize] {
+                        let len = instr.mode.operand_length() as u32;
+                        let mut op_val: u32 = 0;
+                        for j in 1..=len {
+                            if offset + (j as usize) < rom_data.len() {
+                                op_val |= (rom_data[offset + (j as usize)] as u32) << (8 * (j - 1));
+                            }
+                        }
+                        let (_, target_addr) = resolve_target(Some(instr.mode), op_val, pc as u16, db, bank_id);
+                        if let Some(addr) = target_addr {
+                            if addr >= 0x8000 { targets.insert(addr); }
+                        }
+                        pc += 1 + len;
+                    } else {
+                        pc += 1;
+                    }
+                }
+            }
+            RegionInfo::Words(range) => {
+                let mut pc = *range.start() as u32;
+                let end = *range.end() as u32;
+                while pc <= end {
+                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
+                    if offset + 1 >= rom_data.len() { break; }
+                    let low = rom_data[offset];
+                    let high = rom_data[offset + 1];
+                    let val = (high as u16) << 8 | (low as u16);
+                    if val >= 0x8000 { targets.insert(val); }
+                    pc += 2;
+                }
+            }
+            _ => {}
+        }
+    }
+
     // Fill gaps with Bytes regions
     let mut filled_regions = Vec::new();
     let mut current_pc = bank_start;
@@ -393,7 +440,7 @@ pub fn disassemble_bank(
                                 }
                             }
                             
-                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id);
+                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id, &targets);
                             (b, p, m, s, sym, i.mnemonic, 1 + len)
                         }
                         None => (format!("{:02X}", opcode), String::new(), String::new(), String::new(), false, "???", 1),
@@ -401,6 +448,11 @@ pub fn disassemble_bank(
 
                     let annotation = get_annotation(db, bank_id, pc as u16);
                     let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc as u16, db, bank_id);
+
+                    let mut line_symbol = annotation.symbol;
+                    if line_symbol.is_none() && targets.contains(&(pc as u16)) {
+                        line_symbol = Some(format!("L{:04X}", pc));
+                    }
 
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, pc),
@@ -412,7 +464,7 @@ pub fn disassemble_bank(
                         operand_main: main,
                         operand_suffix: suffix,
                         operand_is_symbol: is_sym,
-                        symbol: annotation.symbol,
+                        symbol: line_symbol,
                         comment: annotation.comment,
                         block_comment: annotation.block_comment,
                         target_bank,
@@ -435,6 +487,10 @@ pub fn disassemble_bank(
                         if count > 0 && has_symbol(db, bank_id, pc as u16) {
                             break;
                         }
+                        // Break on auto-labels too
+                        if count > 0 && targets.contains(&(pc as u16)) {
+                            break;
+                        }
 
                         let offset = (pc.wrapping_sub(base_address as u32)) as usize;
                         if offset >= rom_data.len() { break; }
@@ -452,6 +508,11 @@ pub fn disassemble_bank(
 
                     if count > 0 {
                         let annotation = get_annotation(db, bank_id, start_pc as u16);
+                        let mut line_symbol = annotation.symbol;
+                        if line_symbol.is_none() && targets.contains(&(start_pc as u16)) {
+                            line_symbol = Some(format!("L{:04X}", start_pc));
+                        }
+
                         lines.push(DisassemblyLine {
                             address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
                             address: start_pc as u16,
@@ -462,7 +523,7 @@ pub fn disassemble_bank(
                             operand_main: bytes_str,
                             operand_suffix: String::new(),
                             operand_is_symbol: false,
-                            symbol: annotation.symbol,
+                            symbol: line_symbol,
                             comment: annotation.comment,
                             block_comment: annotation.block_comment,
                             target_bank: None,
@@ -485,11 +546,15 @@ pub fn disassemble_bank(
                     let high = rom_data[offset + 1];
                     let val = (high as u16) << 8 | (low as u16);
 
-                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false);
+                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false, &targets);
                     let annotation = get_annotation(db, bank_id, start_pc as u16);
                     
-                    // A word is a target if it's a known symbol or valid address
                     let (target_bank, target_addr) = resolve_target(Some(AddressingMode::Absolute), val as u32, pc as u16, db, bank_id);
+
+                    let mut line_symbol = annotation.symbol;
+                    if line_symbol.is_none() && targets.contains(&(start_pc as u16)) {
+                        line_symbol = Some(format!("L{:04X}", start_pc));
+                    }
 
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
@@ -501,7 +566,7 @@ pub fn disassemble_bank(
                         operand_main: main,
                         operand_suffix: String::new(),
                         operand_is_symbol: is_sym,
-                        symbol: annotation.symbol,
+                        symbol: line_symbol,
                         comment: annotation.comment,
                         block_comment: annotation.block_comment,
                         target_bank,
@@ -534,18 +599,14 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
     };
 
     if let Some(addr) = target_addr {
-        // If it's a global address, it's not a bank target
         if db.global.contains_key(&addr) {
              return (None, Some(addr));
         }
-        // If it's in the current bank
         if let Some(bank) = db.bank.get(&bank_id) {
             if bank.address.contains_key(&addr) {
                 return (Some(bank_id), Some(addr));
             }
         }
-        // Check other banks? 
-        // For now, only resolve to current bank or global.
         return (None, Some(addr));
     }
 
@@ -584,39 +645,39 @@ fn get_annotation(db: &DisassemblyInfo, bank_id: u8, address: u16) -> Annotation
     result
 }
 
-fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8) -> (String, String, String, bool) {
+fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8, targets: &HashSet<u16>) -> (String, String, String, bool) {
     match mode {
         AddressingMode::Implied => (String::new(), String::new(), String::new(), false),
         AddressingMode::Accumulator => (String::new(), "A".to_string(), String::new(), false),
         AddressingMode::Immediate => ("#".to_string(), format!("${:02X}", value), String::new(), false),
         AddressingMode::ZeroPage => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::ZeroPageX => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
             (String::new(), m, ",X".to_string(), sym)
         }
         AddressingMode::ZeroPageY => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
             (String::new(), m, ",Y".to_string(), sym)
         }
         AddressingMode::Relative => {
             let offset = value as i8;
             let target = pc.wrapping_add(2).wrapping_add(offset as u16);
-            let (m, sym) = resolve_symbol(target, db, bank_id, false);
+            let (m, sym) = resolve_symbol(target, db, bank_id, false, targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::Absolute => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::AbsoluteX => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
             (String::new(), m, ",X".to_string(), sym)
         }
         AddressingMode::AbsoluteY => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
             (String::new(), m, ",Y".to_string(), sym)
         }
         AddressingMode::Indirect => {
@@ -631,7 +692,7 @@ fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInf
     }
 }
 
-fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool) -> (String, bool) {
+fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, targets: &HashSet<u16>) -> (String, bool) {
     if let Some(bank) = db.bank.get(&bank_id) {
         if let Some(anno) = bank.address.get(&address) {
             if let Some(ref sym) = anno.symbol {
@@ -642,9 +703,14 @@ fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool) 
     if let Some(anno) = db.global.get(&address) {
         if let Some(ref sym) = anno.symbol {
             return (sym.clone(), true);
+            }
         }
-    }
     
+    // Check for auto-label in ROM region
+    if address >= 0x8000 && targets.contains(&address) {
+        return (format!("L{:04X}", address), true);
+    }
+
     if is_zp {
         (format!("${:02X}", address), false)
     } else {
