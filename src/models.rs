@@ -49,9 +49,21 @@ pub struct DisassemblyInfo {
     pub bank: BTreeMap<u8, BankInfo>,
     // Mapper window size: 8 or 16
     pub mapper_window_size: u8,
-    // The CPU address range where the fixed bank is mapped (e.g. 0xC000..=0xFFFF)
+    // The CPU address where this bank is mapped (e.g. 0xC000..=0xFFFF)
     pub mapper_fixed_range: Option<RangeInclusive<u16>>,
 }
+
+impl DisassemblyInfo {
+    pub fn find_fixed_bank_id(&self) -> Option<u8> {
+        for (id, bank) in &self.bank {
+            if bank.is_fixed {
+                return Some(*id);
+            }
+        }
+        None
+    }
+}
+
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ThemeConfig {

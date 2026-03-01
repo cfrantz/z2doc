@@ -311,10 +311,81 @@ pub const OPCODES: [Option<Instruction>; 256] = {
     table
 };
 
+pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u16> {
+    let mut all_targets = HashSet::new();
+    let mapper_size = db.mapper_window_size as u32 * 1024;
+    let fixed_range = db.mapper_fixed_range.as_ref();
+
+    for (&bank_id, bank_info) in &db.bank {
+        let base_address = bank_info.mapped_at.unwrap_or(0x8000);
+        let rom_offset = 16 + (bank_id as usize * mapper_size as usize);
+        let rom_end = (rom_offset + mapper_size as usize).min(rom_data.len());
+        
+        let bank_data = if rom_offset < rom_data.len() {
+            &rom_data[rom_offset..rom_end]
+        } else {
+            &[]
+        };
+
+        for region in &bank_info.region {
+            match region {
+                RegionInfo::Code(range) => {
+                    let mut pc = *range.start() as u32;
+                    let end = *range.end() as u32;
+                    while pc <= end {
+                        let offset = (pc.wrapping_sub(base_address as u32)) as usize;
+                        if offset >= bank_data.len() { break; }
+                        let opcode = bank_data[offset];
+                        if let Some(instr) = &OPCODES[opcode as usize] {
+                            let len = instr.mode.operand_length() as u32;
+                            let mut op_val: u32 = 0;
+                            for j in 1..=len {
+                                if offset + (j as usize) < bank_data.len() {
+                                    op_val |= (bank_data[offset + (j as usize)] as u32) << (8 * (j - 1));
+                                }
+                            }
+                            let (_, target_addr) = resolve_target(Some(instr.mode), op_val, pc as u16, db, bank_id);
+                            if let Some(addr) = target_addr {
+                                // If target is in this bank or fixed range, it's a candidate for auto-labeling
+                                if (addr >= base_address && addr < base_address + mapper_size as u16) || 
+                                   fixed_range.map_or(false, |r| r.contains(&addr)) {
+                                    all_targets.insert(addr);
+                                }
+                            }
+                            pc += 1 + len;
+                        } else {
+                            pc += 1;
+                        }
+                    }
+                }
+                RegionInfo::Words(range) => {
+                    let mut pc = *range.start() as u32;
+                    let end = *range.end() as u32;
+                    while pc <= end {
+                        let offset = (pc.wrapping_sub(base_address as u32)) as usize;
+                        if offset + 1 >= rom_data.len() { break; }
+                        let low = rom_data[offset];
+                        let high = rom_data[offset + 1];
+                        let val = (high as u16) << 8 | (low as u16);
+                        if (val >= base_address && val < base_address + mapper_size as u16) || 
+                           fixed_range.map_or(false, |r| r.contains(&val)) {
+                            all_targets.insert(val);
+                        }
+                        pc += 2;
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    all_targets
+}
+
 pub fn disassemble_bank(
     db: &DisassemblyInfo,
     bank_id: u8,
     rom_data: &[u8],
+    global_targets: &HashSet<u16>,
 ) -> Vec<DisassemblyLine> {
     let mut lines = Vec::new();
     let bank_info = match db.bank.get(&bank_id) {
@@ -346,73 +417,6 @@ pub fn disassemble_bank(
     let mapper_size = db.mapper_window_size as u32 * 1024;
     let bank_start = base_address as u32;
     let bank_end = bank_start + mapper_size - 1;
-
-    // First Pass: Collect all target addresses in current bank or mapper fixed range
-    let mut targets = HashSet::new();
-    let fixed_range = db.mapper_fixed_range.as_ref();
-
-    for region in &regions {
-        match region {
-            RegionInfo::Code(range) => {
-                let mut pc = *range.start() as u32;
-                let end = *range.end() as u32;
-                while pc <= end {
-                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
-                    if offset >= rom_data.len() { break; }
-                    let opcode = rom_data[offset];
-                    if let Some(instr) = &OPCODES[opcode as usize] {
-                        let len = instr.mode.operand_length() as u32;
-                        let mut op_val: u32 = 0;
-                        for j in 1..=len {
-                            if offset + (j as usize) < rom_data.len() {
-                                op_val |= (rom_data[offset + (j as usize)] as u32) << (8 * (j - 1));
-                            }
-                        }
-                        let (_, target_addr) = resolve_target(Some(instr.mode), op_val, pc as u16, db, bank_id);
-                        if let Some(addr) = target_addr {
-                            // Target is in current bank
-                            let addr_32 = addr as u32;
-                            if addr_32 >= base_address as u32 && addr_32 < (base_address as u32 + mapper_size) {
-                                targets.insert(addr);
-                            }
-                            // Target is in fixed range
-                            if let Some(fixed) = fixed_range {
-                                if fixed.contains(&addr) {
-                                    targets.insert(addr);
-                                }
-                            }
-                        }
-                        pc += 1 + len;
-                    } else {
-                        pc += 1;
-                    }
-                }
-            }
-            RegionInfo::Words(range) => {
-                let mut pc = *range.start() as u32;
-                let end = *range.end() as u32;
-                while pc <= end {
-                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
-                    if offset + 1 >= rom_data.len() { break; }
-                    let low = rom_data[offset];
-                    let high = rom_data[offset + 1];
-                    let val = (high as u16) << 8 | (low as u16);
-                    
-                    let val_32 = val as u32;
-                    if val_32 >= base_address as u32 && val_32 < (base_address as u32 + mapper_size) {
-                        targets.insert(val);
-                    }
-                    if let Some(fixed) = fixed_range {
-                        if fixed.contains(&val) {
-                            targets.insert(val);
-                        }
-                    }
-                    pc += 2;
-                }
-            }
-            _ => {}
-        }
-    }
 
     // Fill gaps with Bytes regions
     let mut filled_regions = Vec::new();
@@ -461,7 +465,7 @@ pub fn disassemble_bank(
                                 }
                             }
                             
-                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id, &targets);
+                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id, global_targets);
                             (b, p, m, s, sym, i.mnemonic, 1 + len)
                         }
                         None => (format!("{:02X}", opcode), String::new(), String::new(), String::new(), false, "???", 1),
@@ -471,7 +475,7 @@ pub fn disassemble_bank(
                     let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc as u16, db, bank_id);
 
                     let mut line_symbol = annotation.symbol;
-                    if line_symbol.is_none() && targets.contains(&(pc as u16)) {
+                    if line_symbol.is_none() && global_targets.contains(&(pc as u16)) {
                         line_symbol = Some(format!("L{:04X}", pc));
                     }
 
@@ -509,7 +513,7 @@ pub fn disassemble_bank(
                             break;
                         }
                         // Break on auto-labels too
-                        if count > 0 && targets.contains(&(pc as u16)) {
+                        if count > 0 && global_targets.contains(&(pc as u16)) {
                             break;
                         }
 
@@ -530,7 +534,7 @@ pub fn disassemble_bank(
                     if count > 0 {
                         let annotation = get_annotation(db, bank_id, start_pc as u16);
                         let mut line_symbol = annotation.symbol;
-                        if line_symbol.is_none() && targets.contains(&(start_pc as u16)) {
+                        if line_symbol.is_none() && global_targets.contains(&(start_pc as u16)) {
                             line_symbol = Some(format!("L{:04X}", start_pc));
                         }
 
@@ -567,13 +571,13 @@ pub fn disassemble_bank(
                     let high = rom_data[offset + 1];
                     let val = (high as u16) << 8 | (low as u16);
 
-                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false, &targets);
+                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false, global_targets);
                     let annotation = get_annotation(db, bank_id, start_pc as u16);
                     
                     let (target_bank, target_addr) = resolve_target(Some(AddressingMode::Absolute), val as u32, pc as u16, db, bank_id);
 
                     let mut line_symbol = annotation.symbol;
-                    if line_symbol.is_none() && targets.contains(&(start_pc as u16)) {
+                    if line_symbol.is_none() && global_targets.contains(&(start_pc as u16)) {
                         line_symbol = Some(format!("L{:04X}", start_pc));
                     }
 
@@ -620,6 +624,15 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
     };
 
     if let Some(addr) = target_addr {
+        // If target is in the fixed range, it belongs to the fixed bank (unless local)
+        if let Some(fixed_range) = &db.mapper_fixed_range {
+            if fixed_range.contains(&addr) {
+                if let Some(fixed_id) = db.find_fixed_bank_id() {
+                    return (Some(fixed_id), Some(addr));
+                }
+            }
+        }
+
         let current_fixed = db.bank.get(&bank_id).map(|b| b.is_fixed).unwrap_or(false);
 
         // 1. Check local bank

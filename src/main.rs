@@ -111,6 +111,7 @@ async fn get_metadata(state: &State<Arc<AppState>>) -> Json<Metadata> {
 #[get("/api/disassembly/<bank_id>")]
 async fn get_disassembly(bank_id: u8, state: &State<Arc<AppState>>) -> Json<Vec<DisassemblyLine>> {
     let db = state.db.read().await;
+    let global_targets = disasm::discover_all_targets(&db, &state.rom_data);
     
     if bank_id == 255 {
         let mut lines = Vec::new();
@@ -145,7 +146,7 @@ async fn get_disassembly(bank_id: u8, state: &State<Arc<AppState>>) -> Json<Vec<
         &[]
     };
 
-    let lines = disasm::disassemble_bank(&db, bank_id, bank_data);
+    let lines = disasm::disassemble_bank(&db, bank_id, bank_data, &global_targets);
     Json(lines)
 }
 
