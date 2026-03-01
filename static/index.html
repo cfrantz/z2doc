@@ -30,13 +30,13 @@
         select { background: #333; color: #fff; border: 1px solid #666; padding: 4px; }
     </style>
 </head>
-<body x-data="disasmApp">
+<body x-data="disasmApp" @update-annotation.window="updateAnnotation($event.detail.line, $event.detail.field, $event.detail.value)">
     <div class="header">
         <h1>z2doc: <span x-text="metadata.rom_file"></span></h1>
         <div style="display: flex; gap: 20px; align-items: center;">
             <div>
                 Bank:
-                <select x-model="currentBank" @change="fetchDisassembly()">
+                <select x-model="currentBank" @change="changeBank()">
                     <template x-for="i in Array.from({length: metadata.total_banks}, (_, i) => i)">
                         <option :value="i" x-text="'$' + i.toString(16).padStart(2, '0')"></option>
                     </template>

@@ -16,7 +16,7 @@ document.addEventListener('alpine:init', () => {
         },
         stopEdit(line, field) {
             this.editing = false;
-            this.$root.__x.$data.updateAnnotation(line, field, this.$el.innerText);
+            this.$dispatch('update-annotation', { line, field, value: this.$el.innerText });
         }
     }));
 
@@ -60,7 +60,10 @@ document.addEventListener('alpine:init', () => {
         async fetchDisassembly() {
             const response = await fetch(`/api/disassembly/${this.currentBank}`);
             this.disassembly = await response.json();
-            // Scroll to top when changing banks
+        },
+
+        async changeBank() {
+            await this.fetchDisassembly();
             window.scrollTo(0, 0);
         },
 
