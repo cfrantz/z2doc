@@ -101,7 +101,7 @@
 </head>
 <body x-data="disasmApp" 
       @update-annotation.window="updateAnnotation($event.detail.line, $event.detail.field, $event.detail.value)"
-      @show-menu.window="contextMenu = { show: true, x: $event.detail.x, y: $event.detail.y, target: $event.detail.target }"
+      @show-menu.window="contextMenu = { show: true, x: $event.detail.x, y: $event.detail.y, target: $event.detail.target, line: $event.detail.line, type: $event.detail.type }"
       @mousemove="if(resizing) resize($event)"
       @mouseup="stopResizing()"
       @click="contextMenu.show = false"
@@ -112,7 +112,10 @@
          class="context-menu" 
          :style="`left: ${contextMenu.x}px; top: ${contextMenu.y}px;`"
          @click.away="contextMenu.show = false">
-        <button @click="contextMenu.target.dispatchEvent(new CustomEvent('edit-symbol', { bubbles: true })); contextMenu.show = false">Rename Symbol</button>
+        <template x-if="contextMenu.type === 'symbol'">
+            <button @click="contextMenu.target.dispatchEvent(new CustomEvent('edit-symbol', { bubbles: true })); contextMenu.show = false">Rename Symbol</button>
+        </template>
+        <button @click="addBlockComment(contextMenu.line); contextMenu.show = false">Add Block Comment</button>
     </div>
     
     <div class="header">
@@ -151,7 +154,7 @@
             <template x-for="line in disassembly" :key="line.address_label">
                 <div class="grid-row">
                     <!-- Block Comment (Always shows) -->
-                    <template x-if="line.block_comment">
+                    <template x-if="line.block_comment !== null">
                         <div class="grid-cell full-width">
                             <div class="comment editable-container" x-data="editField" @edit-symbol="startEdit()"
                                 :contenteditable="editing"
@@ -175,6 +178,7 @@
                                         @click="if(!editing) startEdit()"
                                         @blur="stopEdit(line, 'symbol')"
                                         @keydown.enter.prevent="$el.blur()"
+                                        @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el, line: line, type: 'symbol' })"
                                         :class="{ 'pending': isPending }"
                                         x-text="line.symbol + ':'">
                                     </div>
@@ -182,7 +186,8 @@
                                 </div>
                             </template>
                             <!-- Instruction -->
-                            <div class="grid-cell address" x-text="line.address_label" :id="'addr-' + line.address"></div>
+                            <div class="grid-cell address" x-text="line.address_label" :id="'addr-' + line.address"
+                                 @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el, line: line, type: 'address' })"></div>
                             <div class="grid-cell hex" x-text="line.bytes"></div>
                             <div class="grid-cell opcode" x-text="line.opcode"></div>
                             <div class="grid-cell operand">
@@ -191,7 +196,7 @@
                                     <span x-data="editField" @edit-symbol="startEdit()" style="display: contents;">
                                         <a href="#" x-show="!editing"
                                            @click.prevent="navigate(line.target_bank, line.target_address)" 
-                                           @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el })"
+                                           @contextmenu.prevent="$dispatch('show-menu', { x: $event.clientX, y: $event.clientY, target: $el, line: line, type: 'symbol' })"
                                            :class="{ 'symbol': line.operand_is_symbol, 'pending': isPending }" 
                                            :title="line.operand_is_symbol ? (line.target_bank !== null ? '$' + line.target_bank.toString(16).toUpperCase().padStart(2, '0') + ':$' : '$') + line.target_address.toString(16).toUpperCase().padStart(4, '0') : ''" 
                                            x-text="line.operand_main"></a>

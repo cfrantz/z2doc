@@ -85,7 +85,9 @@ document.addEventListener('alpine:init', () => {
             show: false,
             x: 0,
             y: 0,
-            target: null
+            target: null,
+            line: null,
+            type: null
         },
 
         async init() {
@@ -180,6 +182,23 @@ document.addEventListener('alpine:init', () => {
             this.disassembly = await response.json();
             this.displayedBank = parseInt(this.currentBank);
             window.dispatchEvent(new CustomEvent('disassembly-fetched'));
+        },
+
+        addBlockComment(line) {
+            if (line.block_comment === null || line.block_comment === undefined) {
+                line.block_comment = ""; // Initial empty comment
+                this.$nextTick(() => {
+                    const addrId = `addr-${line.address}`;
+                    const addrCell = document.getElementById(addrId);
+                    if (addrCell) {
+                        const row = addrCell.closest('.grid-row');
+                        const blockCommentDiv = row.querySelector('.comment.editable-container');
+                        if (blockCommentDiv) {
+                            blockCommentDiv.dispatchEvent(new CustomEvent('edit-symbol', { bubbles: true }));
+                        }
+                    }
+                });
+            }
         },
 
         async changeBank() {

@@ -34656,6 +34656,9 @@
         "59860": {
           "symbol": "bank7_table27"
         },
+        "59862": {
+          "symbol": "LE9D6"
+        },
         "59864": {
           "symbol": "bank7_code45",
           "comment": "link facedir SideScroll\t\t; Direction arrow pressed (1 = right, 2 = left)"
@@ -34676,7 +34679,8 @@
           "comment": "refer to table at $1E9D6"
         },
         "59897": {
-          "symbol": "bank7_idem__maybe"
+          "symbol": "bank7_idem__maybe",
+          "block_comment": "------------------------------------------------------------\nThis routine performs an axis-aligned bounding box\ncollision check.\n------------------------------------------------------------"
         },
         "59921": {
           "comment": "used as monster x register ;draw boss hp bar"
