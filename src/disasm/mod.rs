@@ -599,14 +599,35 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
     };
 
     if let Some(addr) = target_addr {
-        if db.global.contains_key(&addr) {
-             return (None, Some(addr));
-        }
+        let current_fixed = db.bank.get(&bank_id).map(|b| b.is_fixed).unwrap_or(false);
+
+        // 1. Check local bank
         if let Some(bank) = db.bank.get(&bank_id) {
             if bank.address.contains_key(&addr) {
                 return (Some(bank_id), Some(addr));
             }
         }
+
+        if current_fixed {
+            // Resolution for fixed bank: Local -> Others -> Global
+            for (other_id, other_bank) in &db.bank {
+                if *other_id != bank_id && other_bank.address.contains_key(&addr) {
+                    return (Some(*other_id), Some(addr));
+                }
+            }
+        } else {
+            // Resolution for non-fixed bank: Local -> Fixed -> Global
+            for (other_id, other_bank) in &db.bank {
+                if other_bank.is_fixed && other_bank.address.contains_key(&addr) {
+                    return (Some(*other_id), Some(addr));
+                }
+            }
+        }
+
+        if db.global.contains_key(&addr) {
+             return (None, Some(addr));
+        }
+
         return (None, Some(addr));
     }
 
@@ -693,6 +714,9 @@ fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInf
 }
 
 fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, targets: &HashSet<u16>) -> (String, bool) {
+    let current_fixed = db.bank.get(&bank_id).map(|b| b.is_fixed).unwrap_or(false);
+
+    // Rule 1: Check local bank
     if let Some(bank) = db.bank.get(&bank_id) {
         if let Some(anno) = bank.address.get(&address) {
             if let Some(ref sym) = anno.symbol {
@@ -700,11 +724,35 @@ fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, 
             }
         }
     }
+
+    if current_fixed {
+        // Resolution for fixed bank: Local -> Other Banks -> Global
+        for (other_id, other_bank) in &db.bank {
+            if *other_id == bank_id { continue; }
+            if let Some(anno) = other_bank.address.get(&address) {
+                if let Some(ref sym) = anno.symbol {
+                    return (sym.clone(), true);
+                }
+            }
+        }
+    } else {
+        // Resolution for non-fixed bank: Local -> Fixed Banks -> Global
+        for (_other_id, other_bank) in &db.bank {
+            if !other_bank.is_fixed { continue; }
+            if let Some(anno) = other_bank.address.get(&address) {
+                if let Some(ref sym) = anno.symbol {
+                    return (sym.clone(), true);
+                }
+            }
+        }
+    }
+
+    // Check global address
     if let Some(anno) = db.global.get(&address) {
         if let Some(ref sym) = anno.symbol {
             return (sym.clone(), true);
-            }
         }
+    }
     
     // Check for auto-label in ROM region
     if address >= 0x8000 && targets.contains(&address) {

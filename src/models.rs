@@ -25,6 +25,9 @@ pub type SectionInfo = BTreeMap<u16, AnnotationInfo>;
 pub struct BankInfo {
     // Optional title for the bank (e.g. "West Hyrule")
     pub title: Option<String>,
+    // Whether this bank is fixed at a specific CPU address (usually the high bank)
+    #[serde(default)]
+    pub is_fixed: bool,
     // List of code and data regions to aid disassembly.
     pub region: Vec<RegionInfo>,
     // Symbol and comment information for ROM code and data.

@@ -199,6 +199,7 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
     if let Some(bank_id) = req.bank_id {
         let bank = db.bank.entry(bank_id).or_insert_with(|| crate::models::BankInfo {
             title: None,
+            is_fixed: false,
             mapped_at: Some(0x8000),
             region: Vec::new(),
             address: std::collections::BTreeMap::new(),
@@ -235,6 +236,7 @@ async fn rocket() -> _ {
         if !default_db.bank.contains_key(&0) {
             default_db.bank.insert(0, crate::models::BankInfo {
                 title: Some("HUD & Overworld".to_string()),
+                is_fixed: false,
                 region: vec![crate::models::RegionInfo::Code(0x8000..=0xBFFF)],
                 address: std::collections::BTreeMap::new(),
                 mapped_at: Some(0x8000),
