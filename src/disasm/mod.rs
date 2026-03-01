@@ -337,13 +337,38 @@ pub fn disassemble_bank(
                 RegionInfo::Bytes(r) => *r.start(),
                 RegionInfo::Words(r) => *r.start(),
             };
-            // Align to mapper window boundaries (8K or 16K)
             let window_size = db.mapper_window_size as u16 * 1024;
             base_address = (start / window_size) * window_size;
         }
     }
 
+    let mapper_size = db.mapper_window_size as u16 * 1024;
+    let bank_start = base_address;
+    let bank_end = base_address + mapper_size - 1;
+
+    // Fill gaps with Bytes regions
+    let mut filled_regions = Vec::new();
+    let mut current_pc = bank_start;
+
     for region in regions {
+        let (r_start, r_end) = match &region {
+            RegionInfo::Code(r) => (*r.start(), *r.end()),
+            RegionInfo::Bytes(r) => (*r.start(), *r.end()),
+            RegionInfo::Words(r) => (*r.start(), *r.end()),
+        };
+
+        if r_start > current_pc {
+            filled_regions.push(RegionInfo::Bytes(current_pc..=r_start - 1));
+        }
+        filled_regions.push(region);
+        current_pc = r_end.saturating_add(1);
+    }
+
+    if current_pc <= bank_end {
+        filled_regions.push(RegionInfo::Bytes(current_pc..=bank_end));
+    }
+
+    for region in filled_regions {
         match region {
             RegionInfo::Code(range) => {
                 let mut pc = *range.start() as u32;
