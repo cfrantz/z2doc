@@ -346,9 +346,10 @@ pub fn disassemble_bank(
     for region in regions {
         match region {
             RegionInfo::Code(range) => {
-                let mut pc = *range.start();
-                while pc <= *range.end() {
-                    let offset = (pc.wrapping_sub(base_address)) as usize;
+                let mut pc = *range.start() as u32;
+                let end = *range.end() as u32;
+                while pc <= end {
+                    let offset = (pc.wrapping_sub(base_address as u32)) as usize;
                     if offset >= rom_data.len() { break; }
 
                     let opcode = rom_data[offset];
@@ -357,7 +358,7 @@ pub fn disassemble_bank(
                     let mut op_val: u32 = 0;
                     let (bytes, mnemonic, operand, length) = match instr {
                         Some(i) => {
-                            let len = i.mode.operand_length();
+                            let len = i.mode.operand_length() as u32;
                             let mut b = format!("{:02X}", opcode);
                             for j in 1..=len {
                                 if offset + (j as usize) < rom_data.len() {
@@ -367,18 +368,18 @@ pub fn disassemble_bank(
                                 }
                             }
                             
-                            let op_str = format_operand(i.mode, op_val, pc, db, bank_id);
+                            let op_str = format_operand(i.mode, op_val, pc as u16, db, bank_id);
                             (b, i.mnemonic, op_str, 1 + len)
                         }
                         None => (format!("{:02X}", opcode), "???", String::new(), 1),
                     };
 
-                    let annotation = get_annotation(db, bank_id, pc);
-                    let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc, db, bank_id);
+                    let annotation = get_annotation(db, bank_id, pc as u16);
+                    let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc as u16, db, bank_id);
 
                     lines.push(DisassemblyLine {
                         address_label: format!("${:02X}:${:04X}", bank_id, pc),
-                        address: pc,
+                        address: pc as u16,
                         bank: Some(bank_id),
                         bytes,
                         opcode: mnemonic.to_string(),
@@ -394,19 +395,20 @@ pub fn disassemble_bank(
                 }
             }
             RegionInfo::Bytes(range) => {
-                let mut pc = *range.start();
-                while pc <= *range.end() {
+                let mut pc = *range.start() as u32;
+                let end = *range.end() as u32;
+                while pc <= end {
                     let mut count = 0;
                     let mut bytes_str = String::new();
                     let mut hex_bytes = String::new();
                     let start_pc = pc;
 
-                    while pc <= *range.end() && count < 8 {
-                        if count > 0 && has_symbol(db, bank_id, pc) {
+                    while pc <= end && count < 8 {
+                        if count > 0 && has_symbol(db, bank_id, pc as u16) {
                             break;
                         }
 
-                        let offset = (pc.wrapping_sub(base_address)) as usize;
+                        let offset = (pc.wrapping_sub(base_address as u32)) as usize;
                         if offset >= rom_data.len() { break; }
 
                         let val = rom_data[offset];
@@ -421,10 +423,10 @@ pub fn disassemble_bank(
                     }
 
                     if count > 0 {
-                        let annotation = get_annotation(db, bank_id, start_pc);
+                        let annotation = get_annotation(db, bank_id, start_pc as u16);
                         lines.push(DisassemblyLine {
                             address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
-                            address: start_pc,
+                            address: start_pc as u16,
                             bank: Some(bank_id),
                             bytes: hex_bytes,
                             opcode: ".byt".to_string(),
@@ -441,19 +443,20 @@ pub fn disassemble_bank(
                 }
             }
             RegionInfo::Words(range) => {
-                let mut pc = *range.start();
-                while pc <= *range.end() {
+                let mut pc = *range.start() as u32;
+                let end = *range.end() as u32;
+                while pc <= end {
                     let mut count = 0;
                     let mut words_str = String::new();
                     let mut hex_bytes = String::new();
                     let start_pc = pc;
 
-                    while pc <= *range.end() && count < 4 {
-                        if count > 0 && has_symbol(db, bank_id, pc) {
+                    while pc <= end && count < 4 {
+                        if count > 0 && has_symbol(db, bank_id, pc as u16) {
                             break;
                         }
 
-                        let offset = (pc.wrapping_sub(base_address)) as usize;
+                        let offset = (pc.wrapping_sub(base_address as u32)) as usize;
                         if offset + 1 >= rom_data.len() { break; }
 
                         let low = rom_data[offset];
@@ -471,10 +474,10 @@ pub fn disassemble_bank(
                     }
 
                     if count > 0 {
-                        let annotation = get_annotation(db, bank_id, start_pc);
+                        let annotation = get_annotation(db, bank_id, start_pc as u16);
                         lines.push(DisassemblyLine {
                             address_label: format!("${:02X}:${:04X}", bank_id, start_pc),
-                            address: start_pc,
+                            address: start_pc as u16,
                             bank: Some(bank_id),
                             bytes: hex_bytes,
                             opcode: ".word".to_string(),
