@@ -347,8 +347,10 @@ pub fn disassemble_bank(
     let bank_start = base_address as u32;
     let bank_end = bank_start + mapper_size - 1;
 
-    // First Pass: Collect all target addresses in ROM region ($8000-$FFFF)
+    // First Pass: Collect all target addresses in current bank or mapper fixed range
     let mut targets = HashSet::new();
+    let fixed_range = db.mapper_fixed_range.as_ref();
+
     for region in &regions {
         match region {
             RegionInfo::Code(range) => {
@@ -368,7 +370,17 @@ pub fn disassemble_bank(
                         }
                         let (_, target_addr) = resolve_target(Some(instr.mode), op_val, pc as u16, db, bank_id);
                         if let Some(addr) = target_addr {
-                            if addr >= 0x8000 { targets.insert(addr); }
+                            // Target is in current bank
+                            let addr_32 = addr as u32;
+                            if addr_32 >= base_address as u32 && addr_32 < (base_address as u32 + mapper_size) {
+                                targets.insert(addr);
+                            }
+                            // Target is in fixed range
+                            if let Some(fixed) = fixed_range {
+                                if fixed.contains(&addr) {
+                                    targets.insert(addr);
+                                }
+                            }
                         }
                         pc += 1 + len;
                     } else {
@@ -385,7 +397,16 @@ pub fn disassemble_bank(
                     let low = rom_data[offset];
                     let high = rom_data[offset + 1];
                     let val = (high as u16) << 8 | (low as u16);
-                    if val >= 0x8000 { targets.insert(val); }
+                    
+                    let val_32 = val as u32;
+                    if val_32 >= base_address as u32 && val_32 < (base_address as u32 + mapper_size) {
+                        targets.insert(val);
+                    }
+                    if let Some(fixed) = fixed_range {
+                        if fixed.contains(&val) {
+                            targets.insert(val);
+                        }
+                    }
                     pc += 2;
                 }
             }
@@ -754,8 +775,9 @@ fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, 
         }
     }
     
-    // Check for auto-label in ROM region
-    if address >= 0x8000 && targets.contains(&address) {
+    // Check for auto-label in ROM region (current bank targets or fixed range)
+    let in_fixed_range = db.mapper_fixed_range.as_ref().map(|r| r.contains(&address)).unwrap_or(false);
+    if (address >= 0x8000 && targets.contains(&address)) || in_fixed_range {
         return (format!("L{:04X}", address), true);
     }
 

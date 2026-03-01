@@ -258,6 +258,9 @@ async fn rocket() -> _ {
             .unwrap_or("NES Disassembly")
             .to_string();
     }
+    if db.mapper_fixed_range.is_none() {
+        db.mapper_fixed_range = Some(0xC000..=0xFFFF);
+    }
 
     database::save_db(&db_path, &db).expect("Failed to save database");
 

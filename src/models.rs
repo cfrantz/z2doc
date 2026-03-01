@@ -49,6 +49,8 @@ pub struct DisassemblyInfo {
     pub bank: BTreeMap<u8, BankInfo>,
     // Mapper window size: 8 or 16
     pub mapper_window_size: u8,
+    // The CPU address range where the fixed bank is mapped (e.g. 0xC000..=0xFFFF)
+    pub mapper_fixed_range: Option<RangeInclusive<u16>>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
