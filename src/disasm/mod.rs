@@ -342,9 +342,9 @@ pub fn disassemble_bank(
         }
     }
 
-    let mapper_size = db.mapper_window_size as u16 * 1024;
-    let bank_start = base_address;
-    let bank_end = base_address + mapper_size - 1;
+    let mapper_size = db.mapper_window_size as u32 * 1024;
+    let bank_start = base_address as u32;
+    let bank_end = bank_start + mapper_size - 1;
 
     // Fill gaps with Bytes regions
     let mut filled_regions = Vec::new();
@@ -352,20 +352,20 @@ pub fn disassemble_bank(
 
     for region in regions {
         let (r_start, r_end) = match &region {
-            RegionInfo::Code(r) => (*r.start(), *r.end()),
-            RegionInfo::Bytes(r) => (*r.start(), *r.end()),
-            RegionInfo::Words(r) => (*r.start(), *r.end()),
+            RegionInfo::Code(r) => (*r.start() as u32, *r.end() as u32),
+            RegionInfo::Bytes(r) => (*r.start() as u32, *r.end() as u32),
+            RegionInfo::Words(r) => (*r.start() as u32, *r.end() as u32),
         };
 
         if r_start > current_pc {
-            filled_regions.push(RegionInfo::Bytes(current_pc..=r_start - 1));
+            filled_regions.push(RegionInfo::Bytes((current_pc as u16)..=(r_start as u16 - 1)));
         }
         filled_regions.push(region);
-        current_pc = r_end.saturating_add(1);
+        current_pc = r_end + 1;
     }
 
     if current_pc <= bank_end {
-        filled_regions.push(RegionInfo::Bytes(current_pc..=bank_end));
+        filled_regions.push(RegionInfo::Bytes((current_pc as u16)..=(bank_end as u16)));
     }
 
     for region in filled_regions {
