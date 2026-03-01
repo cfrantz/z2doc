@@ -55,9 +55,11 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('disasmApp', () => ({
         metadata: { name: '', title: '', rom_file: '', total_banks: 0, mapper_window_size: 0, banks: {} },
         currentBank: 0,
+        displayedBank: null,
         disassembly: [],
         themes: [],
         currentTheme: 'Dark',
+        isNavigating: false,
 
         // Resizing state
         resizing: null,
@@ -108,16 +110,25 @@ document.addEventListener('alpine:init', () => {
 
             if (bankMatch) {
                 const bankId = bankMatch[1] === 'FF' ? 255 : parseInt(bankMatch[1], 16);
-                if (bankId !== parseInt(this.currentBank)) {
-                    this.currentBank = bankId;
+                this.currentBank = bankId;
+                if (bankId !== this.displayedBank) {
+                    this.isNavigating = true;
                     await this.fetchDisassembly();
                 }
             }
 
             if (addrMatch) {
+                this.isNavigating = true;
                 const addr = parseInt(addrMatch[1], 16);
                 this.$nextTick(() => {
                     this.scrolltoAddress(addr);
+                    setTimeout(() => { this.isNavigating = false; }, 200);
+                });
+            } else {
+                this.$nextTick(() => {
+                    const container = document.getElementById('disasm-container');
+                    if (container) container.scrollTop = 0;
+                    setTimeout(() => { this.isNavigating = false; }, 200);
                 });
             }
         },
@@ -159,9 +170,13 @@ document.addEventListener('alpine:init', () => {
         async fetchDisassembly() {
             const response = await fetch(`/api/disassembly/${this.currentBank}`);
             this.disassembly = await response.json();
+            this.displayedBank = parseInt(this.currentBank);
         },
 
         async changeBank() {
+            const container = document.getElementById('disasm-container');
+            if (container) container.scrollTop = 0;
+
             const bankHex = parseInt(this.currentBank).toString(16).toUpperCase().padStart(2, '0');
             window.location.hash = `bank-${bankHex}`;
         },
@@ -206,7 +221,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         onScroll() {
-            if (this.resizing) return;
+            if (this.resizing || this.isNavigating || this.displayedBank === null) return;
             
             const container = document.getElementById('disasm-container');
             if (!container) return;
@@ -223,7 +238,7 @@ document.addEventListener('alpine:init', () => {
             }
 
             if (topAddr) {
-                const bankHex = parseInt(this.currentBank).toString(16).toUpperCase().padStart(2, '0');
+                const bankHex = this.displayedBank.toString(16).toUpperCase().padStart(2, '0');
                 const addrHex = parseInt(topAddr).toString(16).toUpperCase().padStart(4, '0');
                 const newHash = `#bank-${bankHex}-addr-${addrHex}`;
                 history.replaceState(null, null, newHash);

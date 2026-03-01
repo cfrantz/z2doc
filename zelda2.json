@@ -330,6 +330,8 @@
   },
   "bank": {
     "0": {
+      "title": "Gameplay management",
+      "is_fixed": false,
       "region": [
         {
           "Code": {
@@ -739,7 +741,7 @@
           "block_comment": "Return of Ganon screen Palettes (C bytes)\n3F 00 08\tPPU Address 3F00, transfer 8 bytes\n16 30 0F 0F\n16 30 27 0F\nFF\tEnd Byte\nReturn of Ganon screen Palettes (C bytes)\n3F 00 08\tPPU Address 3F00, transfer 8 bytes\n16 30 0F 0F\n16 30 27 0F\nFF\tEnd Byte"
         },
         "32981": {
-          "symbol": "North_Castle_Chandeliers_sprite_attributes",
+          "symbol": "north_castle_chandeliers_sprites",
           "block_comment": "7F = Left Flame Y Position (in pixels)\n52 = Left Flame Tile Mapping (affects both tiles)\n01 = Left Flame Palette\n58 = X Position, but is hard-coded instead\n8F = Left Chandelier Y Position\n7B = Left Chandelier Tile Mapping (affects both tiles)\n03 = Left Chandelier Palette\n58 = X Position, but is hard-coded instead\n7F = Right Flame Y Position (in pixels)\n52 = Right Flame Tile Mapping (affects both tiles)\n01 = Right Flame Palette\nA0 = X Position, but is hard-coded instead\n8F = Right Chandelier Y Position (in pixels)\n7B = Right Chandelier Tile Mapping (affects both tiles)\n03 = Right Chandelier Palette\nA0 = X Position, but is hard-coded instead\n7F = Left Flame Y Position (in pixels)\n52 = Left Flame Tile Mapping (affects both tiles)\n01 = Left Flame Palette\n58 = X Position, but is hard-coded instead\n8F = Left Chandelier Y Position\n7B = Left Chandelier Tile Mapping (affects both tiles)\n03 = Left Chandelier Palette\n58 = X Position, but is hard-coded instead\n7F = Right Flame Y Position (in pixels)\n52 = Right Flame Tile Mapping (affects both tiles)\n01 = Right Flame Palette\nA0 = X Position, but is hard-coded instead\n8F = Right Chandelier Y Position (in pixels)\n7B = Right Chandelier Tile Mapping (affects both tiles)\n03 = Right Chandelier Palette\nA0 = X Position, but is hard-coded instead"
         },
         "32997": {
@@ -812,6 +814,9 @@
         "33104": {
           "comment": "Set Mapper Parameters at 0xA000"
         },
+        "33114": {
+          "symbol": "L815A"
+        },
         "33116": {
           "comment": "Link's facing direction in OW (04 = down)"
         },
@@ -827,6 +832,7 @@
         "33126": {
           "comment": "Y position in OW (square unit)"
         },
+        "33128": {},
         "33129": {
           "comment": "relative Y offset"
         },
@@ -3486,7 +3492,7 @@
           "comment": "some sort of timer???"
         },
         "38541": {
-          "symbol": "Hub_Update_Routine",
+          "symbol": "bank0_Hub_Update_Routine",
           "comment": "Current Experience (low byte)"
         },
         "38545": {
@@ -5065,7 +5071,7 @@
           "comment": "0x3faa $BF9A 4C 00 C0"
         },
         "49053": {
-          "symbol": "Set_Mapper_Parameters_at_0x8000",
+          "symbol": "set_mmc1_config_register",
           "comment": "0x3fad $BF9D 8D 00 80",
           "block_comment": "----------------------------------------------------------------------------\nbank0_Set_Mapper_Parameters_at_0x8000:"
         },
@@ -5187,6 +5193,8 @@
       "mapped_at": 32768
     },
     "1": {
+      "title": "West Hyrule",
+      "is_fixed": false,
       "region": [
         {
           "Words": {
@@ -8786,6 +8794,8 @@
       "mapped_at": 32768
     },
     "2": {
+      "title": "East Hyrule",
+      "is_fixed": false,
       "region": [
         {
           "Words": {
@@ -11853,6 +11863,8 @@
       "mapped_at": 32768
     },
     "3": {
+      "title": "Towns",
+      "is_fixed": false,
       "region": [
         {
           "Words": {
@@ -14837,6 +14849,8 @@
       "mapped_at": 32768
     },
     "4": {
+      "title": "Palaces",
+      "is_fixed": false,
       "region": [
         {
           "Words": {
@@ -20424,6 +20438,8 @@
       "mapped_at": 32768
     },
     "5": {
+      "title": "Title Screen & Great Palace",
+      "is_fixed": false,
       "region": [
         {
           "Code": {
@@ -26151,6 +26167,8 @@
       "mapped_at": 32768
     },
     "6": {
+      "title": "Music",
+      "is_fixed": false,
       "region": [
         {
           "Code": {
@@ -28188,6 +28206,8 @@
       "mapped_at": 32768
     },
     "7": {
+      "title": "Global Bank",
+      "is_fixed": true,
       "region": [
         {
           "Code": {
@@ -35272,5 +35292,9 @@
       "mapped_at": 49152
     }
   },
-  "mapper_window_size": 16
+  "mapper_window_size": 16,
+  "mapper_fixed_range": {
+    "start": 49152,
+    "end": 65535
+  }
 }
