@@ -356,7 +356,7 @@ pub fn disassemble_bank(
                     let instr = &OPCODES[opcode as usize];
                     
                     let mut op_val: u32 = 0;
-                    let (bytes, mnemonic, operand, length) = match instr {
+                    let (bytes, prefix, main, suffix, is_sym, mnemonic, length) = match instr {
                         Some(i) => {
                             let len = i.mode.operand_length() as u32;
                             let mut b = format!("{:02X}", opcode);
@@ -368,10 +368,10 @@ pub fn disassemble_bank(
                                 }
                             }
                             
-                            let op_str = format_operand(i.mode, op_val, pc as u16, db, bank_id);
-                            (b, i.mnemonic, op_str, 1 + len)
+                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id);
+                            (b, p, m, s, sym, i.mnemonic, 1 + len)
                         }
-                        None => (format!("{:02X}", opcode), "???", String::new(), 1),
+                        None => (format!("{:02X}", opcode), String::new(), String::new(), String::new(), false, "???", 1),
                     };
 
                     let annotation = get_annotation(db, bank_id, pc as u16);
@@ -383,7 +383,10 @@ pub fn disassemble_bank(
                         bank: Some(bank_id),
                         bytes,
                         opcode: mnemonic.to_string(),
-                        operand,
+                        operand_prefix: prefix,
+                        operand_main: main,
+                        operand_suffix: suffix,
+                        operand_is_symbol: is_sym,
                         symbol: annotation.symbol,
                         comment: annotation.comment,
                         block_comment: annotation.block_comment,
@@ -430,7 +433,10 @@ pub fn disassemble_bank(
                             bank: Some(bank_id),
                             bytes: hex_bytes,
                             opcode: ".byt".to_string(),
-                            operand: bytes_str,
+                            operand_prefix: String::new(),
+                            operand_main: bytes_str,
+                            operand_suffix: String::new(),
+                            operand_is_symbol: false,
                             symbol: annotation.symbol,
                             comment: annotation.comment,
                             block_comment: annotation.block_comment,
@@ -481,7 +487,10 @@ pub fn disassemble_bank(
                             bank: Some(bank_id),
                             bytes: hex_bytes,
                             opcode: ".word".to_string(),
-                            operand: words_str,
+                            operand_prefix: String::new(),
+                            operand_main: words_str,
+                            operand_suffix: String::new(),
+                            operand_is_symbol: false,
                             symbol: annotation.symbol,
                             comment: annotation.comment,
                             block_comment: annotation.block_comment,
@@ -566,45 +575,70 @@ fn get_annotation(db: &DisassemblyInfo, bank_id: u8, address: u16) -> Annotation
     result
 }
 
-fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8) -> String {
+fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8) -> (String, String, String, bool) {
     match mode {
-        AddressingMode::Implied => String::new(),
-        AddressingMode::Accumulator => "A".to_string(),
-        AddressingMode::Immediate => format!("#${:02X}", value),
-        AddressingMode::ZeroPage => resolve_symbol(value as u16, db, bank_id, true),
-        AddressingMode::ZeroPageX => format!("{},X", resolve_symbol(value as u16, db, bank_id, true)),
-        AddressingMode::ZeroPageY => format!("{},Y", resolve_symbol(value as u16, db, bank_id, true)),
+        AddressingMode::Implied => (String::new(), String::new(), String::new(), false),
+        AddressingMode::Accumulator => (String::new(), "A".to_string(), String::new(), false),
+        AddressingMode::Immediate => ( "#".to_string(), format!("${:02X}", value), String::new(), false),
+        AddressingMode::ZeroPage => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            (String::new(), m, String::new(), sym)
+        }
+        AddressingMode::ZeroPageX => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            (String::new(), m, ",X".to_string(), sym)
+        }
+        AddressingMode::ZeroPageY => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
+            (String::new(), m, ",Y".to_string(), sym)
+        }
         AddressingMode::Relative => {
             let offset = value as i8;
             let target = pc.wrapping_add(2).wrapping_add(offset as u16);
-            resolve_symbol(target, db, bank_id, false)
+            let (m, sym) = resolve_symbol(target, db, bank_id, false);
+            (String::new(), m, String::new(), sym)
         }
-        AddressingMode::Absolute => resolve_symbol(value as u16, db, bank_id, false),
-        AddressingMode::AbsoluteX => format!("{},X", resolve_symbol(value as u16, db, bank_id, false)),
-        AddressingMode::AbsoluteY => format!("{},Y", resolve_symbol(value as u16, db, bank_id, false)),
-        AddressingMode::Indirect => format!("(${:04X})", value),
-        AddressingMode::IndexedIndirect => format!("(${:02X},X)", value),
-        AddressingMode::IndirectIndexed => format!("(${:02X}),Y", value),
+        AddressingMode::Absolute => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            (String::new(), m, String::new(), sym)
+        }
+        AddressingMode::AbsoluteX => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            (String::new(), m, ",X".to_string(), sym)
+        }
+        AddressingMode::AbsoluteY => {
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false);
+            (String::new(), m, ",Y".to_string(), sym)
+        }
+        AddressingMode::Indirect => {
+            ( "(".to_string(), format!("${:04X}", value), ")".to_string(), false)
+        }
+        AddressingMode::IndexedIndirect => {
+            ( "(".to_string(), format!("${:02X}", value), ",X)".to_string(), false)
+        }
+        AddressingMode::IndirectIndexed => {
+            ( "(".to_string(), format!("${:02X}", value), "),Y".to_string(), false)
+        }
     }
 }
 
-fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool) -> String {
+fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool) -> (String, bool) {
     if let Some(bank) = db.bank.get(&bank_id) {
         if let Some(anno) = bank.address.get(&address) {
             if let Some(ref sym) = anno.symbol {
-                return sym.clone();
+                return (sym.clone(), true);
             }
         }
     }
     if let Some(anno) = db.global.get(&address) {
         if let Some(ref sym) = anno.symbol {
-            return sym.clone();
+            return (sym.clone(), true);
         }
     }
     
     if is_zp {
-        format!("${:02X}", address)
+        (format!("${:02X}", address), false)
     } else {
-        format!("${:04X}", address)
+        (format!("${:04X}", address), false)
     }
 }

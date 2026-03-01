@@ -141,7 +141,8 @@ async fn get_theme_css(state: &State<Arc<AppState>>) -> (ContentType, String) {
          .operand {{ color: {}; }}\n\
          .comment {{ color: {}; }}\n\
          .symbol {{ color: {}; }}\n\
-         a {{ color: {}; text-decoration: none; }}\n\
+         a {{ color: inherit; text-decoration: none; }}\n\
+         a.symbol {{ color: {}; }}\n\
          a:hover {{ text-decoration: underline; }}\n",
         theme.background, theme.instruction,
         theme.address, theme.hex, theme.instruction, theme.opcode,
