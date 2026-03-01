@@ -64,6 +64,7 @@
                                 :contenteditable="editing"
                                 @click="if(!editing) startEdit()"
                                 @blur="stopEdit(line, 'block_comment')"
+                                @keydown.enter.ctrl.prevent="$el.blur()"
                                 x-text="line.block_comment.split('\n').map(l => '; ' + l).join('\n')">
                             </div>
                             <span class="edit-icon">✎</span>
@@ -78,6 +79,7 @@
                                 :contenteditable="editing"
                                 @click="if(!editing) startEdit()"
                                 @blur="stopEdit(line, 'symbol')"
+                                @keydown.enter.prevent="$el.blur()"
                                 x-text="line.symbol + ':'">
                             </div>
                             <span class="edit-icon">✎</span>
@@ -95,6 +97,7 @@
                             :contenteditable="editing"
                             @click="if(!editing) startEdit()"
                             @blur="stopEdit(line, 'comment')"
+                            @keydown.enter.prevent="$el.blur()"
                             x-text="line.comment ? '; ' + line.comment : ''">
                         </div>
                         <span class="edit-icon">✎</span>
