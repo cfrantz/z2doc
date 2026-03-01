@@ -68,18 +68,7 @@
                     <td class="address" x-text="line.address_label"></td>
                     <td class="hex" x-text="line.bytes"></td>
                     <td class="opcode" x-text="line.opcode"></td>
-                    <td class="operand">
-                        <span x-text="line.operand_prefix"></span>
-                        <template x-if="line.target_address">
-                            <a href="#" @click.prevent="navigate(line.target_bank, line.target_address)" 
-                               :class="line.operand_is_symbol ? 'symbol' : ''"
-                               x-text="line.operand_main"></a>
-                        </template>
-                        <template x-if="!line.target_address">
-                            <span :class="line.operand_is_symbol ? 'symbol' : ''" x-text="line.operand_main"></span>
-                        </template>
-                        <span x-text="line.operand_suffix"></span>
-                    </td>
+                    <td class="operand"><span x-text="line.operand_prefix"></span><template x-if="line.target_address"><a href="#" @click.prevent="navigate(line.target_bank, line.target_address)" :class="line.operand_is_symbol ? 'symbol' : ''" x-text="line.operand_main"></a></template><template x-if="!line.target_address"><span :class="line.operand_is_symbol ? 'symbol' : ''" x-text="line.operand_main"></span></template><span x-text="line.operand_suffix"></span></td>
                     <td class="comment" contenteditable
                         @blur="updateAnnotation(line, 'comment', $event.target.innerText)"
                         x-text="line.comment || ''"></td>

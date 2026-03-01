@@ -579,7 +579,7 @@ fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInf
     match mode {
         AddressingMode::Implied => (String::new(), String::new(), String::new(), false),
         AddressingMode::Accumulator => (String::new(), "A".to_string(), String::new(), false),
-        AddressingMode::Immediate => ( "#".to_string(), format!("${:02X}", value), String::new(), false),
+        AddressingMode::Immediate => ("#".to_string(), format!("${:02X}", value), String::new(), false),
         AddressingMode::ZeroPage => {
             let (m, sym) = resolve_symbol(value as u16, db, bank_id, true);
             (String::new(), m, String::new(), sym)
