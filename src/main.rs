@@ -44,6 +44,8 @@ pub struct AppState {
 
 #[derive(Serialize)]
 pub struct Metadata {
+    pub name: String,
+    pub title: String,
     pub rom_file: String,
     pub total_banks: u8,
     pub mapper_window_size: u8,
@@ -89,6 +91,8 @@ async fn get_metadata(state: &State<Arc<AppState>>) -> Json<Metadata> {
     };
 
     Json(Metadata {
+        name: db.name.clone(),
+        title: db.title.clone(),
         rom_file: rom_name,
         total_banks,
         mapper_window_size: db.mapper_window_size,
@@ -189,7 +193,7 @@ async fn rocket() -> _ {
 
     let rom_data = fs::read(&rom_path).expect("Failed to read ROM file");
     
-    let db = if db_path.exists() {
+    let mut db = if db_path.exists() {
         database::load_db(&db_path).expect("Failed to load database")
     } else {
         let template_path = Path::new("templates/default_db.json");
@@ -203,9 +207,25 @@ async fn rocket() -> _ {
             });
         }
         
-        database::save_db(&db_path, &default_db).expect("Failed to save initial database");
         default_db
     };
+
+    // Initialize defaults for name and title if missing
+    if db.name.is_empty() {
+        db.name = rom_path.file_stem()
+            .and_then(|s| s.to_str())
+            .unwrap_or("project")
+            .to_string();
+    }
+    if db.title.is_empty() {
+        db.title = rom_path.file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("NES Disassembly")
+            .to_string();
+    }
+
+    // Save if we updated defaults or it's a new file
+    database::save_db(&db_path, &db).expect("Failed to save database");
 
     let mut themes = BTreeMap::new();
     themes.insert("Light".to_string(), ThemeConfig {

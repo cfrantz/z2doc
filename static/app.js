@@ -21,7 +21,7 @@ document.addEventListener('alpine:init', () => {
     }));
 
     Alpine.data('disasmApp', () => ({
-        metadata: { rom_file: '', total_banks: 0, mapper_window_size: 0 },
+        metadata: { name: '', title: '', rom_file: '', total_banks: 0, mapper_window_size: 0 },
         currentBank: 0,
         disassembly: [],
         themes: [],
@@ -41,6 +41,13 @@ document.addEventListener('alpine:init', () => {
         async init() {
             await this.fetchMetadata();
             await this.fetchThemes();
+            
+            // Load saved column widths
+            const saved = localStorage.getItem(this.metadata.name + '.colWidths');
+            if (saved) {
+                this.colWidths = JSON.parse(saved);
+            }
+
             await this.fetchDisassembly();
         },
 
@@ -136,6 +143,9 @@ document.addEventListener('alpine:init', () => {
         },
 
         stopResizing() {
+            if (this.resizing) {
+                localStorage.setItem(this.metadata.name + '.colWidths', JSON.stringify(this.colWidths));
+            }
             this.resizing = null;
         },
 

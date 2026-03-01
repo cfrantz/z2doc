@@ -33,6 +33,10 @@ pub struct BankInfo {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct DisassemblyInfo {
+    // Unique project name for persistence keys (e.g. "zelda2")
+    pub name: String,
+    // Display title for the UI (e.g. "Zelda II: The Adventure of Link")
+    pub title: String,
     // Symbol and comment information for RAM variables and global peripherals
     pub global: SectionInfo,
     // Information for ROM code and data. The u8 key is the bank index

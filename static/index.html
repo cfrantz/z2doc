@@ -35,6 +35,18 @@
             display: grid;
             grid-template-columns: var(--col-addr, 100px) var(--col-hex, 200px) var(--col-op, 60px) var(--col-operand, 150px) 1fr;
             width: 100%;
+            background: #333;
+            color: #eee;
+        }
+
+        .grid-header .grid-cell {
+            border: 1px solid #555;
+            border-right: none;
+            padding: 4px 8px;
+        }
+
+        .grid-header .grid-cell:last-child {
+            border-right: 1px solid #555;
         }
 
         .grid-row { display: contents; }
@@ -43,10 +55,15 @@
         
         /* Resizer Handle */
         .resizer {
-            position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+            position: absolute; right: 0; top: 0; bottom: 0; width: 6px;
             cursor: col-resize; z-index: 20;
+            border-right: 2px solid rgba(74, 144, 226, 0);
+            transition: border-color 0.2s;
         }
-        .resizer:hover { background: rgba(74, 144, 226, 0.5); }
+        .resizer:hover { 
+            border-right-color: rgba(74, 144, 226, 0.8);
+            background: rgba(74, 144, 226, 0.1);
+        }
         .resizing { cursor: col-resize; user-select: none; }
 
         .address { user-select: none; }
@@ -76,7 +93,7 @@
       :class="resizing ? 'resizing' : ''">
     
     <div class="header">
-        <h1 style="margin-top: 0;">z2doc: <span x-text="metadata.rom_file"></span></h1>
+        <h1 style="margin-top: 0;">z2doc: <span x-text="metadata.title"></span></h1>
         <div style="display: flex; gap: 20px; align-items: center;">
             <div>
                 Bank:
