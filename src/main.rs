@@ -202,7 +202,7 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
     let bank_id = req.bank_id;
     let address = req.address;
 
-    let entry = if let Some(id) = bank_id {
+    let section = if let Some(id) = bank_id {
         let bank = db.bank.entry(id).or_insert_with(|| crate::models::BankInfo {
             title: None,
             is_fixed: false,
@@ -210,10 +210,12 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
             region: Vec::new(),
             address: std::collections::BTreeMap::new(),
         });
-        bank.address.entry(address).or_default()
+        &mut bank.address
     } else {
-        db.global.entry(address).or_default()
+        &mut db.global
     };
+
+    let entry = section.entry(address).or_default();
 
     if let Some(ref sym) = req.symbol {
         entry.symbol = if sym.is_empty() { None } else { Some(sym.clone()) };
@@ -223,6 +225,11 @@ async fn update_annotation(req: Json<AnnotationRequest>, state: &State<Arc<AppSt
     }
     if let Some(ref bc) = req.block_comment {
         entry.block_comment = if bc.is_empty() { None } else { Some(bc.clone()) };
+    }
+
+    // Cleanup: Remove entry if all fields are None
+    if entry.is_empty() {
+        section.remove(&address);
     }
 
     database::save_db(&state.db_path, &db).map_err(|e| e.to_string())?;

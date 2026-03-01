@@ -842,6 +842,7 @@
         "33136": {
           "comment": "Y position in OW (square unit)"
         },
+        "33144": {},
         "33150": {
           "comment": "X position on map (Link)"
         },
@@ -33221,6 +33222,7 @@
         "57144": {
           "comment": "are used to draw the Overworld tiles? offset in the Name Table(s) for Overworld redrawing."
         },
+        "57157": {},
         "57162": {
           "symbol": "bank7_Set_tile_and_go_down_1_row_in_2x2_tiles_units"
         },

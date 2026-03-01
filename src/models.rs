@@ -19,6 +19,12 @@ pub struct AnnotationInfo {
     pub block_comment: Option<String>,
 }
 
+impl AnnotationInfo {
+    pub fn is_empty(&self) -> bool {
+        self.symbol.is_none() && self.comment.is_none() && self.block_comment.is_none()
+    }
+}
+
 pub type SectionInfo = BTreeMap<u16, AnnotationInfo>;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
