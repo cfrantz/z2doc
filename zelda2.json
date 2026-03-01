@@ -1,0 +1,7831 @@
+{
+  "global": {
+    "18": {
+      "symbol": "frame",
+      "comment": "Global frame counter"
+    },
+    "41": {
+      "symbol": "link_ypos",
+      "comment": "Link's Y position",
+      "block_comment": "----------------------------------------------------------------------\nY positions for Link, enemies and projectiles\n----------------------------------------------------------------------"
+    },
+    "42": {
+      "symbol": "enemy_ypos",
+      "comment": "Enemy Y positions (array of 6)"
+    },
+    "48": {
+      "symbol": "projectile_ypos",
+      "comment": "Projectile Y positions (array of 6)"
+    },
+    "54": {
+      "symbol": "swordbeam_ypos"
+    },
+    "59": {
+      "symbol": "link_page",
+      "comment": "Link's page position",
+      "block_comment": "----------------------------------------------------------------------\nPage positions for Link, enemies and projectiles (e.g. X-pos highbyte)\n----------------------------------------------------------------------"
+    },
+    "60": {
+      "symbol": "enemy_page",
+      "comment": "Enemy page positions (array of 6)"
+    },
+    "66": {
+      "symbol": "projectile_page",
+      "comment": "Projectile page positions (array of 6)"
+    },
+    "77": {
+      "symbol": "link_xpos",
+      "comment": "Link's X position",
+      "block_comment": "----------------------------------------------------------------------\nX positions for Link, enemies and projectiles\n----------------------------------------------------------------------"
+    },
+    "78": {
+      "symbol": "enemy_xpos",
+      "comment": "Enemy X positions (array of 6)"
+    },
+    "84": {
+      "symbol": "projectile_xpos",
+      "comment": "Projectile X positions (array of 6)"
+    },
+    "95": {
+      "symbol": "sideview_exit_side"
+    },
+    "96": {
+      "symbol": "enemy_facing_dir"
+    },
+    "102": {
+      "symbol": "projectile_facing_dir"
+    },
+    "112": {
+      "symbol": "link_xvel"
+    },
+    "113": {
+      "symbol": "enemy_xvel"
+    },
+    "119": {
+      "symbol": "projectile_velocity"
+    },
+    "134": {
+      "symbol": "overworld_spawn_type"
+    },
+    "141": {
+      "symbol": "projectile_flag"
+    },
+    "159": {
+      "symbol": "link_facing_dir"
+    },
+    "161": {
+      "symbol": "enemy_id"
+    },
+    "167": {
+      "symbol": "wall_hit_detect_maybe"
+    },
+    "175": {
+      "symbol": "enemy_ai"
+    },
+    "182": {
+      "symbol": "enemy_exist"
+    },
+    "188": {
+      "symbol": "enemy_ram_idx"
+    },
+    "194": {
+      "symbol": "enemy_hp"
+    },
+    "209": {
+      "symbol": "sidview_width_maybe"
+    },
+    "233": {
+      "symbol": "sound_fx_dmc"
+    },
+    "234": {
+      "symbol": "sound_pause"
+    },
+    "235": {
+      "symbol": "sound_song"
+    },
+    "236": {
+      "symbol": "sound_fx1"
+    },
+    "237": {
+      "symbol": "sound_fx2"
+    },
+    "238": {
+      "symbol": "sound_fx3"
+    },
+    "239": {
+      "symbol": "sound_fx4"
+    },
+    "245": {
+      "symbol": "controller1_buttons"
+    },
+    "246": {
+      "symbol": "controller2_buttons"
+    },
+    "247": {
+      "symbol": "controller1_held"
+    },
+    "248": {
+      "symbol": "controller2_held"
+    },
+    "770": {
+      "symbol": "ppu_macro0_ram"
+    },
+    "867": {
+      "symbol": "ppu_macro1_ram"
+    },
+    "1038": {
+      "symbol": "enemy_stun_timer"
+    },
+    "1166": {
+      "symbol": "enemy_item_id"
+    },
+    "1316": {
+      "symbol": "menu_state"
+    },
+    "1377": {
+      "symbol": "area"
+    },
+    "1387": {
+      "symbol": "town_code"
+    },
+    "1388": {
+      "symbol": "palace_code"
+    },
+    "1792": {
+      "symbol": "num_lives"
+    },
+    "1798": {
+      "symbol": "overworld"
+    },
+    "1799": {
+      "symbol": "world"
+    },
+    "1804": {
+      "symbol": "link_magic_refill"
+    },
+    "1805": {
+      "symbol": "link_life_refill"
+    },
+    "1846": {
+      "symbol": "game_mode"
+    },
+    "1877": {
+      "symbol": "link_xp_add_hi"
+    },
+    "1878": {
+      "symbol": "link_xp_add_lo"
+    },
+    "1897": {
+      "symbol": "bank"
+    },
+    "1900": {
+      "symbol": "game_routine"
+    },
+    "1904": {
+      "symbol": "next_xp_hi"
+    },
+    "1905": {
+      "symbol": "next_xp_lo"
+    },
+    "1907": {
+      "symbol": "link_mp"
+    },
+    "1908": {
+      "symbol": "link_hp"
+    },
+    "1909": {
+      "symbol": "link_xp_hi"
+    },
+    "1910": {
+      "symbol": "link_xp_lo"
+    },
+    "1911": {
+      "symbol": "link_level_atk"
+    },
+    "1912": {
+      "symbol": "link_level_magic"
+    },
+    "1913": {
+      "symbol": "link_level_life"
+    },
+    "1915": {
+      "symbol": "link_has_shield"
+    },
+    "1916": {
+      "symbol": "link_has_jump"
+    },
+    "1917": {
+      "symbol": "link_has_life"
+    },
+    "1918": {
+      "symbol": "link_has_fairy"
+    },
+    "1919": {
+      "symbol": "link_has_fire"
+    },
+    "1920": {
+      "symbol": "link_has_reflect"
+    },
+    "1921": {
+      "symbol": "link_has_spell"
+    },
+    "1922": {
+      "symbol": "link_has_thunder"
+    },
+    "1923": {
+      "symbol": "link_magic_containers"
+    },
+    "1924": {
+      "symbol": "link_heart_containers"
+    },
+    "1925": {
+      "symbol": "link_has_candle"
+    },
+    "1926": {
+      "symbol": "link_has_glove"
+    },
+    "1927": {
+      "symbol": "link_has_raft"
+    },
+    "1928": {
+      "symbol": "link_has_boots"
+    },
+    "1929": {
+      "symbol": "link_has_flute"
+    },
+    "1930": {
+      "symbol": "link_has_cross"
+    },
+    "1931": {
+      "symbol": "link_has_hammer"
+    },
+    "1932": {
+      "symbol": "link_has_magic_key"
+    },
+    "1939": {
+      "symbol": "link_num_keys"
+    },
+    "1940": {
+      "symbol": "link_num_crystals"
+    },
+    "1951": {
+      "symbol": "link_num_deaths"
+    },
+    "1952": {
+      "symbol": "link_name"
+    },
+    "8192": {
+      "symbol": "PPUCTRL"
+    },
+    "8193": {
+      "symbol": "PPUMASK"
+    },
+    "8194": {
+      "symbol": "PPUSTATUS"
+    },
+    "8195": {
+      "symbol": "OAMADDR"
+    },
+    "8196": {
+      "symbol": "OAMDATA"
+    },
+    "8197": {
+      "symbol": "PPUSCROLL"
+    },
+    "8198": {
+      "symbol": "PPUADDR"
+    },
+    "8199": {
+      "symbol": "PPUDATA"
+    },
+    "16404": {
+      "symbol": "OAMDMA"
+    },
+    "32768": {
+      "symbol": "MMC1_CONFIG"
+    },
+    "39415": {
+      "symbol": "bank1_goriya_something0_fixme"
+    },
+    "39790": {
+      "symbol": "bank2_lizafos_something0_fixme"
+    },
+    "40037": {
+      "symbol": "bank4_ik_something0_fixme"
+    },
+    "40044": {
+      "symbol": "bank4_ik_something1_fixme"
+    },
+    "40048": {
+      "symbol": "bank4_ik_something2_fixme"
+    },
+    "40960": {
+      "symbol": "MMC1_CHR"
+    },
+    "57344": {
+      "symbol": "MMC1_PRG"
+    }
+  },
+  "bank": {
+    "0": {
+      "region": [
+        {
+          "Code": {
+            "start": 32997,
+            "end": 33196
+          }
+        },
+        {
+          "Code": {
+            "start": 33201,
+            "end": 33284
+          }
+        },
+        {
+          "Code": {
+            "start": 33287,
+            "end": 33320
+          }
+        },
+        {
+          "Code": {
+            "start": 33412,
+            "end": 33525
+          }
+        },
+        {
+          "Code": {
+            "start": 33527,
+            "end": 33964
+          }
+        },
+        {
+          "Code": {
+            "start": 33983,
+            "end": 34087
+          }
+        },
+        {
+          "Code": {
+            "start": 34136,
+            "end": 34722
+          }
+        },
+        {
+          "Code": {
+            "start": 34803,
+            "end": 35000
+          }
+        },
+        {
+          "Words": {
+            "start": 35001,
+            "end": 35014
+          }
+        },
+        {
+          "Code": {
+            "start": 35015,
+            "end": 35025
+          }
+        },
+        {
+          "Words": {
+            "start": 35026,
+            "end": 35047
+          }
+        },
+        {
+          "Code": {
+            "start": 35048,
+            "end": 35351
+          }
+        },
+        {
+          "Code": {
+            "start": 35354,
+            "end": 35627
+          }
+        },
+        {
+          "Code": {
+            "start": 35630,
+            "end": 35965
+          }
+        },
+        {
+          "Code": {
+            "start": 35971,
+            "end": 36060
+          }
+        },
+        {
+          "Code": {
+            "start": 36065,
+            "end": 36218
+          }
+        },
+        {
+          "Code": {
+            "start": 36291,
+            "end": 36423
+          }
+        },
+        {
+          "Words": {
+            "start": 36424,
+            "end": 36439
+          }
+        },
+        {
+          "Code": {
+            "start": 36440,
+            "end": 36460
+          }
+        },
+        {
+          "Code": {
+            "start": 36463,
+            "end": 36507
+          }
+        },
+        {
+          "Words": {
+            "start": 36562,
+            "end": 36567
+          }
+        },
+        {
+          "Code": {
+            "start": 36568,
+            "end": 36729
+          }
+        },
+        {
+          "Code": {
+            "start": 36740,
+            "end": 36777
+          }
+        },
+        {
+          "Code": {
+            "start": 36791,
+            "end": 36926
+          }
+        },
+        {
+          "Words": {
+            "start": 36927,
+            "end": 36932
+          }
+        },
+        {
+          "Code": {
+            "start": 36935,
+            "end": 37092
+          }
+        },
+        {
+          "Code": {
+            "start": 37098,
+            "end": 37197
+          }
+        },
+        {
+          "Code": {
+            "start": 37200,
+            "end": 37361
+          }
+        },
+        {
+          "Code": {
+            "start": 37364,
+            "end": 37488
+          }
+        },
+        {
+          "Code": {
+            "start": 37490,
+            "end": 37544
+          }
+        },
+        {
+          "Code": {
+            "start": 37567,
+            "end": 37808
+          }
+        },
+        {
+          "Code": {
+            "start": 37820,
+            "end": 37999
+          }
+        },
+        {
+          "Code": {
+            "start": 38019,
+            "end": 38082
+          }
+        },
+        {
+          "Code": {
+            "start": 38085,
+            "end": 38445
+          }
+        },
+        {
+          "Code": {
+            "start": 38541,
+            "end": 38840
+          }
+        },
+        {
+          "Code": {
+            "start": 38843,
+            "end": 38932
+          }
+        },
+        {
+          "Code": {
+            "start": 38939,
+            "end": 38980
+          }
+        },
+        {
+          "Code": {
+            "start": 38983,
+            "end": 39453
+          }
+        },
+        {
+          "Words": {
+            "start": 39454,
+            "end": 39471
+          }
+        },
+        {
+          "Code": {
+            "start": 39472,
+            "end": 39583
+          }
+        },
+        {
+          "Code": {
+            "start": 39592,
+            "end": 39605
+          }
+        },
+        {
+          "Code": {
+            "start": 39608,
+            "end": 39769
+          }
+        },
+        {
+          "Words": {
+            "start": 39770,
+            "end": 39849
+          }
+        },
+        {
+          "Words": {
+            "start": 40270,
+            "end": 40275
+          }
+        },
+        {
+          "Code": {
+            "start": 40276,
+            "end": 40314
+          }
+        },
+        {
+          "Words": {
+            "start": 40315,
+            "end": 40336
+          }
+        },
+        {
+          "Code": {
+            "start": 40337,
+            "end": 40419
+          }
+        },
+        {
+          "Words": {
+            "start": 40420,
+            "end": 40437
+          }
+        },
+        {
+          "Code": {
+            "start": 40438,
+            "end": 40478
+          }
+        },
+        {
+          "Words": {
+            "start": 40486,
+            "end": 40497
+          }
+        },
+        {
+          "Code": {
+            "start": 40570,
+            "end": 40898
+          }
+        },
+        {
+          "Code": {
+            "start": 40910,
+            "end": 41106
+          }
+        },
+        {
+          "Code": {
+            "start": 41113,
+            "end": 41279
+          }
+        },
+        {
+          "Code": {
+            "start": 41288,
+            "end": 41380
+          }
+        },
+        {
+          "Code": {
+            "start": 41436,
+            "end": 42539
+          }
+        },
+        {
+          "Code": {
+            "start": 42547,
+            "end": 42562
+          }
+        },
+        {
+          "Code": {
+            "start": 42567,
+            "end": 42631
+          }
+        },
+        {
+          "Code": {
+            "start": 42635,
+            "end": 42681
+          }
+        },
+        {
+          "Code": {
+            "start": 42706,
+            "end": 42912
+          }
+        },
+        {
+          "Code": {
+            "start": 42923,
+            "end": 43055
+          }
+        },
+        {
+          "Words": {
+            "start": 43056,
+            "end": 43061
+          }
+        },
+        {
+          "Code": {
+            "start": 43098,
+            "end": 43109
+          }
+        },
+        {
+          "Code": {
+            "start": 43113,
+            "end": 43165
+          }
+        },
+        {
+          "Code": {
+            "start": 43528,
+            "end": 43583
+          }
+        },
+        {
+          "Code": {
+            "start": 49053,
+            "end": 49092
+          }
+        }
+      ],
+      "address": {
+        "32997": {
+          "symbol": "Chandeliers_in_North_Castle"
+        },
+        "33088": {
+          "symbol": "unknown1"
+        },
+        "33097": {
+          "symbol": "Initialization_stuff"
+        },
+        "33201": {
+          "symbol": "unknown2"
+        },
+        "33285": {
+          "symbol": "unknown3"
+        },
+        "33287": {
+          "symbol": "unknown4"
+        },
+        "33321": {
+          "symbol": "tables_overworld_demons"
+        },
+        "33412": {
+          "symbol": "overworld1"
+        },
+        "33965": {
+          "symbol": "Table_for_Hammer_tile_XY_offset"
+        },
+        "33983": {
+          "symbol": "overworld2"
+        },
+        "34034": {
+          "symbol": "A_Button_in_Overworld_Hammer"
+        },
+        "34066": {
+          "symbol": "B_Button_in_Overworld_Flute"
+        },
+        "34092": {
+          "symbol": "unknown5"
+        },
+        "34136": {
+          "symbol": "overworld3"
+        },
+        "34173": {
+          "symbol": "Check_if_Link_stepped_on_a_Key_Area"
+        },
+        "34575": {
+          "symbol": "Blocked_by_Tile_or_Not_Routine"
+        },
+        "34787": {
+          "symbol": "Overworld_Palette_Codes_0_3"
+        },
+        "34803": {
+          "symbol": "overworld4"
+        },
+        "35001": {
+          "symbol": "unknown_pointer_table1"
+        },
+        "35015": {
+          "symbol": "unknown6"
+        },
+        "35026": {
+          "symbol": "unknown_pointer_table2"
+        },
+        "35048": {
+          "symbol": "Define_Overworld_Boundaries_Mountain_or_Water"
+        },
+        "35144": {
+          "symbol": "Overworld_Redrawing_Horizontal_Movement"
+        },
+        "35352": {
+          "symbol": "unknown7"
+        },
+        "35354": {
+          "symbol": "overworld6"
+        },
+        "35628": {
+          "symbol": "unknown8"
+        },
+        "35630": {
+          "symbol": "overworld7"
+        },
+        "35971": {
+          "symbol": "Overworld_Redrawing_Vertical_Movement_and_out_of_Side_View"
+        },
+        "36061": {
+          "symbol": "Table_for_Sprite0"
+        },
+        "36065": {
+          "symbol": "Side_View_Initialization_when_entering_a_Key_Area"
+        },
+        "36283": {
+          "symbol": "Table_for_Spell_effects"
+        },
+        "36291": {
+          "symbol": "Spell_Casting_Routine"
+        },
+        "36424": {
+          "symbol": "Pointer_Table_for_spells_routines"
+        },
+        "36440": {
+          "symbol": "Jump_Spell"
+        },
+        "36467": {
+          "symbol": "Spell_Spell"
+        },
+        "36493": {
+          "symbol": "Shield_Spell"
+        },
+        "36502": {
+          "symbol": "Reflect_Spell"
+        },
+        "36562": {
+          "symbol": "Pointer_table_for_Big_Door_Tile_Mappings"
+        },
+        "36730": {
+          "symbol": "unknown9"
+        },
+        "36740": {
+          "symbol": "unknown10"
+        },
+        "36799": {
+          "symbol": "unknown12"
+        },
+        "36927": {
+          "symbol": "pointer_table_unknown13"
+        },
+        "36933": {
+          "symbol": "unknown13"
+        },
+        "36935": {
+          "symbol": "Related_to_Side_View_initialization"
+        },
+        "37098": {
+          "symbol": "Set_Music_to_A"
+        },
+        "37114": {
+          "symbol": "Place_Locked_Door"
+        },
+        "37198": {
+          "symbol": "Table_for_Elevator_Positions_when_changing_screens"
+        },
+        "37200": {
+          "symbol": "Place_Elevator___spawn"
+        },
+        "37284": {
+          "symbol": "Fairy_Spell"
+        },
+        "37350": {
+          "symbol": "Thunder_Spell"
+        },
+        "37429": {
+          "symbol": "related_to_palette_cycling__flashing_"
+        },
+        "37545": {
+          "symbol": "unknown14"
+        },
+        "37567": {
+          "symbol": "Side_View3"
+        },
+        "37820": {
+          "symbol": "Side_View4__walking"
+        },
+        "37946": {
+          "symbol": "jump_to__143A"
+        },
+        "38019": {
+          "symbol": "Sword_Slash"
+        },
+        "38083": {
+          "symbol": "unknown15"
+        },
+        "38364": {
+          "symbol": "Button_B_Pressed"
+        },
+        "38411": {
+          "symbol": "set_sound_of_Sword_Slash"
+        },
+        "38416": {
+          "symbol": "goto__1610"
+        },
+        "38465": {
+          "symbol": "Table_for_Hub_Tile_Mapping2"
+        },
+        "38513": {
+          "symbol": "Table_for_levelup_experience_low"
+        },
+        "38537": {
+          "symbol": "unknown16"
+        },
+        "38541": {
+          "symbol": "Hub_Update_Routine"
+        },
+        "38841": {
+          "symbol": "unknown17"
+        },
+        "38843": {
+          "symbol": "Fire_Spell2"
+        },
+        "38906": {
+          "symbol": "else_goto__17FA"
+        },
+        "38939": {
+          "symbol": "unknown19"
+        },
+        "38981": {
+          "symbol": "unknown20"
+        },
+        "38983": {
+          "symbol": "Check_for_Fire_Spell"
+        },
+        "38990": {
+          "symbol": "Check_if_Life_is_Full"
+        },
+        "39169": {
+          "symbol": "set_sound_effect_to_Flame"
+        },
+        "39454": {
+          "symbol": "unknown_pointer_table4"
+        },
+        "39472": {
+          "symbol": "unknown22"
+        },
+        "39584": {
+          "symbol": "unknown23"
+        },
+        "39592": {
+          "symbol": "unknown24"
+        },
+        "39606": {
+          "symbol": "unknown25"
+        },
+        "39608": {
+          "symbol": "unknown26"
+        },
+        "39724": {
+          "symbol": "DECIDE_IF_DRAW_ITEMS_WHICH_LINK_HAS_ON_SPELL_PAUSE_PANE_SCREEN"
+        },
+        "39770": {
+          "symbol": "Pointer_Table_for_Panes"
+        },
+        "39786": {
+          "symbol": "Pointer_Table_for_Contents_of_Panes_in_Cartridge_RAM"
+        },
+        "39808": {
+          "symbol": "Pointer_table_for_Panes_tile_mappings"
+        },
+        "40270": {
+          "symbol": "unknown_pointer_table30"
+        },
+        "40276": {
+          "symbol": "unknown27"
+        },
+        "40315": {
+          "symbol": "unknown_pointer_table3"
+        },
+        "40337": {
+          "symbol": "unknown28"
+        },
+        "40420": {
+          "symbol": "Pointer_table_for_Pause_Pane"
+        },
+        "40438": {
+          "symbol": "unknown29"
+        },
+        "40479": {
+          "symbol": "unknown30"
+        },
+        "40486": {
+          "symbol": "pointer_table_C"
+        },
+        "40498": {
+          "symbol": "Table_for_AML_digits_in_Level_Up_Pane__10s"
+        },
+        "40522": {
+          "symbol": "Table_for_AML_digits_in_Level_Up_Pane__100s"
+        },
+        "40546": {
+          "symbol": "Table_for_AML_digits_in_Level_Up_Pane__1000s"
+        },
+        "40570": {
+          "symbol": "unknown31"
+        },
+        "40578": {
+          "symbol": "Related_To_LevelUp"
+        },
+        "41372": {
+          "symbol": "Manual_Save_Game_Routine_UP_AND_A"
+        },
+        "41437": {
+          "symbol": "Pause_Pane_Pointer_5__Table_1DE4"
+        },
+        "41799": {
+          "symbol": "Pause_Pane_LOAD_FROM_ROM_TO_RAM_THE_SPELL_MENU_TEXT"
+        },
+        "42143": {
+          "symbol": "involves_drawing_the_spell_menu"
+        },
+        "42404": {
+          "symbol": "Experience_Convertion_and_Display_Routine"
+        },
+        "42467": {
+          "symbol": "involves_pause_pane_deciding_what_to_draw_based_on_what_spells_list_has_and_drawing_it"
+        },
+        "42563": {
+          "symbol": "unknown32"
+        },
+        "42567": {
+          "symbol": "unknown33"
+        },
+        "42632": {
+          "symbol": "unknown34"
+        },
+        "42635": {
+          "symbol": "unknown35"
+        },
+        "42682": {
+          "symbol": "unknown36"
+        },
+        "42706": {
+          "symbol": "unknown37"
+        },
+        "42717": {
+          "symbol": "occurs_when_break_block_stab_block"
+        },
+        "42913": {
+          "symbol": "unknown38"
+        },
+        "42923": {
+          "symbol": "unknown39"
+        },
+        "43056": {
+          "symbol": "unknown40"
+        },
+        "43062": {
+          "symbol": "Some_Palettes_Data_related_to_Falling_Animation"
+        },
+        "43098": {
+          "symbol": "unknown41"
+        },
+        "43110": {
+          "symbol": "unknown42"
+        },
+        "43113": {
+          "symbol": "unknown43"
+        },
+        "43166": {
+          "symbol": "unknown44"
+        },
+        "43420": {
+          "symbol": "unknown45_loaded_in_6957"
+        },
+        "43504": {
+          "symbol": "Table_for_Some_Palettes"
+        },
+        "43528": {
+          "symbol": "startup_init_begin_game"
+        },
+        "43584": {
+          "symbol": "unused_space_big"
+        },
+        "49008": {
+          "symbol": "ending_routines"
+        },
+        "49053": {
+          "symbol": "Set_Mapper_Parameters_at_0x8000"
+        },
+        "49073": {
+          "symbol": "Set_Mapper_Parameters_at_0xA000"
+        },
+        "49120": {
+          "symbol": "ending_bytes"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "1": {
+      "region": [
+        {
+          "Words": {
+            "start": 32768,
+            "end": 32781
+          }
+        },
+        {
+          "Code": {
+            "start": 33006,
+            "end": 33030
+          }
+        },
+        {
+          "Words": {
+            "start": 33031,
+            "end": 33060
+          }
+        },
+        {
+          "Words": {
+            "start": 33061,
+            "end": 33070
+          }
+        },
+        {
+          "Code": {
+            "start": 33071,
+            "end": 33074
+          }
+        },
+        {
+          "Words": {
+            "start": 33075,
+            "end": 33086
+          }
+        },
+        {
+          "Words": {
+            "start": 33087,
+            "end": 33096
+          }
+        },
+        {
+          "Words": {
+            "start": 33097,
+            "end": 33106
+          }
+        },
+        {
+          "Code": {
+            "start": 33187,
+            "end": 33206
+          }
+        },
+        {
+          "Code": {
+            "start": 33267,
+            "end": 33302
+          }
+        },
+        {
+          "Code": {
+            "start": 33309,
+            "end": 33472
+          }
+        },
+        {
+          "Code": {
+            "start": 33480,
+            "end": 33517
+          }
+        },
+        {
+          "Code": {
+            "start": 33539,
+            "end": 33539
+          }
+        },
+        {
+          "Code": {
+            "start": 33555,
+            "end": 33621
+          }
+        },
+        {
+          "Code": {
+            "start": 33624,
+            "end": 33639
+          }
+        },
+        {
+          "Code": {
+            "start": 33697,
+            "end": 33800
+          }
+        },
+        {
+          "Words": {
+            "start": 34048,
+            "end": 34055
+          }
+        },
+        {
+          "Words": {
+            "start": 34056,
+            "end": 34059
+          }
+        },
+        {
+          "Code": {
+            "start": 34060,
+            "end": 34073
+          }
+        },
+        {
+          "Words": {
+            "start": 34083,
+            "end": 34134
+          }
+        },
+        {
+          "Words": {
+            "start": 34135,
+            "end": 34208
+          }
+        },
+        {
+          "Words": {
+            "start": 34209,
+            "end": 34334
+          }
+        },
+        {
+          "Words": {
+            "start": 34703,
+            "end": 34710
+          }
+        },
+        {
+          "Code": {
+            "start": 34715,
+            "end": 34757
+          }
+        },
+        {
+          "Code": {
+            "start": 37804,
+            "end": 37818
+          }
+        },
+        {
+          "Words": {
+            "start": 37888,
+            "end": 37901
+          }
+        },
+        {
+          "Words": {
+            "start": 37957,
+            "end": 38028
+          }
+        },
+        {
+          "Words": {
+            "start": 38029,
+            "end": 38100
+          }
+        },
+        {
+          "Words": {
+            "start": 38245,
+            "end": 38316
+          }
+        },
+        {
+          "Code": {
+            "start": 38317,
+            "end": 38317
+          }
+        },
+        {
+          "Words": {
+            "start": 38338,
+            "end": 38355
+          }
+        },
+        {
+          "Code": {
+            "start": 38432,
+            "end": 38495
+          }
+        },
+        {
+          "Code": {
+            "start": 38500,
+            "end": 38677
+          }
+        },
+        {
+          "Code": {
+            "start": 38680,
+            "end": 38740
+          }
+        },
+        {
+          "Code": {
+            "start": 38745,
+            "end": 38801
+          }
+        },
+        {
+          "Code": {
+            "start": 38804,
+            "end": 38820
+          }
+        },
+        {
+          "Code": {
+            "start": 38825,
+            "end": 38881
+          }
+        },
+        {
+          "Code": {
+            "start": 38888,
+            "end": 38893
+          }
+        },
+        {
+          "Code": {
+            "start": 38898,
+            "end": 38904
+          }
+        },
+        {
+          "Code": {
+            "start": 38909,
+            "end": 38983
+          }
+        },
+        {
+          "Code": {
+            "start": 38989,
+            "end": 39033
+          }
+        },
+        {
+          "Code": {
+            "start": 39038,
+            "end": 39104
+          }
+        },
+        {
+          "Code": {
+            "start": 39107,
+            "end": 39212
+          }
+        },
+        {
+          "Code": {
+            "start": 39282,
+            "end": 39426
+          }
+        },
+        {
+          "Code": {
+            "start": 39445,
+            "end": 39630
+          }
+        },
+        {
+          "Code": {
+            "start": 39633,
+            "end": 39722
+          }
+        },
+        {
+          "Code": {
+            "start": 39861,
+            "end": 40002
+          }
+        },
+        {
+          "Code": {
+            "start": 40047,
+            "end": 40084
+          }
+        },
+        {
+          "Code": {
+            "start": 40100,
+            "end": 40280
+          }
+        },
+        {
+          "Code": {
+            "start": 40293,
+            "end": 40437
+          }
+        },
+        {
+          "Code": {
+            "start": 40443,
+            "end": 40457
+          }
+        },
+        {
+          "Code": {
+            "start": 40460,
+            "end": 40632
+          }
+        },
+        {
+          "Words": {
+            "start": 40960,
+            "end": 41085
+          }
+        },
+        {
+          "Words": {
+            "start": 41086,
+            "end": 41211
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "Pointer_table_for_Background_Areas_Data"
+        },
+        "32894": {
+          "symbol": "Palettes_for_West_Hyrule_Bridge"
+        },
+        "32966": {
+          "symbol": "unknown_palettes_maybe2"
+        },
+        "32994": {
+          "symbol": "Grotto_without_Candle__Sprites_and_Background1"
+        },
+        "33002": {
+          "symbol": "Grotto_without_Candle__Sprites_and_Background3"
+        },
+        "33006": {
+          "symbol": "code0"
+        },
+        "33031": {
+          "symbol": "Pointer_table_for_Objects_Construction"
+        },
+        "33061": {
+          "symbol": "Special_Objects__Y_Position_F"
+        },
+        "33071": {
+          "symbol": "code1"
+        },
+        "33075": {
+          "symbol": "Pointer_table_for_Small_Objects_Construction_0x"
+        },
+        "33107": {
+          "symbol": "Tables_for_Level_Layers_Data"
+        },
+        "33179": {
+          "symbol": "Table_for_Level_Layers_Data_pointers"
+        },
+        "33187": {
+          "symbol": "Build_Pointer_for_Layer_Tiles_Bank_1_and_2"
+        },
+        "33237": {
+          "symbol": "Tile_Codes_for_Objects_Set1_BackgroundSky"
+        },
+        "33265": {
+          "symbol": "Tile_Codes_for_Objects_Set1_VerticalDolmen_1wide"
+        },
+        "33267": {
+          "symbol": "Objects_Construction_Object_2high_Xwide"
+        },
+        "33281": {
+          "symbol": "Objects_Construction_Object_1high_Xwide"
+        },
+        "33303": {
+          "symbol": "Objects_Construction_Object_Xhigh_1wide_SingleTileType"
+        },
+        "33309": {
+          "symbol": "Objects_Construction_Object_Xhigh_1wide"
+        },
+        "33381": {
+          "symbol": "Objects_Construction_Object_Cactus"
+        },
+        "33418": {
+          "symbol": "Objects_Construction_Object_LavaPit"
+        },
+        "33466": {
+          "symbol": "Objects_Construction_Object_Elevator"
+        },
+        "33473": {
+          "symbol": "Small_Objects_Construction_LockedDoor_Ypos8"
+        },
+        "33480": {
+          "symbol": "Small_Objects_Construction_TreeStump"
+        },
+        "33493": {
+          "symbol": "Objects_Construction_Object_Cactus_with_Stem"
+        },
+        "33518": {
+          "symbol": "Small_Objects_Construction_Cross"
+        },
+        "33522": {
+          "symbol": "Small_Objects_Construction_SlantedCross"
+        },
+        "33526": {
+          "symbol": "Table_for_Cross__Slanted_Cross_and_Gravestone"
+        },
+        "33529": {
+          "symbol": "Small_Objects_Construction_Gravestone"
+        },
+        "33540": {
+          "symbol": "Table_for_Dolmen_Tile_Codes"
+        },
+        "33555": {
+          "symbol": "Small_Objects_Construction_Dolmen"
+        },
+        "33585": {
+          "symbol": "Small_Objects_Construction_PitExtendingToGround"
+        },
+        "33600": {
+          "symbol": "Small_Objects_Construction_Zelda"
+        },
+        "33618": {
+          "symbol": "Small_Objects_Construction_LongCloud"
+        },
+        "33622": {
+          "symbol": "Table_for_Right_End_of_Clouds_Tile_Codes"
+        },
+        "33624": {
+          "symbol": "Small_Objects_Construction_Short_Cloud"
+        },
+        "33640": {
+          "symbol": "Check_for_Hidden_Palace_spot"
+        },
+        "33671": {
+          "symbol": "Check_for_Spider_in_OW"
+        },
+        "33685": {
+          "symbol": "table0"
+        },
+        "33697": {
+          "symbol": "code6"
+        },
+        "33743": {
+          "symbol": "overworld_limit_check_jmp_from_bank7"
+        },
+        "33796": {
+          "symbol": "East_Boundary"
+        },
+        "33903": {
+          "symbol": "Table_0_1_for_Area_Objects_Tile_Mappings_Horizontal_Dolmen_Left"
+        },
+        "34007": {
+          "symbol": "Table_2_for_Area_Objects_Tile_Mappings_unknown0"
+        },
+        "34023": {
+          "symbol": "UNUSED_84E7"
+        },
+        "34048": {
+          "symbol": "Pointer_table_for_Objects_Tile_Mappings"
+        },
+        "34056": {
+          "symbol": "Pointer_table_for_Overworld_Map_Data"
+        },
+        "34060": {
+          "symbol": "code7"
+        },
+        "34074": {
+          "symbol": "table1"
+        },
+        "34083": {
+          "symbol": "Area_Pointers_West_Hyrule"
+        },
+        "34335": {
+          "symbol": "West_Hyrule__Key_Areas_Y_Location"
+        },
+        "34398": {
+          "symbol": "West_Hyrule__Key_Areas_X_Location"
+        },
+        "34461": {
+          "symbol": "West_Hyrule__Key_Areas_Map_Number"
+        },
+        "34524": {
+          "symbol": "West_Hyrule__Key_Areas_World_Number"
+        },
+        "34587": {
+          "symbol": "West_Hyrule__Room_Connectivity_Data"
+        },
+        "34687": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Desert__South_West_Hyrule_"
+        },
+        "34703": {
+          "symbol": "Pointer_table_for_Palaces_offsets_in_Saved_RAM"
+        },
+        "34715": {
+          "symbol": "Transform_completed_palaces_into_stone"
+        },
+        "34758": {
+          "symbol": "UNUSED_87C6"
+        },
+        "34976": {
+          "symbol": "Enemy_Data__West_Hyrule_and_Death_Mountain"
+        },
+        "35900": {
+          "symbol": "Background_Areas_Data"
+        },
+        "36021": {
+          "symbol": "Area_Data__West_Hyrule_North_Castle"
+        },
+        "36075": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Desert__North_West_Hyrule_"
+        },
+        "36103": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle_grass_or_lava"
+        },
+        "36129": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Forest__North_West_Hyrule_"
+        },
+        "36149": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Swamp__North_West_and_South_West_Hyrule_"
+        },
+        "36183": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Graveyard__North_West_and_South_West_Hyrule_"
+        },
+        "36249": {
+          "symbol": "Area_Data__West_Hyrule_Bridge"
+        },
+        "36277": {
+          "symbol": "Area_Data__West_Hyrule_Grass_Area_with_Dolmens_and_Heart_Container"
+        },
+        "36304": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_with_Trophy_"
+        },
+        "36341": {
+          "symbol": "Area_Data__West_Hyrule_Forest_with_Single_Tree__with_Aches_and_50_Exp_Bag_"
+        },
+        "36372": {
+          "symbol": "Area_Data__West_Hyrule_Forest_with_Single_Tree__with_Megmats_and_100_Exp_Bag_"
+        },
+        "36403": {
+          "symbol": "Area_Data__West_Hyrule_Area_with_Rocky_Ground_and_Grass__Red_Jar_near_Palace_2_"
+        },
+        "36450": {
+          "symbol": "Area_Data__West_Hyrule_Forest_with_Tree_Stumps__Lost_Woods"
+        },
+        "36472": {
+          "symbol": "Area_Data__West_Hyrule_Common_Grotto"
+        },
+        "36518": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_South_of_Ruto___Part_1_and_2"
+        },
+        "36568": {
+          "symbol": "Area_Data__West_Hyrule_Bridge_over_Lava__before_Medicine_"
+        },
+        "36590": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_before_200_Exp_Bag__with_Megmats_and_Orange_Goriya_"
+        },
+        "36648": {
+          "symbol": "Area_Data__West_Hyrule_Bubble_Path"
+        },
+        "36700": {
+          "symbol": "Area_Data__West_Hyrule_Graveyard_Area_near_Kings_Tomb__with_Red_Jar_"
+        },
+        "36719": {
+          "symbol": "Area_Data__West_Hyrule_Tunnel_South_of_Kings_Tomb"
+        },
+        "36765": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_South_of_Ruto___Part_3__with_Aches_and_Acheman_"
+        },
+        "36779": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Road__North_West_and_South_West_Hyrule_"
+        },
+        "36810": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_with_200_Exp_Bag__dead_end_"
+        },
+        "36829": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_with_Heart_Container__dead_end_"
+        },
+        "36848": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_with_Magic_Container__South_of_North_Castle_"
+        },
+        "36893": {
+          "symbol": "Area_Data__West_Hyrule_Random_Battle___Forest__South_West_Hyrule_"
+        },
+        "36927": {
+          "symbol": "Area_Data__West_Hyrule_Forest_Area_with_no_trees"
+        },
+        "36937": {
+          "symbol": "Area_Data__West_Hyrule_Grotto_with_Medicine__dead_end_"
+        },
+        "36956": {
+          "symbol": "West_Hyrule_Overworld_Map_Data"
+        },
+        "37801": {
+          "symbol": "table2"
+        },
+        "37804": {
+          "symbol": "code8"
+        },
+        "37819": {
+          "symbol": "UNUSED_93BB"
+        },
+        "37888": {
+          "symbol": "pointer_table"
+        },
+        "37902": {
+          "symbol": "table3"
+        },
+        "37921": {
+          "symbol": "Enemy_Hit_Points"
+        },
+        "37957": {
+          "symbol": "Enemy_Init_Routines_pointers"
+        },
+        "38029": {
+          "symbol": "Pointer_table_for_Enemy_Routines1"
+        },
+        "38245": {
+          "symbol": "Pointer_table_for_Enemy_Routines2"
+        },
+        "38317": {
+          "symbol": "RTS"
+        },
+        "38318": {
+          "symbol": "table5"
+        },
+        "38334": {
+          "symbol": "table_padding_maybe"
+        },
+        "38338": {
+          "symbol": "Pointer_Table_for_Projectiles_Routines"
+        },
+        "38430": {
+          "symbol": "Various_Tile_Mappings_unknown"
+        },
+        "38432": {
+          "symbol": "Enemy_Init_Routines_Red_Jar"
+        },
+        "38437": {
+          "symbol": "Enemy_Init_Routines_Red_Blue_Deeler"
+        },
+        "38449": {
+          "symbol": "Enemy_Init_Routines_Moblin_Daira_Goriya"
+        },
+        "38455": {
+          "symbol": "table6"
+        },
+        "38457": {
+          "symbol": "Various_Projectiles"
+        },
+        "38496": {
+          "symbol": "Table_for_various_boomerang_velocities"
+        },
+        "38500": {
+          "symbol": "code11"
+        },
+        "38678": {
+          "symbol": "table7"
+        },
+        "38680": {
+          "symbol": "code12"
+        },
+        "38741": {
+          "symbol": "Table_for_relative_Y_display_of_Desert_Rocks"
+        },
+        "38745": {
+          "symbol": "Projectiles_Routines_Desert_Rock"
+        },
+        "38765": {
+          "symbol": "Projectiles_Routines_Octorok_Rock_or_Flame"
+        },
+        "38779": {
+          "symbol": "Projectiles_Routines_Raising_Bubble"
+        },
+        "38793": {
+          "symbol": "Projectiles_Routines_Moblin_Spear"
+        },
+        "38821": {
+          "symbol": "Table_for_Boomerang_mirroring_attributes"
+        },
+        "38825": {
+          "symbol": "Projectiles_Routines_Boomerang"
+        },
+        "38848": {
+          "symbol": "Projectiles_Routines_Red_Daria_Axe"
+        },
+        "38894": {
+          "symbol": "Table_for_Moblins_Spear_X_Velocity_"
+        },
+        "38898": {
+          "symbol": "code15"
+        },
+        "38990": {
+          "symbol": "Enemy_Init_Routines_Bubble_Rock_BagoBago_Moby_DumbMoblin_Generator"
+        },
+        "39020": {
+          "symbol": "Enemy_Init_Routines_Geldarm"
+        },
+        "39034": {
+          "symbol": "Table_for_Megmat"
+        },
+        "39107": {
+          "symbol": "Enemy_Routines1_Lowder"
+        },
+        "39213": {
+          "symbol": "Table_for_Dumb_Moblin_X_Velocity"
+        },
+        "39215": {
+          "symbol": "Enemy_Routines1_Dumb_Moblin_Generator"
+        },
+        "39247": {
+          "symbol": "Enemy_Routines1_Dumb_Moblin"
+        },
+        "39282": {
+          "symbol": "Enemy_Routines1_Goriya"
+        },
+        "39427": {
+          "symbol": "table9"
+        },
+        "39445": {
+          "symbol": "Enemy_Routines1_Daira"
+        },
+        "39631": {
+          "symbol": "Table_for_Daira"
+        },
+        "39633": {
+          "symbol": "code20"
+        },
+        "39729": {
+          "symbol": "Enemy_Routines1_Generators"
+        },
+        "39828": {
+          "symbol": "Enemy_Routines1_Moby"
+        },
+        "39859": {
+          "symbol": "Table_for_Geldarm"
+        },
+        "39861": {
+          "symbol": "Enemy_Routines1_Geldarm"
+        },
+        "40047": {
+          "symbol": "Enemy_Routines2_Goriya"
+        },
+        "40085": {
+          "symbol": "Tables_for_Moblin_and_Spear__before_throw__tile_mapping_and_offsets"
+        },
+        "40100": {
+          "symbol": "Enemy_Routines2_Moblin"
+        },
+        "40281": {
+          "symbol": "Table_for_Daira_backswing_tile_mapping__offset_and_hitbox"
+        },
+        "40293": {
+          "symbol": "Enemy_Routines2_Daira_Orange"
+        },
+        "40297": {
+          "symbol": "Enemy_Routines2_Daira_Red_"
+        },
+        "40433": {
+          "symbol": "Enemy_Routines2_Lowder"
+        },
+        "40438": {
+          "symbol": "Enemy_Routines2_Moby"
+        },
+        "40443": {
+          "symbol": "Enemy_Routines2_Megmat"
+        },
+        "40458": {
+          "symbol": "table12"
+        },
+        "40460": {
+          "symbol": "Geldarm_body_tiles_layout"
+        },
+        "40498": {
+          "symbol": "Geldarm_head"
+        },
+        "40531": {
+          "symbol": "Geldarm_body_Tile_Mapping"
+        },
+        "40633": {
+          "symbol": "UNUSED_9EB9"
+        },
+        "40960": {
+          "symbol": "Area_Pointers_Death_Mountain"
+        },
+        "41086": {
+          "symbol": "Enemy_Pointers_Death_Mountain"
+        },
+        "41212": {
+          "symbol": "Death_Mountain_Key_Areas_Y_Location"
+        },
+        "41275": {
+          "symbol": "Death_Mountain_Key_Areas_X_Location"
+        },
+        "41338": {
+          "symbol": "Death_Mountain_Key_Areas_Map_Number"
+        },
+        "41401": {
+          "symbol": "Death_Mountain_Key_Areas_World_Number"
+        },
+        "41464": {
+          "symbol": "Room_Connectivity_Data"
+        },
+        "41580": {
+          "symbol": "Area_Data_Death_Mountain"
+        },
+        "42572": {
+          "symbol": "Death_Mountain_Overworld_Map_Data"
+        },
+        "43315": {
+          "symbol": "UNUSED_A933"
+        },
+        "43928": {
+          "symbol": "Enemy_Routines1_unknown0"
+        },
+        "44009": {
+          "symbol": "Enemy_Routines1_unknown1"
+        },
+        "49008": {
+          "symbol": "codeEND"
+        },
+        "49120": {
+          "symbol": "tableEND"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "2": {
+      "region": [
+        {
+          "Words": {
+            "start": 32768,
+            "end": 32781
+          }
+        },
+        {
+          "Code": {
+            "start": 33006,
+            "end": 33030
+          }
+        },
+        {
+          "Words": {
+            "start": 33031,
+            "end": 33062
+          }
+        },
+        {
+          "Words": {
+            "start": 33063,
+            "end": 33070
+          }
+        },
+        {
+          "Code": {
+            "start": 33071,
+            "end": 33074
+          }
+        },
+        {
+          "Words": {
+            "start": 33075,
+            "end": 33086
+          }
+        },
+        {
+          "Words": {
+            "start": 33087,
+            "end": 33096
+          }
+        },
+        {
+          "Words": {
+            "start": 33097,
+            "end": 33106
+          }
+        },
+        {
+          "Code": {
+            "start": 33187,
+            "end": 33206
+          }
+        },
+        {
+          "Code": {
+            "start": 33267,
+            "end": 33302
+          }
+        },
+        {
+          "Code": {
+            "start": 33309,
+            "end": 33465
+          }
+        },
+        {
+          "Code": {
+            "start": 33493,
+            "end": 33517
+          }
+        },
+        {
+          "Code": {
+            "start": 33618,
+            "end": 33621
+          }
+        },
+        {
+          "Code": {
+            "start": 33624,
+            "end": 33677
+          }
+        },
+        {
+          "Code": {
+            "start": 33679,
+            "end": 33684
+          }
+        },
+        {
+          "Code": {
+            "start": 33697,
+            "end": 33800
+          }
+        },
+        {
+          "Words": {
+            "start": 34048,
+            "end": 34055
+          }
+        },
+        {
+          "Words": {
+            "start": 34056,
+            "end": 34059
+          }
+        },
+        {
+          "Code": {
+            "start": 34060,
+            "end": 34073
+          }
+        },
+        {
+          "Words": {
+            "start": 34083,
+            "end": 34134
+          }
+        },
+        {
+          "Words": {
+            "start": 34135,
+            "end": 34208
+          }
+        },
+        {
+          "Words": {
+            "start": 34209,
+            "end": 34334
+          }
+        },
+        {
+          "Words": {
+            "start": 34703,
+            "end": 34710
+          }
+        },
+        {
+          "Code": {
+            "start": 34715,
+            "end": 34770
+          }
+        },
+        {
+          "Code": {
+            "start": 37775,
+            "end": 37832
+          }
+        },
+        {
+          "Words": {
+            "start": 37888,
+            "end": 37911
+          }
+        },
+        {
+          "Words": {
+            "start": 37957,
+            "end": 38028
+          }
+        },
+        {
+          "Words": {
+            "start": 38029,
+            "end": 38100
+          }
+        },
+        {
+          "Words": {
+            "start": 38245,
+            "end": 38316
+          }
+        },
+        {
+          "Code": {
+            "start": 38317,
+            "end": 38317
+          }
+        },
+        {
+          "Words": {
+            "start": 38338,
+            "end": 38355
+          }
+        },
+        {
+          "Code": {
+            "start": 38416,
+            "end": 38523
+          }
+        },
+        {
+          "Code": {
+            "start": 38526,
+            "end": 38586
+          }
+        },
+        {
+          "Code": {
+            "start": 38611,
+            "end": 38638
+          }
+        },
+        {
+          "Code": {
+            "start": 38643,
+            "end": 38695
+          }
+        },
+        {
+          "Code": {
+            "start": 38704,
+            "end": 38789
+          }
+        },
+        {
+          "Words": {
+            "start": 38790,
+            "end": 38797
+          }
+        },
+        {
+          "Code": {
+            "start": 38798,
+            "end": 38914
+          }
+        },
+        {
+          "Code": {
+            "start": 38917,
+            "end": 39067
+          }
+        },
+        {
+          "Code": {
+            "start": 39071,
+            "end": 39097
+          }
+        },
+        {
+          "Code": {
+            "start": 39100,
+            "end": 39181
+          }
+        },
+        {
+          "Code": {
+            "start": 39184,
+            "end": 39199
+          }
+        },
+        {
+          "Words": {
+            "start": 39200,
+            "end": 39207
+          }
+        },
+        {
+          "Code": {
+            "start": 39208,
+            "end": 39302
+          }
+        },
+        {
+          "Words": {
+            "start": 39412,
+            "end": 39419
+          }
+        },
+        {
+          "Code": {
+            "start": 39441,
+            "end": 39459
+          }
+        },
+        {
+          "Code": {
+            "start": 39466,
+            "end": 39815
+          }
+        },
+        {
+          "Code": {
+            "start": 39824,
+            "end": 39879
+          }
+        },
+        {
+          "Code": {
+            "start": 39883,
+            "end": 40073
+          }
+        },
+        {
+          "Code": {
+            "start": 40126,
+            "end": 40204
+          }
+        },
+        {
+          "Code": {
+            "start": 40211,
+            "end": 40233
+          }
+        },
+        {
+          "Code": {
+            "start": 40242,
+            "end": 40448
+          }
+        },
+        {
+          "Code": {
+            "start": 40467,
+            "end": 40660
+          }
+        },
+        {
+          "Code": {
+            "start": 40673,
+            "end": 40836
+          }
+        },
+        {
+          "Words": {
+            "start": 40960,
+            "end": 41085
+          }
+        },
+        {
+          "Words": {
+            "start": 41086,
+            "end": 41211
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "Pointer_table_for_background_level_data"
+        },
+        "32782": {
+          "symbol": "Palettes_for_East_Hyrule"
+        },
+        "33006": {
+          "symbol": "code0"
+        },
+        "33031": {
+          "symbol": "Pointer_table_for_Objects_Construction_Routines"
+        },
+        "33063": {
+          "symbol": "Special_Objects__Y_Position_F"
+        },
+        "33071": {
+          "symbol": "code1"
+        },
+        "33075": {
+          "symbol": "Pointer_table_for_Small_Objects_Construction_Routines"
+        },
+        "33107": {
+          "symbol": "Tables_for_Level_Layers_Data"
+        },
+        "33179": {
+          "symbol": "Table_for_Level_Layers_Data_pointers"
+        },
+        "33237": {
+          "symbol": "Tile_Codes_for_Objects_Set1_BackgroundSky"
+        },
+        "33265": {
+          "symbol": "Tile_Codes_for_Objects_Set1_VerticalDolmen_1wide"
+        },
+        "33267": {
+          "symbol": "Objects_Construction_Object_2high_Xwide"
+        },
+        "33281": {
+          "symbol": "Objects_Construction_Object_1high_Xwide"
+        },
+        "33303": {
+          "symbol": "Objects_Construction_Object_Xhigh_1wide_SingleTileType"
+        },
+        "33309": {
+          "symbol": "Objects_Construction_Object_Xhigh_1wide"
+        },
+        "33381": {
+          "symbol": "Objects_Construction_Object_Cactus"
+        },
+        "33418": {
+          "symbol": "Objects_Construction_Object_LavaPit"
+        },
+        "33466": {
+          "symbol": "Objects_Construction_Object_Elevator"
+        },
+        "33473": {
+          "symbol": "Small_Objects_Construction_LockedDoor_Ypos8"
+        },
+        "33480": {
+          "symbol": "Small_Objects_Construction_TreeStump"
+        },
+        "33493": {
+          "symbol": "Objects_Construction_Object_Cactus_with_Stem"
+        },
+        "33518": {
+          "symbol": "Small_Objects_Construction_Cross"
+        },
+        "33522": {
+          "symbol": "Small_Objects_Construction_SlantedCross"
+        },
+        "33526": {
+          "symbol": "Table_for_Cross__Slanted_Cross_and_Gravestone"
+        },
+        "33529": {
+          "symbol": "Small_Objects_Construction_Gravestone"
+        },
+        "33550": {
+          "symbol": "Table_for_Dolmen_Tile_Codes_Low"
+        },
+        "33555": {
+          "symbol": "Small_Objects_Construction_Dolmen"
+        },
+        "33585": {
+          "symbol": "Small_Objects_Construction_PitExtendingToGround"
+        },
+        "33600": {
+          "symbol": "Small_Objects_Construction_Zelda"
+        },
+        "33618": {
+          "symbol": "Small_Objects_Construction_LongCloud"
+        },
+        "33624": {
+          "symbol": "Small_Objects_Construction_ShortCloud"
+        },
+        "33640": {
+          "symbol": "Check_for_Hidden_Palace_spot"
+        },
+        "33671": {
+          "symbol": "Check_for_Spider_in_OW"
+        },
+        "33685": {
+          "symbol": "table0"
+        },
+        "33697": {
+          "symbol": "code5"
+        },
+        "33815": {
+          "symbol": "Table_0_1_for_Area_Objects_Tile_Mappings"
+        },
+        "33951": {
+          "symbol": "Table_2_for_Area_Objects_Tile_Mappings"
+        },
+        "34023": {
+          "symbol": "UNUSED_84E7"
+        },
+        "34048": {
+          "symbol": "Pointer_table_for_Objects_Tile_Mappings_"
+        },
+        "34056": {
+          "symbol": "Pointer_table_for_Overworld_Map_Data"
+        },
+        "34060": {
+          "symbol": "code6"
+        },
+        "34074": {
+          "symbol": "table1"
+        },
+        "34083": {
+          "symbol": "Area_Pointers_East_Hyrule"
+        },
+        "34209": {
+          "symbol": "Enemy_Pointers__East_Hyrule"
+        },
+        "34335": {
+          "symbol": "East_Hyrule_Key_Areas_Y_Location_"
+        },
+        "34398": {
+          "symbol": "East_Hyrule_Key_Areas_X_Location_"
+        },
+        "34461": {
+          "symbol": "East_Hyrule_Key_Areas_Map_Number"
+        },
+        "34524": {
+          "symbol": "East_Hyrule_Key_Areas_World_Number"
+        },
+        "34587": {
+          "symbol": "Room_Connectivity_Data"
+        },
+        "34703": {
+          "symbol": "Pointer_table_for_Palaces_offsets_in_Saved_RAM"
+        },
+        "34715": {
+          "symbol": "Transform_completed_palaces_into_stone"
+        },
+        "34771": {
+          "symbol": "UNUSED_87D3"
+        },
+        "34976": {
+          "symbol": "Enemy_Data_East_Hyrule_and_Maze_Island"
+        },
+        "35938": {
+          "symbol": "Background_Areas_Data"
+        },
+        "36056": {
+          "symbol": "Area_Data_East_Hyrule"
+        },
+        "36934": {
+          "symbol": "East_Hyrule_Overworld_Map_Data"
+        },
+        "37728": {
+          "symbol": "Table_3_for_Area_Objects_Tile_Mappings"
+        },
+        "37775": {
+          "symbol": "Used_for_Palisade_Pass"
+        },
+        "37833": {
+          "symbol": "UNUSED_93C9"
+        },
+        "37888": {
+          "symbol": "Pointer_table_for_Projectile_routines"
+        },
+        "37912": {
+          "symbol": "table2"
+        },
+        "37921": {
+          "symbol": "Enemy_Hit_Points"
+        },
+        "37957": {
+          "symbol": "Enemy_Init_Routines_pointers"
+        },
+        "38029": {
+          "symbol": "Pointer_table_for_Enemy_Routines1"
+        },
+        "38173": {
+          "symbol": "Enemy_Size_Codes"
+        },
+        "38209": {
+          "symbol": "Other_Enemy_Attributes_6E41_in_RAM"
+        },
+        "38245": {
+          "symbol": "Pointer_table_for_Enemy_Routines2"
+        },
+        "38317": {
+          "symbol": "RTS"
+        },
+        "38318": {
+          "symbol": "table3"
+        },
+        "38338": {
+          "symbol": "Pointer_table_for_Projectiles_Routines"
+        },
+        "38356": {
+          "symbol": "table4"
+        },
+        "38416": {
+          "symbol": "Enemy_Init_Routines_Red_Jar"
+        },
+        "38427": {
+          "symbol": "Enemy_Init_Routines_Red_Blue_Deeler"
+        },
+        "38439": {
+          "symbol": "Projectiles_Routines_Flame"
+        },
+        "38447": {
+          "symbol": "Projectiles_Routines_Energy_Ball_blue_and_Mace_and_Link_Doll"
+        },
+        "38455": {
+          "symbol": "Projectiles_Routines_Raising_Bubble_with_no_Y_Velocity"
+        },
+        "38474": {
+          "symbol": "Projectiles_Routines_Rock_moves_horizontally"
+        },
+        "38491": {
+          "symbol": "Projectiles_Routines_Rock_with_gravity"
+        },
+        "38524": {
+          "symbol": "table5"
+        },
+        "38526": {
+          "symbol": "code9"
+        },
+        "38579": {
+          "symbol": "Projectiles_Routines2_Energy_Ball_Tektite"
+        },
+        "38586": {
+          "symbol": "Projectiles_Routines2_Energy_Ball_blue_not_flashing_causes_less_damage"
+        },
+        "38587": {
+          "symbol": "table6"
+        },
+        "38591": {
+          "symbol": "Projectiles_Routines2_Link_Doll"
+        },
+        "38611": {
+          "symbol": "Projectiles_Routines2_RockHori_Flame_RockGravity"
+        },
+        "38625": {
+          "symbol": "Projectiles_Routines2_Raising_Bubble_with_no_Y_Velocity"
+        },
+        "38639": {
+          "symbol": "table7"
+        },
+        "38643": {
+          "symbol": "Projectiles_Routines2_Mace_causes_lots_of_damage"
+        },
+        "38666": {
+          "symbol": "Enemy_Init_Routines_Bubble_Rock_BagoBago_Generator"
+        },
+        "38696": {
+          "symbol": "Table_for_Tossed_Rocks_Y_Velocity_adjustment"
+        },
+        "38704": {
+          "symbol": "Enemy_Routines1_Lizalfos_Rock_Tossing"
+        },
+        "38790": {
+          "symbol": "Pointer_table_for_Rock_Tossing_Lizalfos_routines"
+        },
+        "38798": {
+          "symbol": "code13"
+        },
+        "38899": {
+          "symbol": "Enemy_Init_Routines_Leever"
+        },
+        "38917": {
+          "symbol": "Enemy_Routines1_Tektite"
+        },
+        "39098": {
+          "symbol": "Table_for_Girobokku_XY_Velocities"
+        },
+        "39100": {
+          "symbol": "Enemy_Routines1_Girobokku"
+        },
+        "39184": {
+          "symbol": "Enemy_Routines1_Leever"
+        },
+        "39200": {
+          "symbol": "pointer_table_for_Leever_routines"
+        },
+        "39208": {
+          "symbol": "Leever_routines_Lurking"
+        },
+        "39248": {
+          "symbol": "Leever_routines_Emerging"
+        },
+        "39276": {
+          "symbol": "Leever_routines_Moving"
+        },
+        "39292": {
+          "symbol": "Leever_routines_Retreating"
+        },
+        "39303": {
+          "symbol": "Table_for_Boon_XY_Velocities"
+        },
+        "39305": {
+          "symbol": "Enemy_Routines1_Boon"
+        },
+        "39412": {
+          "symbol": "Pointer_table_for_Boon_routines"
+        },
+        "39420": {
+          "symbol": "code16"
+        },
+        "39441": {
+          "symbol": "Spawn_Rock_with_Gravity__with_XY_Velocity_set_to_0"
+        },
+        "39466": {
+          "symbol": "Enemy_Routines1_Zora"
+        },
+        "39598": {
+          "symbol": "Enemy_Routines1_Aru_Lowder"
+        },
+        "39766": {
+          "symbol": "Enemy_Routines1_Lizalfos_Orange"
+        },
+        "39824": {
+          "symbol": "Enemy_Routines1_Lizalfos_Red_Blue"
+        },
+        "40126": {
+          "symbol": "code17"
+        },
+        "40205": {
+          "symbol": "table9"
+        },
+        "40211": {
+          "symbol": "code18"
+        },
+        "40234": {
+          "symbol": "lizalfos_table0"
+        },
+        "40242": {
+          "symbol": "Enemy_Routines2_Lizalfos__Rock_Tossing"
+        },
+        "40364": {
+          "symbol": "Enemy_Routines2_Tektite"
+        },
+        "40414": {
+          "symbol": "Enemy_Routines2_Girobokku"
+        },
+        "40427": {
+          "symbol": "Enemy_Routines2_Leever"
+        },
+        "40449": {
+          "symbol": "Enemy_Routines2_Boon"
+        },
+        "40467": {
+          "symbol": "Enemy_Routines2_Zora"
+        },
+        "40580": {
+          "symbol": "Enemy_Routines2_Aru_Lowder"
+        },
+        "40673": {
+          "symbol": "Enemy_Routines2_Lizalfos_Red_Orange_Blue"
+        },
+        "40837": {
+          "symbol": "UNUSED_9F85"
+        },
+        "40960": {
+          "symbol": "Area_Pointers_Maze_Island"
+        },
+        "41086": {
+          "symbol": "Enemy_Pointers_Maze_Island"
+        },
+        "41212": {
+          "symbol": "Maze_Island_Key_Areas_Y_Location"
+        },
+        "41275": {
+          "symbol": "Maze_Island_Key_Areas_X_Location"
+        },
+        "41338": {
+          "symbol": "Maze_Island_Key_Areas_Map_Number"
+        },
+        "41401": {
+          "symbol": "Maze_Island_Key_Areas_World_Number"
+        },
+        "41464": {
+          "symbol": "Maze_Island_Room_Connectivity_Data"
+        },
+        "41580": {
+          "symbol": "Area_Data_Maze_Island"
+        },
+        "42572": {
+          "symbol": "Maze_Island_Overworld_Map_Data"
+        },
+        "43315": {
+          "symbol": "UNUSED_A933"
+        },
+        "43928": {
+          "symbol": "Enemy_Routines1_unknown0"
+        },
+        "44009": {
+          "symbol": "Enemy_Routines1_unknown1"
+        },
+        "49008": {
+          "symbol": "codeEND"
+        },
+        "49120": {
+          "symbol": "UNUSED_BFE0"
+        },
+        "49146": {
+          "symbol": "tableEND"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "3": {
+      "region": [
+        {
+          "Words": {
+            "start": 32768,
+            "end": 32781
+          }
+        },
+        {
+          "Code": {
+            "start": 33006,
+            "end": 33017
+          }
+        },
+        {
+          "Code": {
+            "start": 33026,
+            "end": 33098
+          }
+        },
+        {
+          "Code": {
+            "start": 33109,
+            "end": 33157
+          }
+        },
+        {
+          "Code": {
+            "start": 33164,
+            "end": 33275
+          }
+        },
+        {
+          "Code": {
+            "start": 33388,
+            "end": 33453
+          }
+        },
+        {
+          "Code": {
+            "start": 33458,
+            "end": 33480
+          }
+        },
+        {
+          "Code": {
+            "start": 33487,
+            "end": 33524
+          }
+        },
+        {
+          "Code": {
+            "start": 33546,
+            "end": 33590
+          }
+        },
+        {
+          "Code": {
+            "start": 33594,
+            "end": 33634
+          }
+        },
+        {
+          "Code": {
+            "start": 33638,
+            "end": 33683
+          }
+        },
+        {
+          "Code": {
+            "start": 33700,
+            "end": 33707
+          }
+        },
+        {
+          "Code": {
+            "start": 33712,
+            "end": 33737
+          }
+        },
+        {
+          "Words": {
+            "start": 34048,
+            "end": 34055
+          }
+        },
+        {
+          "Code": {
+            "start": 34060,
+            "end": 34073
+          }
+        },
+        {
+          "Words": {
+            "start": 34083,
+            "end": 34134
+          }
+        },
+        {
+          "Words": {
+            "start": 34135,
+            "end": 34208
+          }
+        },
+        {
+          "Words": {
+            "start": 34209,
+            "end": 34334
+          }
+        },
+        {
+          "Code": {
+            "start": 34375,
+            "end": 34394
+          }
+        },
+        {
+          "Code": {
+            "start": 34402,
+            "end": 34405
+          }
+        },
+        {
+          "Code": {
+            "start": 34408,
+            "end": 34431
+          }
+        },
+        {
+          "Code": {
+            "start": 34435,
+            "end": 34445
+          }
+        },
+        {
+          "Code": {
+            "start": 34451,
+            "end": 34465
+          }
+        },
+        {
+          "Code": {
+            "start": 35733,
+            "end": 35760
+          }
+        },
+        {
+          "Words": {
+            "start": 37888,
+            "end": 37911
+          }
+        },
+        {
+          "Words": {
+            "start": 37957,
+            "end": 38100
+          }
+        },
+        {
+          "Words": {
+            "start": 38245,
+            "end": 38316
+          }
+        },
+        {
+          "Code": {
+            "start": 38317,
+            "end": 38317
+          }
+        },
+        {
+          "Words": {
+            "start": 38336,
+            "end": 38355
+          }
+        },
+        {
+          "Code": {
+            "start": 38568,
+            "end": 38607
+          }
+        },
+        {
+          "Code": {
+            "start": 38624,
+            "end": 38720
+          }
+        },
+        {
+          "Code": {
+            "start": 38723,
+            "end": 38784
+          }
+        },
+        {
+          "Code": {
+            "start": 38787,
+            "end": 38863
+          }
+        },
+        {
+          "Code": {
+            "start": 38867,
+            "end": 39201
+          }
+        },
+        {
+          "Code": {
+            "start": 39238,
+            "end": 39255
+          }
+        },
+        {
+          "Code": {
+            "start": 39258,
+            "end": 39576
+          }
+        },
+        {
+          "Code": {
+            "start": 39579,
+            "end": 39705
+          }
+        },
+        {
+          "Code": {
+            "start": 39708,
+            "end": 39751
+          }
+        },
+        {
+          "Code": {
+            "start": 39814,
+            "end": 39838
+          }
+        },
+        {
+          "Words": {
+            "start": 39839,
+            "end": 39882
+          }
+        },
+        {
+          "Code": {
+            "start": 39883,
+            "end": 39900
+          }
+        },
+        {
+          "Words": {
+            "start": 39901,
+            "end": 39952
+          }
+        },
+        {
+          "Code": {
+            "start": 39953,
+            "end": 39975
+          }
+        },
+        {
+          "Code": {
+            "start": 39986,
+            "end": 40025
+          }
+        },
+        {
+          "Code": {
+            "start": 40028,
+            "end": 40104
+          }
+        },
+        {
+          "Code": {
+            "start": 40108,
+            "end": 40129
+          }
+        },
+        {
+          "Words": {
+            "start": 44990,
+            "end": 45093
+          }
+        },
+        {
+          "Words": {
+            "start": 45094,
+            "end": 45185
+          }
+        },
+        {
+          "Code": {
+            "start": 45186,
+            "end": 45232
+          }
+        },
+        {
+          "Words": {
+            "start": 45233,
+            "end": 45258
+          }
+        },
+        {
+          "Code": {
+            "start": 45259,
+            "end": 46044
+          }
+        },
+        {
+          "Words": {
+            "start": 46045,
+            "end": 46052
+          }
+        },
+        {
+          "Code": {
+            "start": 46053,
+            "end": 46066
+          }
+        },
+        {
+          "Words": {
+            "start": 46067,
+            "end": 46086
+          }
+        },
+        {
+          "Words": {
+            "start": 46115,
+            "end": 46118
+          }
+        },
+        {
+          "Words": {
+            "start": 46158,
+            "end": 46207
+          }
+        },
+        {
+          "Code": {
+            "start": 46208,
+            "end": 46277
+          }
+        },
+        {
+          "Code": {
+            "start": 46283,
+            "end": 46301
+          }
+        },
+        {
+          "Code": {
+            "start": 46307,
+            "end": 46368
+          }
+        },
+        {
+          "Code": {
+            "start": 46374,
+            "end": 46499
+          }
+        },
+        {
+          "Code": {
+            "start": 46510,
+            "end": 46527
+          }
+        },
+        {
+          "Code": {
+            "start": 46535,
+            "end": 46541
+          }
+        },
+        {
+          "Code": {
+            "start": 46544,
+            "end": 46628
+          }
+        },
+        {
+          "Code": {
+            "start": 46649,
+            "end": 46818
+          }
+        },
+        {
+          "Code": {
+            "start": 46823,
+            "end": 46831
+          }
+        },
+        {
+          "Code": {
+            "start": 46834,
+            "end": 47106
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "Pointer_table_for_Background_Areas_Data"
+        },
+        "33006": {
+          "symbol": "Objects_Construction_Routines_Cross_Hatched_Roof_2_high_X_wide_1x"
+        },
+        "33010": {
+          "symbol": "Objects_Construction_Routines_White_Shingle_Roof_2_high_X_wide_3x"
+        },
+        "33014": {
+          "symbol": "Objects_Construction_Routines_Green_Shingle_Roof_2_high_X_wide_4x"
+        },
+        "33018": {
+          "symbol": "Tile_Codes_for_House_Roofs"
+        },
+        "33026": {
+          "symbol": "Objects_Construction_Routines_Blocks_wall_in_caves_2_high_X_wide_Dx"
+        },
+        "33083": {
+          "symbol": "Objects_Construction_Routines_House_Facade__Bricks_X_wide__5x"
+        },
+        "33087": {
+          "symbol": "Objects_Construction_Routines_House_Facade__Small_bricks_X_wide_6x"
+        },
+        "33091": {
+          "symbol": "Objects_Construction_Routines_House_Facade__Grass_X_wide__7x"
+        },
+        "33095": {
+          "symbol": "Objects_Construction_Routines_House_Facade__White_bricks_X_wide_8x"
+        },
+        "33109": {
+          "symbol": "Objects_Construction_Routines_House_Facade__Logs_X_wide__9x"
+        },
+        "33150": {
+          "symbol": "Objects_Construction_Routines_Square_Window_1_wide_2_high_repeat_down_Ax"
+        },
+        "33154": {
+          "symbol": "Objects_Construction_Routines_Rounded_Window_1_wide_2_high_repeat_down_Bx"
+        },
+        "33158": {
+          "symbol": "Tile_Codes_for_House_Windows"
+        },
+        "33164": {
+          "symbol": "Objects_Construction_Routines_Hatched_Window_1_wide_2_high_repeat_down_Cx"
+        },
+        "33192": {
+          "symbol": "Objects_Construction_Routines_Indoor_Ceiling_3Step_Stairs_3_high_X_wide_3x"
+        },
+        "33234": {
+          "symbol": "Objects_Construction_Routines_Indoor_Ceiling_3Step_Stairs_3_high_X_wide_4x"
+        },
+        "33276": {
+          "symbol": "Tile_Codes_for_Portals_and_Walls"
+        },
+        "33384": {
+          "symbol": "Table_for_Portal_Wall_Tile_Codes_Offset"
+        },
+        "33388": {
+          "symbol": "SmallObjectsConstructionRoutines_Portal_to_Left_00"
+        },
+        "33392": {
+          "symbol": "SmallObjectsConstructionRoutines_Portal_to_Right_01"
+        },
+        "33396": {
+          "symbol": "SmallObjectsConstructionRoutines_Wall_to_Left_02"
+        },
+        "33400": {
+          "symbol": "SmallObjectsConstructionRoutines_Wall_to_Right_03"
+        },
+        "33454": {
+          "symbol": "table0"
+        },
+        "33458": {
+          "symbol": "SmallObjectsConstructionRoutines_Table__08"
+        },
+        "33481": {
+          "symbol": "table1"
+        },
+        "33487": {
+          "symbol": "SmallObjectsConstructionRoutines_Fireplace_04"
+        },
+        "33525": {
+          "symbol": "SmallObjectsConstructionRoutines_Undefined_Object_2_wide_extending_to_ground_04"
+        },
+        "33546": {
+          "symbol": "Objects_Construction_Routines_Water_X_wide_Y_Position_A___7x"
+        },
+        "33591": {
+          "symbol": "Tile_Codes_for_Special_Object_2x"
+        },
+        "33594": {
+          "symbol": "Objects_Construction_Routines_Background_wall_3_wide_X_high_Y_Position_4_2x"
+        },
+        "33635": {
+          "symbol": "Tile_Codes_for_Bridge_with_Water"
+        },
+        "33638": {
+          "symbol": "Objects_Construction_Routines_Bridge_with_Water_X_wide_Y_Position_A_6x"
+        },
+        "33684": {
+          "symbol": "Tile_Codes_for_Doors"
+        },
+        "33700": {
+          "symbol": "SmallObjectsConstructionRoutines_Closed_Door_with_Grass_00"
+        },
+        "33704": {
+          "symbol": "SmallObjectsConstructionRoutines_Open_Door_with_Grass_01"
+        },
+        "33708": {
+          "symbol": "SmallObjectsConstructionRoutines_Open_Door_with_Lines_02"
+        },
+        "33712": {
+          "symbol": "SmallObjectsConstructionRoutines_Open_Door_with_Bricks_03"
+        },
+        "33738": {
+          "symbol": "Table_2_for_Area_Objects_Tile_Mappings"
+        },
+        "33838": {
+          "symbol": "Table_3_for_Area_Objects_Tile_Mappings"
+        },
+        "34010": {
+          "symbol": "UNUSED_84DA"
+        },
+        "34048": {
+          "symbol": "Pointer_table_for_Objects_Tile_Mappings"
+        },
+        "34056": {
+          "symbol": "unused_table"
+        },
+        "34060": {
+          "symbol": "code7"
+        },
+        "34074": {
+          "symbol": "table3"
+        },
+        "34083": {
+          "symbol": "Area_Pointers__Towns"
+        },
+        "34209": {
+          "symbol": "Enemy_Pointers__Towns"
+        },
+        "34335": {
+          "symbol": "Tables_for_Level_Layers_Data"
+        },
+        "34371": {
+          "symbol": "Table_for_Level_Layers_Data_pointers"
+        },
+        "34375": {
+          "symbol": "Build_a_pointer_with_86_and_a_value_from_C643"
+        },
+        "34395": {
+          "symbol": "Objects_Construction_Routines_Bagu_maybe_confused_red_lumberjack__5x"
+        },
+        "34402": {
+          "symbol": "SmallObjectsConstructionRoutines_Cloud__Long_06"
+        },
+        "34406": {
+          "symbol": "Tile_Codes_for_Clouds_LongShort"
+        },
+        "34408": {
+          "symbol": "SmallObjectsConstructionRoutines_Cloud__Short_07"
+        },
+        "34424": {
+          "symbol": "SmallObjectsConstructionRoutines_Churchbell_0D"
+        },
+        "34428": {
+          "symbol": "SmallObjectsConstructionRoutines_Cross__0A"
+        },
+        "34433": {
+          "symbol": "table4"
+        },
+        "34435": {
+          "symbol": "SmallObjectsConstructionRoutines_Chair__05"
+        },
+        "34446": {
+          "symbol": "Tile_Codes_for_Bench"
+        },
+        "34451": {
+          "symbol": "SmallObjectsConstructionRoutines_Bench__09"
+        },
+        "34466": {
+          "symbol": "Table_0_1_for_Area_Objects_Tile_Mappings"
+        },
+        "34587": {
+          "symbol": "Room_Connectivity_Data_size_unknown"
+        },
+        "34839": {
+          "symbol": "Door_Destinations_in_Towns"
+        },
+        "34951": {
+          "symbol": "UNUSED_8887"
+        },
+        "34976": {
+          "symbol": "Enemy_Data_Towns_"
+        },
+        "35264": {
+          "symbol": "Area_Data_Towns1"
+        },
+        "35726": {
+          "symbol": "SmallObjectsConstructionRoutines_Locked_Door_glitched_tiles_0E"
+        },
+        "35733": {
+          "symbol": "Objects_Construction_Routines_Bushes_1_high_X_wide_Y_Position_A__1x"
+        },
+        "35761": {
+          "symbol": "UNUSED_8BB1"
+        },
+        "37104": {
+          "symbol": "Area_Data"
+        },
+        "37172": {
+          "symbol": "UNUSED_9134"
+        },
+        "37888": {
+          "symbol": "pointer_table2"
+        },
+        "37912": {
+          "symbol": "table5"
+        },
+        "37957": {
+          "symbol": "pointer_table3"
+        },
+        "38173": {
+          "symbol": "Enemy_Size_Codes_6E1D_in_RAM"
+        },
+        "38245": {
+          "symbol": "Pointer_table_for_Enemy_Routines"
+        },
+        "38317": {
+          "symbol": "rts"
+        },
+        "38318": {
+          "symbol": "table6"
+        },
+        "38336": {
+          "symbol": "pointer_table4"
+        },
+        "38436": {
+          "symbol": "Townfolks_Tile_Mappings_unknown0"
+        },
+        "38448": {
+          "symbol": "Related_to_Enemy_Velocities_in_Towns"
+        },
+        "38568": {
+          "symbol": "code13"
+        },
+        "38620": {
+          "symbol": "Townfolks_initial_X_Position_adjustment_2low_then_2high"
+        },
+        "38624": {
+          "symbol": "code14"
+        },
+        "38721": {
+          "symbol": "table8"
+        },
+        "38723": {
+          "symbol": "code15"
+        },
+        "38785": {
+          "symbol": "table9"
+        },
+        "38787": {
+          "symbol": "code16"
+        },
+        "39202": {
+          "symbol": "Tile_Mappings_for_Opening_Door"
+        },
+        "39238": {
+          "symbol": "Related_to_woman_opening_door"
+        },
+        "39468": {
+          "symbol": "Check_for_B_button_to_talk_to_people"
+        },
+        "39577": {
+          "symbol": "table10"
+        },
+        "39579": {
+          "symbol": "code17"
+        },
+        "39624": {
+          "symbol": "Enemy_Routines1_Wise_Man"
+        },
+        "39656": {
+          "symbol": "Enemy_Routines1_ManyNPC"
+        },
+        "39752": {
+          "symbol": "Background_Areas_Data"
+        },
+        "39796": {
+          "symbol": "Area_Data_Towns2"
+        },
+        "39814": {
+          "symbol": "code18"
+        },
+        "39839": {
+          "symbol": "Pointer_table_for_Objects_Construction_Routines"
+        },
+        "39883": {
+          "symbol": "code19"
+        },
+        "39901": {
+          "symbol": "Table_for_Small_Objects_Construction_Routines"
+        },
+        "39953": {
+          "symbol": "SmallObjectsConstructionRoutines_Sign__06"
+        },
+        "39976": {
+          "symbol": "Tile_Codes_for_Fountain"
+        },
+        "39986": {
+          "symbol": "SmallObjectsConstructionRoutines_Fountain_05"
+        },
+        "40026": {
+          "symbol": "table11"
+        },
+        "40028": {
+          "symbol": "SmallObjectsConstructionRoutines_Chimney_2_wide_1_high_cant_go_in__0C"
+        },
+        "40045": {
+          "symbol": "Objects_Construction_Routines_Column_X_high_1_wide___Ex"
+        },
+        "40076": {
+          "symbol": "Objects_Construction_Routines_Square_brick_wall_1_high_X_wide_Fx"
+        },
+        "40097": {
+          "symbol": "SmallObjectsConstructionRoutines_Gravestone_07"
+        },
+        "40101": {
+          "symbol": "SmallObjectsConstructionRoutines_Tomb_Decoration__Left_08"
+        },
+        "40105": {
+          "symbol": "Tile_Codes_for_Gravestone_and_Decorations"
+        },
+        "40108": {
+          "symbol": "SmallObjectsConstructionRoutines_Tomb_Decoration__Right_09"
+        },
+        "40130": {
+          "symbol": "Area_Data_Towns3"
+        },
+        "40202": {
+          "symbol": "UNUSED_9D0A"
+        },
+        "40960": {
+          "symbol": "Area_Data_Towns4"
+        },
+        "41528": {
+          "symbol": "related_to_dialog_indexes1"
+        },
+        "41628": {
+          "symbol": "related_to_dialog_indexes2"
+        },
+        "41692": {
+          "symbol": "related_to_dialog_indexes3"
+        },
+        "41792": {
+          "symbol": "related_to_dialog_indexes4"
+        },
+        "41856": {
+          "symbol": "Dialogs_Text_Table"
+        },
+        "44990": {
+          "symbol": "Dialogs_Pointer_Table_Towns_in_West_Hyrule"
+        },
+        "45094": {
+          "symbol": "Dialogs_Pointer_Table_Towns_in_East_Hyrule"
+        },
+        "45186": {
+          "symbol": "code20"
+        },
+        "45233": {
+          "symbol": "Pointer_table_for_Dialog_Routines"
+        },
+        "45259": {
+          "symbol": "Dialog_Routines_play_sound__R0"
+        },
+        "45266": {
+          "symbol": "Dialog_Routines_load_tiles_to_draw_the_dialog_box_lines_and_more__R1"
+        },
+        "45319": {
+          "symbol": "Dialog_Routines_advance_to_next_routine_in_this_table__R2"
+        },
+        "45323": {
+          "symbol": "Palette_modification_routine"
+        },
+        "45393": {
+          "symbol": "End_PPU_Macro"
+        },
+        "45443": {
+          "symbol": "Dialog_Routines_decrease_the_line_count_when_erasing_the_box__R3"
+        },
+        "45451": {
+          "symbol": "Redraw_over_Dialog_Box_row"
+        },
+        "45810": {
+          "symbol": "draw_tiles_for_2_rows"
+        },
+        "45847": {
+          "symbol": "check_if_Scrolling_Offset__bits_4_to_7__is_even"
+        },
+        "46045": {
+          "symbol": "Pointer_table_for_location_of_the_4_screens_in_RAM_"
+        },
+        "46053": {
+          "symbol": "Set_RAM_address_according_to_screen_number"
+        },
+        "46067": {
+          "symbol": "Pointer_table_for_rows_of_dialog_box"
+        },
+        "46087": {
+          "symbol": "Tables_for_dialog_box_rows_tile_mappings"
+        },
+        "46115": {
+          "symbol": "Pointer_table_for_Dialogs_Pointer_Table"
+        },
+        "46123": {
+          "symbol": "Related_to_Collectable_Objects_conditions"
+        },
+        "46158": {
+          "symbol": "Pointer_table_for_Dialog_Conditions"
+        },
+        "46208": {
+          "symbol": "Dialog_Routines_Set_text_pointer_according_to_Townfolk_type__R5"
+        },
+        "46243": {
+          "symbol": "Dialog_Conditions_Blue_Old_Woman__Immobile___River_Man"
+        },
+        "46267": {
+          "symbol": "Knight_Type_A_Downward_Stab__03"
+        },
+        "46291": {
+          "symbol": "Knight_Type_B_Up_Stab__03"
+        },
+        "46318": {
+          "symbol": "Dialog_Conditions_Blue_Lumberjack__Immobile"
+        },
+        "46333": {
+          "symbol": "Error_of_Ruto__04"
+        },
+        "46349": {
+          "symbol": "Unknown_Townfolk__04"
+        },
+        "46360": {
+          "symbol": "Dialog_Conditions_Wise_Man"
+        },
+        "46414": {
+          "symbol": "Dialog_Conditions_Immobile"
+        },
+        "46432": {
+          "symbol": "Dialog_Conditions_Idle"
+        },
+        "46461": {
+          "symbol": "Dialog_Conditions_HealerLady_MagicLady"
+        },
+        "46482": {
+          "symbol": "Dialog_Conditions_Walking"
+        },
+        "46510": {
+          "symbol": "Dialog_Conditions_Invisible_Dialog_Mirror"
+        },
+        "46521": {
+          "symbol": "Dialog_Conditions_Ache_Bit_talker"
+        },
+        "46535": {
+          "symbol": "Dialog_Conditions_default"
+        },
+        "46584": {
+          "symbol": "At_this_point_A_is_the_dialog_index"
+        },
+        "46625": {
+          "symbol": "Dialog_Routines_advance_to_next_routine_in_this_table__R2_duplicate"
+        },
+        "46637": {
+          "symbol": "code21"
+        },
+        "46678": {
+          "symbol": "End_of_Line_Routine"
+        },
+        "46750": {
+          "symbol": "Delay_counter_between_letters"
+        },
+        "46813": {
+          "symbol": "Load_a_letter"
+        },
+        "46939": {
+          "symbol": "Dialog_Routines_life_magic_restore"
+        },
+        "47014": {
+          "symbol": "Dialog_Routines_wait_for_B_button"
+        },
+        "47052": {
+          "symbol": "Townfolk_Transforming_into_Ache"
+        },
+        "47107": {
+          "symbol": "UNUSED_B803"
+        },
+        "49008": {
+          "symbol": "codeEND"
+        },
+        "49120": {
+          "symbol": "UNUSED_BFE0"
+        },
+        "49146": {
+          "symbol": "tableEND"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "4": {
+      "region": [
+        {
+          "Words": {
+            "start": 32768,
+            "end": 32781
+          }
+        },
+        {
+          "Code": {
+            "start": 33006,
+            "end": 33030
+          }
+        },
+        {
+          "Words": {
+            "start": 33031,
+            "end": 33070
+          }
+        },
+        {
+          "Code": {
+            "start": 33071,
+            "end": 33074
+          }
+        },
+        {
+          "Words": {
+            "start": 33075,
+            "end": 33086
+          }
+        },
+        {
+          "Words": {
+            "start": 33087,
+            "end": 33096
+          }
+        },
+        {
+          "Words": {
+            "start": 33097,
+            "end": 33106
+          }
+        },
+        {
+          "Code": {
+            "start": 33127,
+            "end": 33146
+          }
+        },
+        {
+          "Code": {
+            "start": 33177,
+            "end": 33355
+          }
+        },
+        {
+          "Code": {
+            "start": 33369,
+            "end": 33380
+          }
+        },
+        {
+          "Code": {
+            "start": 33389,
+            "end": 33405
+          }
+        },
+        {
+          "Code": {
+            "start": 33431,
+            "end": 33490
+          }
+        },
+        {
+          "Code": {
+            "start": 33493,
+            "end": 33508
+          }
+        },
+        {
+          "Words": {
+            "start": 34048,
+            "end": 34055
+          }
+        },
+        {
+          "Code": {
+            "start": 34060,
+            "end": 34073
+          }
+        },
+        {
+          "Words": {
+            "start": 34083,
+            "end": 34134
+          }
+        },
+        {
+          "Words": {
+            "start": 34135,
+            "end": 34208
+          }
+        },
+        {
+          "Words": {
+            "start": 34209,
+            "end": 34334
+          }
+        },
+        {
+          "Words": {
+            "start": 37888,
+            "end": 37903
+          }
+        },
+        {
+          "Words": {
+            "start": 37910,
+            "end": 37911
+          }
+        },
+        {
+          "Words": {
+            "start": 37957,
+            "end": 38028
+          }
+        },
+        {
+          "Words": {
+            "start": 38029,
+            "end": 38100
+          }
+        },
+        {
+          "Words": {
+            "start": 38245,
+            "end": 38316
+          }
+        },
+        {
+          "Code": {
+            "start": 38317,
+            "end": 38317
+          }
+        },
+        {
+          "Words": {
+            "start": 38338,
+            "end": 38355
+          }
+        },
+        {
+          "Code": {
+            "start": 38490,
+            "end": 38573
+          }
+        },
+        {
+          "Code": {
+            "start": 38577,
+            "end": 38701
+          }
+        },
+        {
+          "Code": {
+            "start": 38717,
+            "end": 38730
+          }
+        },
+        {
+          "Code": {
+            "start": 38734,
+            "end": 38832
+          }
+        },
+        {
+          "Code": {
+            "start": 38837,
+            "end": 38876
+          }
+        },
+        {
+          "Code": {
+            "start": 38881,
+            "end": 38932
+          }
+        },
+        {
+          "Code": {
+            "start": 38941,
+            "end": 39047
+          }
+        },
+        {
+          "Code": {
+            "start": 39081,
+            "end": 39271
+          }
+        },
+        {
+          "Code": {
+            "start": 39274,
+            "end": 39402
+          }
+        },
+        {
+          "Code": {
+            "start": 39405,
+            "end": 39549
+          }
+        },
+        {
+          "Code": {
+            "start": 39554,
+            "end": 39593
+          }
+        },
+        {
+          "Code": {
+            "start": 39636,
+            "end": 39650
+          }
+        },
+        {
+          "Words": {
+            "start": 39651,
+            "end": 39658
+          }
+        },
+        {
+          "Code": {
+            "start": 39659,
+            "end": 39816
+          }
+        },
+        {
+          "Code": {
+            "start": 39829,
+            "end": 39884
+          }
+        },
+        {
+          "Code": {
+            "start": 39901,
+            "end": 40060
+          }
+        },
+        {
+          "Code": {
+            "start": 40076,
+            "end": 40182
+          }
+        },
+        {
+          "Code": {
+            "start": 40186,
+            "end": 40500
+          }
+        },
+        {
+          "Code": {
+            "start": 40517,
+            "end": 40636
+          }
+        },
+        {
+          "Code": {
+            "start": 40641,
+            "end": 40671
+          }
+        },
+        {
+          "Words": {
+            "start": 40960,
+            "end": 41085
+          }
+        },
+        {
+          "Words": {
+            "start": 41086,
+            "end": 41211
+          }
+        },
+        {
+          "Words": {
+            "start": 43264,
+            "end": 43287
+          }
+        },
+        {
+          "Words": {
+            "start": 43333,
+            "end": 43404
+          }
+        },
+        {
+          "Words": {
+            "start": 43405,
+            "end": 43476
+          }
+        },
+        {
+          "Words": {
+            "start": 43621,
+            "end": 43692
+          }
+        },
+        {
+          "Code": {
+            "start": 43693,
+            "end": 43693
+          }
+        },
+        {
+          "Words": {
+            "start": 43714,
+            "end": 43731
+          }
+        },
+        {
+          "Code": {
+            "start": 43928,
+            "end": 44000
+          }
+        },
+        {
+          "Code": {
+            "start": 44004,
+            "end": 44240
+          }
+        },
+        {
+          "Code": {
+            "start": 44249,
+            "end": 44435
+          }
+        },
+        {
+          "Code": {
+            "start": 44446,
+            "end": 44575
+          }
+        },
+        {
+          "Code": {
+            "start": 44592,
+            "end": 44614
+          }
+        },
+        {
+          "Code": {
+            "start": 44623,
+            "end": 44833
+          }
+        },
+        {
+          "Code": {
+            "start": 44838,
+            "end": 44979
+          }
+        },
+        {
+          "Code": {
+            "start": 44988,
+            "end": 45225
+          }
+        },
+        {
+          "Code": {
+            "start": 45229,
+            "end": 45329
+          }
+        },
+        {
+          "Code": {
+            "start": 45332,
+            "end": 45332
+          }
+        },
+        {
+          "Code": {
+            "start": 45343,
+            "end": 45367
+          }
+        },
+        {
+          "Words": {
+            "start": 45368,
+            "end": 45375
+          }
+        },
+        {
+          "Code": {
+            "start": 45376,
+            "end": 45465
+          }
+        },
+        {
+          "Code": {
+            "start": 45502,
+            "end": 45502
+          }
+        },
+        {
+          "Code": {
+            "start": 45534,
+            "end": 45669
+          }
+        },
+        {
+          "Code": {
+            "start": 45712,
+            "end": 45886
+          }
+        },
+        {
+          "Code": {
+            "start": 45891,
+            "end": 45975
+          }
+        },
+        {
+          "Code": {
+            "start": 45992,
+            "end": 46420
+          }
+        },
+        {
+          "Code": {
+            "start": 46423,
+            "end": 46428
+          }
+        },
+        {
+          "Code": {
+            "start": 46510,
+            "end": 46633
+          }
+        },
+        {
+          "Code": {
+            "start": 46636,
+            "end": 46701
+          }
+        },
+        {
+          "Code": {
+            "start": 46705,
+            "end": 46785
+          }
+        },
+        {
+          "Code": {
+            "start": 46789,
+            "end": 46881
+          }
+        },
+        {
+          "Code": {
+            "start": 46888,
+            "end": 46920
+          }
+        },
+        {
+          "Code": {
+            "start": 46937,
+            "end": 47015
+          }
+        },
+        {
+          "Code": {
+            "start": 47024,
+            "end": 47038
+          }
+        },
+        {
+          "Code": {
+            "start": 47045,
+            "end": 47198
+          }
+        },
+        {
+          "Code": {
+            "start": 47201,
+            "end": 47407
+          }
+        },
+        {
+          "Code": {
+            "start": 47420,
+            "end": 47481
+          }
+        },
+        {
+          "Code": {
+            "start": 47484,
+            "end": 47639
+          }
+        },
+        {
+          "Code": {
+            "start": 47648,
+            "end": 47699
+          }
+        },
+        {
+          "Code": {
+            "start": 47703,
+            "end": 47808
+          }
+        },
+        {
+          "Code": {
+            "start": 47811,
+            "end": 47831
+          }
+        },
+        {
+          "Code": {
+            "start": 47834,
+            "end": 48170
+          }
+        },
+        {
+          "Code": {
+            "start": 48206,
+            "end": 48245
+          }
+        },
+        {
+          "Code": {
+            "start": 48254,
+            "end": 48299
+          }
+        },
+        {
+          "Code": {
+            "start": 48303,
+            "end": 48355
+          }
+        },
+        {
+          "Code": {
+            "start": 48367,
+            "end": 48498
+          }
+        },
+        {
+          "Code": {
+            "start": 48501,
+            "end": 48589
+          }
+        },
+        {
+          "Code": {
+            "start": 48592,
+            "end": 48618
+          }
+        },
+        {
+          "Code": {
+            "start": 48621,
+            "end": 48844
+          }
+        },
+        {
+          "Code": {
+            "start": 48866,
+            "end": 48892
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "Pointer_table_for_Background_Areas_Data"
+        },
+        "32782": {
+          "symbol": "Default_Palettes_for_Palaces_Type_A_B_"
+        },
+        "33006": {
+          "symbol": "code0"
+        },
+        "33031": {
+          "symbol": "Pointer_table_for_Objects_Construction_Routines"
+        },
+        "33071": {
+          "symbol": "code1"
+        },
+        "33075": {
+          "symbol": "Pointer_table_for_Small_Objects_Construction_Routines"
+        },
+        "33107": {
+          "symbol": "Tables_for_Level_Layers_Data"
+        },
+        "33125": {
+          "symbol": "Table_for_Level_Layers_Data_pointers"
+        },
+        "33127": {
+          "symbol": "Build_a_pointer_with_81_and_a_value_from_10165"
+        },
+        "33147": {
+          "symbol": "Tile_Codes_for_Objects_Set_0_Background"
+        },
+        "33175": {
+          "symbol": "Tile_Codes_for_Objects_Set_0_Background3"
+        },
+        "33177": {
+          "symbol": "Objects_Construction_Routines_Object_1_high_X_wide"
+        },
+        "33183": {
+          "symbol": "Objects_Construction_Routines_Object_2_high_X_wide"
+        },
+        "33216": {
+          "symbol": "Objects_Construction_Routines_Object_X_high_1_wide_single_tile_type"
+        },
+        "33222": {
+          "symbol": "Objects_Construction_Routines_Object_X_high_1_wide"
+        },
+        "33294": {
+          "symbol": "Objects_Construction_Routines_Lava_Pit_2_high_bottom_of_screen"
+        },
+        "33342": {
+          "symbol": "Objects_Construction_Routines_Elevator"
+        },
+        "33349": {
+          "symbol": "Small_Objects_Construction_Routines_Locked_Door"
+        },
+        "33369": {
+          "symbol": "Small_Objects_Construction_Routines_Window_2_high"
+        },
+        "33373": {
+          "symbol": "Small_Objects_Construction_Routines_Mau_Statue_facing_left_2_high"
+        },
+        "33377": {
+          "symbol": "Small_Objects_Construction_Routines_Ra_Statue_facing_right_2_high"
+        },
+        "33381": {
+          "symbol": "Tile_Codes_for_Window__Mau_Statue__Ra_Statue_and_Ironknuckle_Statue"
+        },
+        "33389": {
+          "symbol": "Small_Objects_Construction_Routines_Ironknuckle_Statue"
+        },
+        "33426": {
+          "symbol": "Table_for_Crystal_Statue_Tile_Mappings4"
+        },
+        "33431": {
+          "symbol": "Small_Objects_Construction_Routines_Crystal_Statue"
+        },
+        "33462": {
+          "symbol": "Objects_Construction_Routines_Pit_2_high_X_wide_extending_to_bottom"
+        },
+        "33487": {
+          "symbol": "Small_Objects_Construction_Routines_Cloud__Long"
+        },
+        "33491": {
+          "symbol": "Tile_Codes_for_Clouds"
+        },
+        "33493": {
+          "symbol": "Small_Objects_Construction_Routines_Cloud__Short"
+        },
+        "33509": {
+          "symbol": "Area_Data_for_Palaces_Type_A_Entrance"
+        },
+        "33563": {
+          "symbol": "Area_Data_for_Palaces_Type_A_Boss_Room_and_Crystal_Statue"
+        },
+        "33629": {
+          "symbol": "Table_0_1_for_Area_Objects_Tile_Mappings_8"
+        },
+        "33657": {
+          "symbol": "Table_2_for_Area_Objects_Tile_Mappings_"
+        },
+        "33681": {
+          "symbol": "Table_3_for_Area_Objects_Tile_Mappings_"
+        },
+        "33756": {
+          "symbol": "UNUSED_83DC"
+        },
+        "33904": {
+          "symbol": "Palaces_Type_A_B_Palettes"
+        },
+        "34032": {
+          "symbol": "UNUSED_84F0"
+        },
+        "34048": {
+          "symbol": "Pointer_table_for_Objects_Tile_Mappings"
+        },
+        "34056": {
+          "symbol": "Unused_Table"
+        },
+        "34060": {
+          "symbol": "Related_to_False_Wall_maybe"
+        },
+        "34074": {
+          "symbol": "table0"
+        },
+        "34083": {
+          "symbol": "Area_Pointers_Palaces_Type_A"
+        },
+        "34209": {
+          "symbol": "Enemy_Pointers_Palaces_Type_A"
+        },
+        "34335": {
+          "symbol": "Area_Data_for_Palaces_Type_A"
+        },
+        "34574": {
+          "symbol": "UNUSED_870E"
+        },
+        "34587": {
+          "symbol": "Room_Connectivity_Data_for_Palaces_Type_A_"
+        },
+        "34839": {
+          "symbol": "UNUSED_8817"
+        },
+        "34976": {
+          "symbol": "Enemy_Data_for_Palaces_Type_A_B"
+        },
+        "35955": {
+          "symbol": "Area_Data"
+        },
+        "36547": {
+          "symbol": "UNUSED_8EC3"
+        },
+        "37888": {
+          "symbol": "pointer_table_Related_to_projectiles_maybe"
+        },
+        "37904": {
+          "symbol": "table_padding"
+        },
+        "37910": {
+          "symbol": "pointer_table1"
+        },
+        "37912": {
+          "symbol": "table1"
+        },
+        "37921": {
+          "symbol": "Enemy_Hit_Points0"
+        },
+        "37957": {
+          "symbol": "Pointer_table_for_Enemy_Init_Routines"
+        },
+        "38029": {
+          "symbol": "Pointer_table_for_Enemy_Routines0"
+        },
+        "38173": {
+          "symbol": "Enemy_Size_Codes0"
+        },
+        "38245": {
+          "symbol": "Pointer_table_for_Enemy_Routines1"
+        },
+        "38317": {
+          "symbol": "code_rts1"
+        },
+        "38326": {
+          "symbol": "table3"
+        },
+        "38338": {
+          "symbol": "pointer_table2"
+        },
+        "38382": {
+          "symbol": "Various_Tile_Mappings9"
+        },
+        "38490": {
+          "symbol": "Enemy_Routines_Stalfos"
+        },
+        "38833": {
+          "symbol": "related_to_Guma"
+        },
+        "38837": {
+          "symbol": "code4"
+        },
+        "38860": {
+          "symbol": "Enemy_Routines1_Tinsuit"
+        },
+        "38877": {
+          "symbol": "Table_for_Guma"
+        },
+        "38881": {
+          "symbol": "Enemy_Routines1_Guma"
+        },
+        "38933": {
+          "symbol": "Table_related_to_Horsehead"
+        },
+        "38941": {
+          "symbol": "Enemy_Routines1_Horsehead"
+        },
+        "39018": {
+          "symbol": "code6"
+        },
+        "39082": {
+          "symbol": "Enemy_Init_Routines_Bubble__Slow"
+        },
+        "39086": {
+          "symbol": "Enemy_Init_Routines_Bubble__Fast"
+        },
+        "39094": {
+          "symbol": "Enemy_Init_Routines_Tinsuit"
+        },
+        "39148": {
+          "symbol": "Enemy_Routines1_Dripping_Column"
+        },
+        "39272": {
+          "symbol": "table16"
+        },
+        "39274": {
+          "symbol": "code_996A"
+        },
+        "39377": {
+          "symbol": "Enemy_Routines_Bubble__Slow_Fast"
+        },
+        "39464": {
+          "symbol": "Enemy_Init_Routines_Generator"
+        },
+        "39539": {
+          "symbol": "Enemy_Init_Routines_Crystal_Slot_and_Crystal"
+        },
+        "39563": {
+          "symbol": "Enemy_Routines_Crystal"
+        },
+        "39594": {
+          "symbol": "table5"
+        },
+        "39636": {
+          "symbol": "Enemy_Routines_Crystal_Slot"
+        },
+        "39659": {
+          "symbol": "Related_to_placing_crystal_onto_statue"
+        },
+        "39723": {
+          "symbol": "Crystal_Flying_Up"
+        },
+        "39817": {
+          "symbol": "Table_for_Crystal_Flashing_Colors_maybe"
+        },
+        "39829": {
+          "symbol": "code8"
+        },
+        "39885": {
+          "symbol": "table6"
+        },
+        "39901": {
+          "symbol": "Enemy_Routines_Energy_Ball_Shooter__Left_Right"
+        },
+        "40076": {
+          "symbol": "Enemy_Routines_Iron_Knuckle"
+        },
+        "40501": {
+          "symbol": "table7"
+        },
+        "40517": {
+          "symbol": "Enemy_Routines1_Iron_Knuckle"
+        },
+        "40637": {
+          "symbol": "table_9EBD"
+        },
+        "40641": {
+          "symbol": "Enemy_Routines_Tinsuit_Generator"
+        },
+        "40672": {
+          "symbol": "UNUSED_9EE0"
+        },
+        "40960": {
+          "symbol": "Area_Pointers_Palaces_Type_B_"
+        },
+        "41086": {
+          "symbol": "Enemy_Pointers_Palaces_Type_B"
+        },
+        "41212": {
+          "symbol": "Area_Data_Palaces_Type_B0"
+        },
+        "41443": {
+          "symbol": "UNUSED_A1E3"
+        },
+        "41464": {
+          "symbol": "Room_Connectivity_Data_for_Palaces_Type_B"
+        },
+        "41716": {
+          "symbol": "Area_Data_Palaces_Type_B1"
+        },
+        "41979": {
+          "symbol": "UNUSED_A3FB"
+        },
+        "42048": {
+          "symbol": "Area_Data_Palaces_Type_B2"
+        },
+        "42297": {
+          "symbol": "UNUSED_A539"
+        },
+        "42560": {
+          "symbol": "Area_Data_Palaces_Type_B3"
+        },
+        "42853": {
+          "symbol": "UNUSED_A765"
+        },
+        "43264": {
+          "symbol": "pointer_table3"
+        },
+        "43288": {
+          "symbol": "table9"
+        },
+        "43297": {
+          "symbol": "Enemy_Hit_Points1"
+        },
+        "43333": {
+          "symbol": "Enemy_Init_Routines_pointers"
+        },
+        "43405": {
+          "symbol": "Pointer_table_for_Enemy_Routines2"
+        },
+        "43549": {
+          "symbol": "Enemy_Size_Codes1"
+        },
+        "43621": {
+          "symbol": "Pointer_table_for_Enemy_Routines3"
+        },
+        "43693": {
+          "symbol": "code_rts2"
+        },
+        "43694": {
+          "symbol": "table10"
+        },
+        "43714": {
+          "symbol": "Pointer_table_for_Projectiles_Routines"
+        },
+        "43732": {
+          "symbol": "table11"
+        },
+        "43928": {
+          "symbol": "Enemy_Routines_Falling_Block_Generator"
+        },
+        "44009": {
+          "symbol": "Enemy_Routines_Falling_Block"
+        },
+        "44032": {
+          "symbol": "Related_to_Falling_Blocks"
+        },
+        "44241": {
+          "symbol": "table_ACD1"
+        },
+        "44249": {
+          "symbol": "code13"
+        },
+        "44329": {
+          "symbol": "Related_to_Helmethead_maybe0"
+        },
+        "44432": {
+          "symbol": "Related_to_Helmethead_maybe1"
+        },
+        "44588": {
+          "symbol": "table_AE2C"
+        },
+        "44615": {
+          "symbol": "table_AE47"
+        },
+        "44834": {
+          "symbol": "maybe_ik_table"
+        },
+        "44980": {
+          "symbol": "table_AFB4"
+        },
+        "45333": {
+          "symbol": "table_B115"
+        },
+        "45369": {
+          "symbol": "table_B139_looks_like_pointer"
+        },
+        "45670": {
+          "symbol": "table_B266"
+        },
+        "45887": {
+          "symbol": "table_B33F"
+        },
+        "45976": {
+          "symbol": "table_B398"
+        },
+        "46429": {
+          "symbol": "table_B55D"
+        },
+        "47024": {
+          "symbol": "Enemy_Routines1_Bubble"
+        },
+        "47039": {
+          "symbol": "Mago_Table"
+        },
+        "47045": {
+          "symbol": "Enemy_Routines_Mago"
+        },
+        "47155": {
+          "symbol": "Enemy_Routines1_Ra_Flying_Unicorn_Head"
+        },
+        "47166": {
+          "symbol": "Enemy_Routines_Hidden_Red_Jar"
+        },
+        "47199": {
+          "symbol": "table13"
+        },
+        "47201": {
+          "symbol": "Enemy_Routines_Mau_Generator"
+        },
+        "47291": {
+          "symbol": "Enemy_Routines_Mau_Wolf_Head"
+        },
+        "47356": {
+          "symbol": "Enemy_Init_Routines_Energy_Ball_Shooter__Left_Right"
+        },
+        "47364": {
+          "symbol": "Enemy_Routines1_Mau"
+        },
+        "47369": {
+          "symbol": "Enemy_Routines_Moa"
+        },
+        "47551": {
+          "symbol": "Enemy_Routines_Dripping_Column"
+        },
+        "47604": {
+          "symbol": "Enemy_Init_Routines_Ra_Unicorn_Head"
+        },
+        "47640": {
+          "symbol": "Ra_Position_Table"
+        },
+        "47648": {
+          "symbol": "Enemy_Routines_Ra_Unicorn_Head"
+        },
+        "47703": {
+          "symbol": "Enemy_Routines_Guma"
+        },
+        "47811": {
+          "symbol": "Enemy_Routines_Helmethead__Gooma"
+        },
+        "47967": {
+          "symbol": "Enemy_Routines_Horsehead"
+        },
+        "48163": {
+          "symbol": "increase_animation_frame__and_set_timer_for_next_AI__maybe"
+        },
+        "48206": {
+          "symbol": "Related_to_Horsehead"
+        },
+        "48246": {
+          "symbol": "Table_for_Helmethead_Gooma"
+        },
+        "48254": {
+          "symbol": "Enemy_Init_Routines_Helmethead__Gooma__Barba"
+        },
+        "48289": {
+          "symbol": "Enemy_Init_Routines_Horsehead__Rebonack"
+        },
+        "48316": {
+          "symbol": "Enemy_Routines_Tinsuit"
+        },
+        "48356": {
+          "symbol": "table15"
+        },
+        "48367": {
+          "symbol": "Enemy_Routines_Floating_Helmet"
+        },
+        "48499": {
+          "symbol": "table_BD73"
+        },
+        "48501": {
+          "symbol": "Enemy_Routines1_Helmethead__Gooma"
+        },
+        "48590": {
+          "symbol": "table_BDCE"
+        },
+        "48592": {
+          "symbol": "Enemy_Routines1_Floating_Helmet"
+        },
+        "48619": {
+          "symbol": "direction_table0"
+        },
+        "48621": {
+          "symbol": "Enemy_Routines1_Stalfos"
+        },
+        "48763": {
+          "symbol": "Enemy_Routines1_Mago"
+        },
+        "48896": {
+          "symbol": "Palettes_for_Palaces1"
+        },
+        "48912": {
+          "symbol": "Palettes_for_Palaces2"
+        },
+        "48928": {
+          "symbol": "Palettes_for_Palaces3"
+        },
+        "48944": {
+          "symbol": "Palettes_for_Palaces4"
+        },
+        "48960": {
+          "symbol": "Palettes_for_Palaces5"
+        },
+        "48976": {
+          "symbol": "Palettes_for_Palaces6"
+        },
+        "48992": {
+          "symbol": "UNUSED_BF60"
+        },
+        "49120": {
+          "symbol": "ending_BFE0"
+        },
+        "49146": {
+          "symbol": "tableEND"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "5": {
+      "region": [
+        {
+          "Code": {
+            "start": 33006,
+            "end": 33030
+          }
+        },
+        {
+          "Words": {
+            "start": 33031,
+            "end": 33060
+          }
+        },
+        {
+          "Words": {
+            "start": 33061,
+            "end": 33070
+          }
+        },
+        {
+          "Code": {
+            "start": 33071,
+            "end": 33074
+          }
+        },
+        {
+          "Words": {
+            "start": 33075,
+            "end": 33086
+          }
+        },
+        {
+          "Words": {
+            "start": 33087,
+            "end": 33096
+          }
+        },
+        {
+          "Words": {
+            "start": 33097,
+            "end": 33106
+          }
+        },
+        {
+          "Code": {
+            "start": 33147,
+            "end": 33166
+          }
+        },
+        {
+          "Code": {
+            "start": 33197,
+            "end": 33365
+          }
+        },
+        {
+          "Code": {
+            "start": 33386,
+            "end": 33389
+          }
+        },
+        {
+          "Code": {
+            "start": 33406,
+            "end": 33460
+          }
+        },
+        {
+          "Code": {
+            "start": 33463,
+            "end": 33478
+          }
+        },
+        {
+          "Words": {
+            "start": 34048,
+            "end": 34055
+          }
+        },
+        {
+          "Code": {
+            "start": 34060,
+            "end": 34073
+          }
+        },
+        {
+          "Words": {
+            "start": 34083,
+            "end": 34134
+          }
+        },
+        {
+          "Words": {
+            "start": 34135,
+            "end": 34208
+          }
+        },
+        {
+          "Words": {
+            "start": 34209,
+            "end": 34334
+          }
+        },
+        {
+          "Code": {
+            "start": 35664,
+            "end": 35762
+          }
+        },
+        {
+          "Code": {
+            "start": 35775,
+            "end": 35814
+          }
+        },
+        {
+          "Words": {
+            "start": 35815,
+            "end": 35844
+          }
+        },
+        {
+          "Code": {
+            "start": 35869,
+            "end": 36065
+          }
+        },
+        {
+          "Code": {
+            "start": 36067,
+            "end": 36102
+          }
+        },
+        {
+          "Code": {
+            "start": 36112,
+            "end": 36145
+          }
+        },
+        {
+          "Code": {
+            "start": 36148,
+            "end": 36170
+          }
+        },
+        {
+          "Code": {
+            "start": 36196,
+            "end": 36236
+          }
+        },
+        {
+          "Code": {
+            "start": 36282,
+            "end": 36320
+          }
+        },
+        {
+          "Code": {
+            "start": 36362,
+            "end": 36487
+          }
+        },
+        {
+          "Words": {
+            "start": 36488,
+            "end": 36493
+          }
+        },
+        {
+          "Code": {
+            "start": 36494,
+            "end": 36512
+          }
+        },
+        {
+          "Code": {
+            "start": 36526,
+            "end": 36602
+          }
+        },
+        {
+          "Code": {
+            "start": 36635,
+            "end": 36750
+          }
+        },
+        {
+          "Code": {
+            "start": 36766,
+            "end": 36939
+          }
+        },
+        {
+          "Words": {
+            "start": 36940,
+            "end": 36949
+          }
+        },
+        {
+          "Code": {
+            "start": 36981,
+            "end": 37037
+          }
+        },
+        {
+          "Words": {
+            "start": 37046,
+            "end": 37049
+          }
+        },
+        {
+          "Code": {
+            "start": 37118,
+            "end": 37223
+          }
+        },
+        {
+          "Code": {
+            "start": 37235,
+            "end": 37464
+          }
+        },
+        {
+          "Words": {
+            "start": 37465,
+            "end": 37500
+          }
+        },
+        {
+          "Words": {
+            "start": 37888,
+            "end": 37911
+          }
+        },
+        {
+          "Words": {
+            "start": 37957,
+            "end": 38028
+          }
+        },
+        {
+          "Words": {
+            "start": 38029,
+            "end": 38100
+          }
+        },
+        {
+          "Words": {
+            "start": 38245,
+            "end": 38316
+          }
+        },
+        {
+          "Code": {
+            "start": 38317,
+            "end": 38317
+          }
+        },
+        {
+          "Code": {
+            "start": 38444,
+            "end": 38494
+          }
+        },
+        {
+          "Code": {
+            "start": 38503,
+            "end": 38724
+          }
+        },
+        {
+          "Code": {
+            "start": 38746,
+            "end": 38851
+          }
+        },
+        {
+          "Code": {
+            "start": 38854,
+            "end": 38861
+          }
+        },
+        {
+          "Words": {
+            "start": 38862,
+            "end": 38877
+          }
+        },
+        {
+          "Code": {
+            "start": 38878,
+            "end": 39058
+          }
+        },
+        {
+          "Code": {
+            "start": 39063,
+            "end": 39152
+          }
+        },
+        {
+          "Code": {
+            "start": 39155,
+            "end": 39167
+          }
+        },
+        {
+          "Words": {
+            "start": 39168,
+            "end": 39179
+          }
+        },
+        {
+          "Code": {
+            "start": 39185,
+            "end": 39219
+          }
+        },
+        {
+          "Code": {
+            "start": 39221,
+            "end": 39227
+          }
+        },
+        {
+          "Code": {
+            "start": 39230,
+            "end": 39325
+          }
+        },
+        {
+          "Code": {
+            "start": 39332,
+            "end": 39387
+          }
+        },
+        {
+          "Code": {
+            "start": 39394,
+            "end": 39497
+          }
+        },
+        {
+          "Code": {
+            "start": 39504,
+            "end": 39556
+          }
+        },
+        {
+          "Code": {
+            "start": 39565,
+            "end": 40086
+          }
+        },
+        {
+          "Code": {
+            "start": 40089,
+            "end": 40229
+          }
+        },
+        {
+          "Code": {
+            "start": 40236,
+            "end": 40306
+          }
+        },
+        {
+          "Code": {
+            "start": 40311,
+            "end": 40330
+          }
+        },
+        {
+          "Code": {
+            "start": 40334,
+            "end": 40549
+          }
+        },
+        {
+          "Code": {
+            "start": 40555,
+            "end": 40899
+          }
+        },
+        {
+          "Code": {
+            "start": 40916,
+            "end": 41102
+          }
+        },
+        {
+          "Code": {
+            "start": 41105,
+            "end": 41149
+          }
+        },
+        {
+          "Code": {
+            "start": 41152,
+            "end": 41338
+          }
+        },
+        {
+          "Code": {
+            "start": 41344,
+            "end": 41444
+          }
+        },
+        {
+          "Code": {
+            "start": 41451,
+            "end": 41462
+          }
+        },
+        {
+          "Code": {
+            "start": 41482,
+            "end": 41487
+          }
+        },
+        {
+          "Code": {
+            "start": 41524,
+            "end": 41588
+          }
+        },
+        {
+          "Code": {
+            "start": 41596,
+            "end": 41756
+          }
+        },
+        {
+          "Code": {
+            "start": 41787,
+            "end": 41797
+          }
+        },
+        {
+          "Code": {
+            "start": 41801,
+            "end": 41806
+          }
+        },
+        {
+          "Code": {
+            "start": 41817,
+            "end": 41869
+          }
+        },
+        {
+          "Code": {
+            "start": 41906,
+            "end": 42091
+          }
+        },
+        {
+          "Code": {
+            "start": 42098,
+            "end": 42167
+          }
+        },
+        {
+          "Code": {
+            "start": 42180,
+            "end": 42298
+          }
+        },
+        {
+          "Code": {
+            "start": 42305,
+            "end": 42318
+          }
+        },
+        {
+          "Code": {
+            "start": 42512,
+            "end": 42718
+          }
+        },
+        {
+          "Code": {
+            "start": 42725,
+            "end": 42756
+          }
+        },
+        {
+          "Words": {
+            "start": 42757,
+            "end": 42766
+          }
+        },
+        {
+          "Code": {
+            "start": 42767,
+            "end": 42880
+          }
+        },
+        {
+          "Code": {
+            "start": 42887,
+            "end": 42944
+          }
+        },
+        {
+          "Code": {
+            "start": 43201,
+            "end": 43313
+          }
+        },
+        {
+          "Code": {
+            "start": 43885,
+            "end": 43948
+          }
+        },
+        {
+          "Code": {
+            "start": 44005,
+            "end": 44010
+          }
+        },
+        {
+          "Code": {
+            "start": 44023,
+            "end": 44048
+          }
+        },
+        {
+          "Code": {
+            "start": 44081,
+            "end": 44086
+          }
+        },
+        {
+          "Code": {
+            "start": 44093,
+            "end": 44211
+          }
+        },
+        {
+          "Code": {
+            "start": 44216,
+            "end": 44265
+          }
+        },
+        {
+          "Code": {
+            "start": 44270,
+            "end": 44347
+          }
+        },
+        {
+          "Code": {
+            "start": 44382,
+            "end": 44387
+          }
+        },
+        {
+          "Code": {
+            "start": 44512,
+            "end": 44564
+          }
+        },
+        {
+          "Code": {
+            "start": 44737,
+            "end": 44755
+          }
+        },
+        {
+          "Code": {
+            "start": 44774,
+            "end": 44774
+          }
+        },
+        {
+          "Code": {
+            "start": 44831,
+            "end": 44836
+          }
+        },
+        {
+          "Code": {
+            "start": 44843,
+            "end": 44860
+          }
+        },
+        {
+          "Code": {
+            "start": 45613,
+            "end": 45621
+          }
+        },
+        {
+          "Code": {
+            "start": 45634,
+            "end": 45639
+          }
+        },
+        {
+          "Code": {
+            "start": 45646,
+            "end": 45741
+          }
+        },
+        {
+          "Code": {
+            "start": 45748,
+            "end": 45762
+          }
+        },
+        {
+          "Code": {
+            "start": 45806,
+            "end": 45844
+          }
+        },
+        {
+          "Code": {
+            "start": 45849,
+            "end": 45887
+          }
+        },
+        {
+          "Code": {
+            "start": 45895,
+            "end": 45911
+          }
+        },
+        {
+          "Code": {
+            "start": 45919,
+            "end": 45928
+          }
+        },
+        {
+          "Code": {
+            "start": 45934,
+            "end": 45951
+          }
+        },
+        {
+          "Code": {
+            "start": 45956,
+            "end": 46036
+          }
+        },
+        {
+          "Words": {
+            "start": 46037,
+            "end": 46046
+          }
+        },
+        {
+          "Code": {
+            "start": 46047,
+            "end": 46073
+          }
+        },
+        {
+          "Words": {
+            "start": 46080,
+            "end": 46089
+          }
+        },
+        {
+          "Code": {
+            "start": 46090,
+            "end": 46103
+          }
+        },
+        {
+          "Code": {
+            "start": 46109,
+            "end": 46112
+          }
+        },
+        {
+          "Code": {
+            "start": 46338,
+            "end": 46781
+          }
+        },
+        {
+          "Code": {
+            "start": 46786,
+            "end": 46812
+          }
+        },
+        {
+          "Code": {
+            "start": 46820,
+            "end": 46908
+          }
+        },
+        {
+          "Code": {
+            "start": 46911,
+            "end": 46973
+          }
+        },
+        {
+          "Code": {
+            "start": 46987,
+            "end": 47039
+          }
+        },
+        {
+          "Code": {
+            "start": 47052,
+            "end": 47070
+          }
+        },
+        {
+          "Code": {
+            "start": 47075,
+            "end": 47099
+          }
+        },
+        {
+          "Code": {
+            "start": 47107,
+            "end": 47118
+          }
+        },
+        {
+          "Code": {
+            "start": 47121,
+            "end": 47131
+          }
+        },
+        {
+          "Code": {
+            "start": 47139,
+            "end": 47144
+          }
+        },
+        {
+          "Code": {
+            "start": 47153,
+            "end": 47310
+          }
+        },
+        {
+          "Code": {
+            "start": 47314,
+            "end": 47408
+          }
+        },
+        {
+          "Words": {
+            "start": 47448,
+            "end": 47453
+          }
+        },
+        {
+          "Words": {
+            "start": 47454,
+            "end": 47455
+          }
+        },
+        {
+          "Code": {
+            "start": 47456,
+            "end": 47469
+          }
+        },
+        {
+          "Code": {
+            "start": 47523,
+            "end": 47526
+          }
+        },
+        {
+          "Code": {
+            "start": 47562,
+            "end": 47677
+          }
+        },
+        {
+          "Code": {
+            "start": 47680,
+            "end": 47812
+          }
+        },
+        {
+          "Words": {
+            "start": 47813,
+            "end": 47842
+          }
+        },
+        {
+          "Code": {
+            "start": 49053,
+            "end": 49092
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "nothing"
+        },
+        "32782": {
+          "symbol": "Palettes_for_Great_Palace0"
+        },
+        "33006": {
+          "symbol": "code0"
+        },
+        "33031": {
+          "symbol": "Pointer_table_for_Objects_Construction_Routines"
+        },
+        "33061": {
+          "symbol": "Special_Objects_Y_Position_F"
+        },
+        "33071": {
+          "symbol": "code1"
+        },
+        "33075": {
+          "symbol": "Pointer_table_for_Small_Objects_Construction_Routines"
+        },
+        "33107": {
+          "symbol": "Tables_for_Level_Layers_Data"
+        },
+        "33143": {
+          "symbol": "Table_for_Level_Layers_Data_pointers"
+        },
+        "33147": {
+          "symbol": "Build_a_pointer_with_81_and_a_value_from_14177"
+        },
+        "33167": {
+          "symbol": "Tile_Codes_for_Objects_Set_0_Canopy_00"
+        },
+        "33195": {
+          "symbol": "Tile_Codes_for_Objects_Set_0_Column____0E"
+        },
+        "33197": {
+          "symbol": "Objects_Construction_Routines_Object_1_high__X_wide"
+        },
+        "33203": {
+          "symbol": "Objects_Construction_Routines_2_high__X_wide"
+        },
+        "33233": {
+          "symbol": "Objects_Construction_Routines_X_high__1_wide_single_tile_type"
+        },
+        "33239": {
+          "symbol": "Objects_Construction_Routines_Object_X_high__1_wide"
+        },
+        "33311": {
+          "symbol": "Objects_Construction_Routines_Object_Lava_Pit__3_high_bottom_of_screen"
+        },
+        "33359": {
+          "symbol": "Objects_Construction_Routines_Object_Elevator"
+        },
+        "33366": {
+          "symbol": "Small_Objects_Construction_Routines_Locked_Door"
+        },
+        "33386": {
+          "symbol": "Small_Objects_Construction_Routines_Window_2_high"
+        },
+        "33390": {
+          "symbol": "Small_Objects_Construction_Routines_Ra_Statue_facing_right_2_high"
+        },
+        "33394": {
+          "symbol": "Small_Objects_Construction_Routines_Mau_Statue_facing_right_2_high"
+        },
+        "33398": {
+          "symbol": "Tile_Codes_for_Window__Ra_Statue__Mau_Statue__Fokka_Statue"
+        },
+        "33406": {
+          "symbol": "Small_Objects_Construction_Routines_Fokka_Statue"
+        },
+        "33423": {
+          "symbol": "Small_Objects_Construction_Routines_Pit_extending_to_bottom_1_wide"
+        },
+        "33438": {
+          "symbol": "Small_Objects_Construction_Routines_Zelda"
+        },
+        "33457": {
+          "symbol": "Small_Objects_Construction_Routines_Cloud__Long"
+        },
+        "33461": {
+          "symbol": "Tile_Codes_for_Clouds"
+        },
+        "33463": {
+          "symbol": "Small_Objects_Construction_Routines_Cloud__Short"
+        },
+        "33479": {
+          "symbol": "Table_0_1_for_Area_Objects_Tile_Mappings"
+        },
+        "33547": {
+          "symbol": "Table_2_for_Area_Objects_Tile_Mappings"
+        },
+        "33583": {
+          "symbol": "Table_3_for_Area_Objects_Tile_Mappings"
+        },
+        "33614": {
+          "symbol": "Area_Data_Great_Palace0"
+        },
+        "33986": {
+          "symbol": "UNUSED_84C2"
+        },
+        "34000": {
+          "symbol": "Palettes_for_Great_Palace1"
+        },
+        "34016": {
+          "symbol": "UNUSED_84E0"
+        },
+        "34036": {
+          "symbol": "UNUSED_84F4"
+        },
+        "34048": {
+          "symbol": "Pointer_table_for_Objects_Tile_Mappings"
+        },
+        "34056": {
+          "symbol": "table_unused"
+        },
+        "34060": {
+          "symbol": "code3"
+        },
+        "34074": {
+          "symbol": "table1"
+        },
+        "34083": {
+          "symbol": "Area_Pointers_Great_Palace"
+        },
+        "34209": {
+          "symbol": "Enemy_Pointers_Great_Palace"
+        },
+        "34335": {
+          "symbol": "Area_Data_Great_Palace1"
+        },
+        "34565": {
+          "symbol": "UNUSED_8705"
+        },
+        "34587": {
+          "symbol": "Room_Connectivity_Data"
+        },
+        "34839": {
+          "symbol": "Area_Data_Great_Palace2"
+        },
+        "34961": {
+          "symbol": "UNUSED_8891"
+        },
+        "34976": {
+          "symbol": "Enemy_Data_Great_Palace"
+        },
+        "35288": {
+          "symbol": "Area_Data_Great_Palace3"
+        },
+        "35633": {
+          "symbol": "UNUSED_8B31"
+        },
+        "35664": {
+          "symbol": "routines_related_to_Ending_sequence"
+        },
+        "35771": {
+          "symbol": "table2"
+        },
+        "35775": {
+          "symbol": "code4"
+        },
+        "35815": {
+          "symbol": "pointer_table_Related_to_Ending"
+        },
+        "35845": {
+          "symbol": "table3"
+        },
+        "35869": {
+          "symbol": "code5"
+        },
+        "36174": {
+          "symbol": "ppu_macro0"
+        },
+        "36196": {
+          "symbol": "change_tile_of_zelda_to_wake_her_up"
+        },
+        "36237": {
+          "symbol": "table4"
+        },
+        "36269": {
+          "symbol": "ppu_macro1"
+        },
+        "36282": {
+          "symbol": "code7"
+        },
+        "36321": {
+          "symbol": "Ending_Text_Zelda_"
+        },
+        "36362": {
+          "symbol": "code8"
+        },
+        "36488": {
+          "symbol": "pointer_table0"
+        },
+        "36494": {
+          "symbol": "code9"
+        },
+        "36513": {
+          "symbol": "table5"
+        },
+        "36526": {
+          "symbol": "code10"
+        },
+        "36603": {
+          "symbol": "table6"
+        },
+        "36635": {
+          "symbol": "code11"
+        },
+        "36751": {
+          "symbol": "ppu_macro2"
+        },
+        "36766": {
+          "symbol": "code12"
+        },
+        "36940": {
+          "symbol": "pointer_table_Probably_related_to_End_Credits"
+        },
+        "36950": {
+          "symbol": "table7"
+        },
+        "36952": {
+          "symbol": "ppu_macro3"
+        },
+        "36981": {
+          "symbol": "code13"
+        },
+        "37038": {
+          "symbol": "table8"
+        },
+        "37046": {
+          "symbol": "pointer_table1"
+        },
+        "37050": {
+          "symbol": "Probably_related_to_Palette_fading"
+        },
+        "37118": {
+          "symbol": "code14"
+        },
+        "37224": {
+          "symbol": "table9"
+        },
+        "37230": {
+          "symbol": "ppu_macro4"
+        },
+        "37235": {
+          "symbol": "code15"
+        },
+        "37465": {
+          "symbol": "Pointer_table_for_End_Credits"
+        },
+        "37501": {
+          "symbol": "End_Credits"
+        },
+        "37806": {
+          "symbol": "UNUSED_93AE"
+        },
+        "37888": {
+          "symbol": "pointer_table2"
+        },
+        "37912": {
+          "symbol": "table10"
+        },
+        "37921": {
+          "symbol": "Enemy_Hit_Points"
+        },
+        "37957": {
+          "symbol": "Pointer_table_for_Enemy_Init_Routines"
+        },
+        "38029": {
+          "symbol": "Pointer_table_for_Enemy_Routines1"
+        },
+        "38173": {
+          "symbol": "Enemy_Size_Codes"
+        },
+        "38245": {
+          "symbol": "Pointer_table_for_Enemy_Routines2"
+        },
+        "38317": {
+          "symbol": "code_rts"
+        },
+        "38318": {
+          "symbol": "table_95AE"
+        },
+        "38444": {
+          "symbol": "Enemy_Routines2_Bubble___Slow_or_Fast"
+        },
+        "38459": {
+          "symbol": "Enemy_Init_Routines_Ra"
+        },
+        "38495": {
+          "symbol": "table11"
+        },
+        "38503": {
+          "symbol": "Enemy_Routines1_Ra"
+        },
+        "38549": {
+          "symbol": "Enemy_Routines2_Ra"
+        },
+        "38560": {
+          "symbol": "Enemy_Routines2_Fire_Rope__Jumping_or_Moving"
+        },
+        "38565": {
+          "symbol": "Enemy_Routines2_Giant_Bot"
+        },
+        "38806": {
+          "symbol": "Enemy_Init_Routines_Dark_Link_Battle_Trigger"
+        },
+        "38854": {
+          "symbol": "Enemy_Routines1_Dark_Link_Battle_Trigger"
+        },
+        "38862": {
+          "symbol": "table_97CE"
+        },
+        "39147": {
+          "symbol": "dark_link_AI_movement_maybe0"
+        },
+        "39168": {
+          "symbol": "dark_link_AI_movement_maybe__table"
+        },
+        "39180": {
+          "symbol": "dark_link_AI_movement_maybe1"
+        },
+        "39388": {
+          "symbol": "table_99DC"
+        },
+        "39498": {
+          "symbol": "table_9A4A"
+        },
+        "39557": {
+          "symbol": "table_9A85"
+        },
+        "40236": {
+          "symbol": "Enemy_Routines1_Fokka"
+        },
+        "40555": {
+          "symbol": "Enemy_Routines1_Fokkeru"
+        },
+        "40639": {
+          "symbol": "Enemy_Routines2_Thunderbird"
+        },
+        "40900": {
+          "symbol": "table_9FC4"
+        },
+        "40916": {
+          "symbol": "Enemy_Routines2_Fokka"
+        },
+        "41051": {
+          "symbol": "Enemy_Routines2_Fokkeru"
+        },
+        "41077": {
+          "symbol": "Enemy_Routines1_Bubbles"
+        },
+        "41255": {
+          "symbol": "Enemy_Init_Routines_Bubble"
+        },
+        "41259": {
+          "symbol": "Enemy_Init_Routines_Bubble__Fast"
+        },
+        "41267": {
+          "symbol": "Enemy_Routines2_Big_Bubble"
+        },
+        "41339": {
+          "symbol": "table_A17B"
+        },
+        "41344": {
+          "symbol": "Enemy_Routines1_Giant_Bot"
+        },
+        "41488": {
+          "symbol": "table_A210"
+        },
+        "41524": {
+          "symbol": "Enemy_Routines1_Electric_Barrier"
+        },
+        "41757": {
+          "symbol": "Enemy_Init_Routines_Fire_Bago_Bago_Generator"
+        },
+        "41787": {
+          "symbol": "Enemy_Init_Routines_Thunderbird"
+        },
+        "41807": {
+          "symbol": "table_Thunderbird"
+        },
+        "41817": {
+          "symbol": "Enemy_Routines1_Thunderbird"
+        },
+        "42098": {
+          "symbol": "Enemy_Routines2_Dark_Link_Battle_Trigger"
+        },
+        "42273": {
+          "symbol": "Enemy_Routines1_HiddenRedJar"
+        },
+        "42319": {
+          "symbol": "UNUSED_A54F"
+        },
+        "42496": {
+          "symbol": "table_A600"
+        },
+        "42736": {
+          "symbol": "code19"
+        },
+        "42757": {
+          "symbol": "pointer_table3"
+        },
+        "42767": {
+          "symbol": "code20"
+        },
+        "42945": {
+          "symbol": "Intro_Sprites"
+        },
+        "43201": {
+          "symbol": "code21"
+        },
+        "43215": {
+          "symbol": "Animation_of_Stars_in_the_Sky"
+        },
+        "43288": {
+          "symbol": "Animation_of_Glints_in_Water"
+        },
+        "43314": {
+          "symbol": "table_intro_screen_text"
+        },
+        "44023": {
+          "symbol": "code_ABF7"
+        },
+        "44049": {
+          "symbol": "table_AC11"
+        },
+        "44080": {
+          "symbol": "code_AC30"
+        },
+        "44388": {
+          "symbol": "table_AD64"
+        },
+        "44412": {
+          "symbol": "code_AD7C"
+        },
+        "44512": {
+          "symbol": "code_ADE0"
+        },
+        "44861": {
+          "symbol": "table_AF3D_PPU_maybe"
+        },
+        "45622": {
+          "symbol": "table_B236"
+        },
+        "45646": {
+          "symbol": "code22"
+        },
+        "45665": {
+          "symbol": "Load_Saved_Games_Data"
+        },
+        "45783": {
+          "symbol": "Load_Initial_Item_Presence_Bits"
+        },
+        "46037": {
+          "symbol": "pointer_table4"
+        },
+        "46047": {
+          "symbol": "code23"
+        },
+        "46080": {
+          "symbol": "pointer_table5"
+        },
+        "46090": {
+          "symbol": "code24"
+        },
+        "46109": {
+          "symbol": "_073B__plus__equal__1__and_RTS"
+        },
+        "46113": {
+          "symbol": "table12"
+        },
+        "46117": {
+          "symbol": "code25"
+        },
+        "46178": {
+          "symbol": "elimination_mode"
+        },
+        "46333": {
+          "symbol": "table13"
+        },
+        "46338": {
+          "symbol": "code26"
+        },
+        "46377": {
+          "symbol": "Display_Saved_Games_Names"
+        },
+        "46552": {
+          "symbol": "Related_to_AttackMagicLife_Levels__and_convert_numbers_to_Tile_Mappings____Load_Attack_Magic_Life_Levels"
+        },
+        "46595": {
+          "symbol": "Load_Number_of_Saves"
+        },
+        "47448": {
+          "symbol": "pointer_table6"
+        },
+        "47454": {
+          "symbol": "Pointer_for_Item_Presence_Bits_Table"
+        },
+        "47456": {
+          "symbol": "code27"
+        },
+        "47813": {
+          "symbol": "pointer_table7"
+        },
+        "47843": {
+          "symbol": "Beginning_Values"
+        },
+        "47893": {
+          "symbol": "Initial_Item_Presence_Bits_600_61F__West_Hyrule"
+        },
+        "47909": {
+          "symbol": "Initial_Item_Presence_Bits_620_63F__DM__MI"
+        },
+        "47925": {
+          "symbol": "Initial_Item_Presence_Bits_640_65F__East_Hyrule"
+        },
+        "47941": {
+          "symbol": "Initial_Item_Presence_Bits_660_67F__Towns"
+        },
+        "47957": {
+          "symbol": "Initial_Item_Presence_Bits_680_69F__Palaces_Type_A_1_2_5"
+        },
+        "47973": {
+          "symbol": "Initial_Item_Presence_Bits_6A0_6BF__Palaces_Type_B_3_4_6"
+        },
+        "47989": {
+          "symbol": "Initial_Item_Presence_Bits_6C0_6DF__Great_Palace"
+        },
+        "48117": {
+          "symbol": "Table_for_some_palettes"
+        },
+        "48153": {
+          "symbol": "Tables_for_Selection_Screen_Text_"
+        },
+        "48501": {
+          "symbol": "Table_for_Letters_Tile_Mappings"
+        },
+        "48545": {
+          "symbol": "UNUSED_BDA1"
+        },
+        "48992": {
+          "symbol": "table_Some_palettes"
+        },
+        "49008": {
+          "symbol": "codeEND"
+        },
+        "49120": {
+          "symbol": "UNUSED_BFE0"
+        },
+        "49146": {
+          "symbol": "NMI_Reset_and_Break_Vectors"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "6": {
+      "region": [
+        {
+          "Code": {
+            "start": 32768,
+            "end": 32790
+          }
+        },
+        {
+          "Code": {
+            "start": 33039,
+            "end": 33052
+          }
+        },
+        {
+          "Code": {
+            "start": 33056,
+            "end": 33091
+          }
+        },
+        {
+          "Code": {
+            "start": 33095,
+            "end": 33339
+          }
+        },
+        {
+          "Code": {
+            "start": 33386,
+            "end": 33460
+          }
+        },
+        {
+          "Code": {
+            "start": 33487,
+            "end": 33918
+          }
+        },
+        {
+          "Code": {
+            "start": 33926,
+            "end": 33972
+          }
+        },
+        {
+          "Code": {
+            "start": 33980,
+            "end": 34009
+          }
+        },
+        {
+          "Code": {
+            "start": 36864,
+            "end": 36995
+          }
+        },
+        {
+          "Code": {
+            "start": 37001,
+            "end": 37009
+          }
+        },
+        {
+          "Code": {
+            "start": 37015,
+            "end": 37065
+          }
+        },
+        {
+          "Code": {
+            "start": 37067,
+            "end": 37096
+          }
+        },
+        {
+          "Code": {
+            "start": 37387,
+            "end": 37423
+          }
+        },
+        {
+          "Code": {
+            "start": 37451,
+            "end": 37487
+          }
+        },
+        {
+          "Code": {
+            "start": 37503,
+            "end": 38457
+          }
+        },
+        {
+          "Code": {
+            "start": 38804,
+            "end": 38863
+          }
+        },
+        {
+          "Code": {
+            "start": 38869,
+            "end": 39284
+          }
+        },
+        {
+          "Code": {
+            "start": 39288,
+            "end": 39314
+          }
+        },
+        {
+          "Code": {
+            "start": 39318,
+            "end": 39535
+          }
+        },
+        {
+          "Code": {
+            "start": 39576,
+            "end": 40359
+          }
+        }
+      ],
+      "address": {
+        "32768": {
+          "symbol": "Bank6__Code_0"
+        },
+        "32791": {
+          "symbol": "Bank6__UNKNOWN_0"
+        },
+        "33039": {
+          "symbol": "Bank6__Code_1"
+        },
+        "34010": {
+          "symbol": "Index_Table_0"
+        },
+        "34027": {
+          "symbol": "Phrase_Order_Table_0"
+        },
+        "34047": {
+          "symbol": "Phrase_Pointer_Table_0__01"
+        },
+        "34053": {
+          "symbol": "Phrase_Pointer_Table_0__02"
+        },
+        "34059": {
+          "symbol": "Phrase_Pointer_Table_0__03"
+        },
+        "34071": {
+          "symbol": "Phrase_Pointer_Table_0__05"
+        },
+        "34077": {
+          "symbol": "Phrase_Pointer_Table_0__06"
+        },
+        "34105": {
+          "symbol": "Song_Data_0__Square1__00"
+        },
+        "34700": {
+          "symbol": "Bank6__UNUSED_0"
+        },
+        "36864": {
+          "symbol": "Bank6__Code_2"
+        },
+        "37097": {
+          "symbol": "Bank6__UNKNOWN_2"
+        },
+        "37387": {
+          "symbol": "Bank6__Code_3"
+        },
+        "38458": {
+          "symbol": "Bank6__UNKNOWN_3"
+        },
+        "38804": {
+          "symbol": "Bank6__Code_4"
+        },
+        "40360": {
+          "symbol": "Bank6__UNUSED_1"
+        },
+        "40960": {
+          "symbol": "Index_Table_1"
+        },
+        "40970": {
+          "symbol": "Phrase_Order_Table_1"
+        },
+        "41075": {
+          "symbol": "Song_Data_1__Square1__00"
+        },
+        "41195": {
+          "symbol": "Song_Data_1__Square1__01"
+        },
+        "41288": {
+          "symbol": "Song_Data_1__Square1__02"
+        },
+        "41331": {
+          "symbol": "Song_Data_1__Square1__03"
+        },
+        "41378": {
+          "symbol": "Song_Data_1__Square1__04"
+        },
+        "41434": {
+          "symbol": "Song_Data_1__Square1__05"
+        },
+        "41468": {
+          "symbol": "Song_Data_1__Square1__06"
+        },
+        "41501": {
+          "symbol": "Song_Data_1__Square1__07"
+        },
+        "41538": {
+          "symbol": "Song_Data_1__Square1__08"
+        },
+        "41567": {
+          "symbol": "Song_Data_1__Square1__09"
+        },
+        "41621": {
+          "symbol": "Song_Data_1__Square1__0A"
+        },
+        "41678": {
+          "symbol": "Song_Data_1__Square1__0B"
+        },
+        "41766": {
+          "symbol": "Song_Data_1__Square1__0C"
+        },
+        "41905": {
+          "symbol": "Song_Data_1__Square1__0D"
+        },
+        "41930": {
+          "symbol": "Index_Table_2"
+        },
+        "41940": {
+          "symbol": "Phrase_Order_Table_2"
+        },
+        "42016": {
+          "symbol": "Song_Data_2__Square1__00"
+        },
+        "42045": {
+          "symbol": "Song_Data_2__Square1__01"
+        },
+        "42107": {
+          "symbol": "Song_Data_2__Square1__02"
+        },
+        "42172": {
+          "symbol": "Song_Data_2__Square1__03"
+        },
+        "42229": {
+          "symbol": "Song_Data_2__Square1__04"
+        },
+        "42299": {
+          "symbol": "Song_Data_2__Square1__05"
+        },
+        "42364": {
+          "symbol": "Song_Data_2__Square1__06"
+        },
+        "42399": {
+          "symbol": "Song_Data_2__Square1__07"
+        },
+        "42446": {
+          "symbol": "Song_Data_2__Square1__08"
+        },
+        "42509": {
+          "symbol": "Song_Data_2__Square1__09"
+        },
+        "42543": {
+          "symbol": "Index_Table_3"
+        },
+        "42553": {
+          "symbol": "Phrase_Order_Table_3"
+        },
+        "42686": {
+          "symbol": "Song_Data_3__Square1__00"
+        },
+        "42713": {
+          "symbol": "Song_Data_3__Square1__01"
+        },
+        "42792": {
+          "symbol": "Song_Data_3__Square1__02"
+        },
+        "42823": {
+          "symbol": "Song_Data_3__Square1__03"
+        },
+        "42853": {
+          "symbol": "Song_Data_3__Square1__04"
+        },
+        "42886": {
+          "symbol": "Song_Data_3__Square1__05"
+        },
+        "42934": {
+          "symbol": "Song_Data_3__Square1__06"
+        },
+        "42982": {
+          "symbol": "Song_Data_3__Square1__07"
+        },
+        "43016": {
+          "symbol": "Song_Data_3__Square1__08"
+        },
+        "43077": {
+          "symbol": "Song_Data_3__Square1__09"
+        },
+        "43138": {
+          "symbol": "Song_Data_3__Square1__0A"
+        },
+        "43199": {
+          "symbol": "Song_Data_3__Square1__0D"
+        },
+        "43224": {
+          "symbol": "Song_Data_3__Square1__0E"
+        },
+        "43246": {
+          "symbol": "Song_Data_3__Square1__0F"
+        },
+        "43268": {
+          "symbol": "Song_Data_3__Square1__0B"
+        },
+        "43293": {
+          "symbol": "Song_Data_3__Square1__0C"
+        },
+        "43318": {
+          "symbol": "Index_Table_4"
+        },
+        "43328": {
+          "symbol": "Phrase_Order_Table_4"
+        },
+        "43456": {
+          "symbol": "Song_Data_4__Square1__00"
+        },
+        "43490": {
+          "symbol": "Song_Data_4__Square1__01"
+        },
+        "43562": {
+          "symbol": "Song_Data_4__Square1__02"
+        },
+        "43638": {
+          "symbol": "Song_Data_4__Square1__03"
+        },
+        "43665": {
+          "symbol": "Song_Data_4__Square1__04"
+        },
+        "43692": {
+          "symbol": "Song_Data_4__Square1__05"
+        },
+        "43705": {
+          "symbol": "Song_Data_4__Square1__0C"
+        },
+        "43738": {
+          "symbol": "Song_Data_4__Square1__0D"
+        },
+        "43757": {
+          "symbol": "Song_Data_4__Square1__0B"
+        },
+        "43782": {
+          "symbol": "Song_Data_4__Square1__0E"
+        },
+        "43827": {
+          "symbol": "Song_Data_4__Square1__0F"
+        },
+        "43850": {
+          "symbol": "Song_Data_4__Square1__06"
+        },
+        "43889": {
+          "symbol": "Song_Data_4__Square1__07"
+        },
+        "43925": {
+          "symbol": "Song_Data_4__Square1__08"
+        },
+        "43959": {
+          "symbol": "Song_Data_4__Square1__09"
+        },
+        "43995": {
+          "symbol": "Song_Data_4__Square1__0A"
+        },
+        "44041": {
+          "symbol": "Bank6__UNUSED_2"
+        },
+        "49008": {
+          "symbol": "ending_routines"
+        },
+        "49120": {
+          "symbol": "Bank6__UNUSED_3"
+        },
+        "49146": {
+          "symbol": "ending_bytes"
+        }
+      },
+      "mapped_at": 32768
+    },
+    "7": {
+      "region": [
+        {
+          "Code": {
+            "start": 49152,
+            "end": 49212
+          }
+        },
+        {
+          "Words": {
+            "start": 49213,
+            "end": 49244
+          }
+        },
+        {
+          "Code": {
+            "start": 49248,
+            "end": 49706
+          }
+        },
+        {
+          "Words": {
+            "start": 49707,
+            "end": 49714
+          }
+        },
+        {
+          "Code": {
+            "start": 49715,
+            "end": 49724
+          }
+        },
+        {
+          "Words": {
+            "start": 49725,
+            "end": 49732
+          }
+        },
+        {
+          "Code": {
+            "start": 49733,
+            "end": 49764
+          }
+        },
+        {
+          "Words": {
+            "start": 49765,
+            "end": 49796
+          }
+        },
+        {
+          "Code": {
+            "start": 49813,
+            "end": 49879
+          }
+        },
+        {
+          "Words": {
+            "start": 49880,
+            "end": 49893
+          }
+        },
+        {
+          "Code": {
+            "start": 49894,
+            "end": 49899
+          }
+        },
+        {
+          "Words": {
+            "start": 49900,
+            "end": 49949
+          }
+        },
+        {
+          "Code": {
+            "start": 49950,
+            "end": 49955
+          }
+        },
+        {
+          "Words": {
+            "start": 49956,
+            "end": 49979
+          }
+        },
+        {
+          "Code": {
+            "start": 49980,
+            "end": 50025
+          }
+        },
+        {
+          "Words": {
+            "start": 50026,
+            "end": 50037
+          }
+        },
+        {
+          "Code": {
+            "start": 50038,
+            "end": 50066
+          }
+        },
+        {
+          "Words": {
+            "start": 50067,
+            "end": 50070
+          }
+        },
+        {
+          "Code": {
+            "start": 50071,
+            "end": 50076
+          }
+        },
+        {
+          "Words": {
+            "start": 50077,
+            "end": 50084
+          }
+        },
+        {
+          "Code": {
+            "start": 50085,
+            "end": 50197
+          }
+        },
+        {
+          "Words": {
+            "start": 50198,
+            "end": 50205
+          }
+        },
+        {
+          "Code": {
+            "start": 50206,
+            "end": 50221
+          }
+        },
+        {
+          "Code": {
+            "start": 50229,
+            "end": 50248
+          }
+        },
+        {
+          "Code": {
+            "start": 50340,
+            "end": 50342
+          }
+        },
+        {
+          "Words": {
+            "start": 50371,
+            "end": 50378
+          }
+        },
+        {
+          "Code": {
+            "start": 50379,
+            "end": 50746
+          }
+        },
+        {
+          "Code": {
+            "start": 50750,
+            "end": 50996
+          }
+        },
+        {
+          "Code": {
+            "start": 51029,
+            "end": 51230
+          }
+        },
+        {
+          "Words": {
+            "start": 51231,
+            "end": 51242
+          }
+        },
+        {
+          "Code": {
+            "start": 51243,
+            "end": 51482
+          }
+        },
+        {
+          "Words": {
+            "start": 51483,
+            "end": 51494
+          }
+        },
+        {
+          "Code": {
+            "start": 51495,
+            "end": 51503
+          }
+        },
+        {
+          "Words": {
+            "start": 51504,
+            "end": 51515
+          }
+        },
+        {
+          "Words": {
+            "start": 51516,
+            "end": 51523
+          }
+        },
+        {
+          "Code": {
+            "start": 51524,
+            "end": 51629
+          }
+        },
+        {
+          "Code": {
+            "start": 51631,
+            "end": 51689
+          }
+        },
+        {
+          "Code": {
+            "start": 51694,
+            "end": 51741
+          }
+        },
+        {
+          "Words": {
+            "start": 51742,
+            "end": 51747
+          }
+        },
+        {
+          "Code": {
+            "start": 51748,
+            "end": 51933
+          }
+        },
+        {
+          "Code": {
+            "start": 51952,
+            "end": 52017
+          }
+        },
+        {
+          "Code": {
+            "start": 52021,
+            "end": 52488
+          }
+        },
+        {
+          "Code": {
+            "start": 52495,
+            "end": 52510
+          }
+        },
+        {
+          "Words": {
+            "start": 52511,
+            "end": 52514
+          }
+        },
+        {
+          "Words": {
+            "start": 52515,
+            "end": 52518
+          }
+        },
+        {
+          "Code": {
+            "start": 52544,
+            "end": 53057
+          }
+        },
+        {
+          "Words": {
+            "start": 53058,
+            "end": 53067
+          }
+        },
+        {
+          "Code": {
+            "start": 53068,
+            "end": 53332
+          }
+        },
+        {
+          "Words": {
+            "start": 53333,
+            "end": 53338
+          }
+        },
+        {
+          "Code": {
+            "start": 53339,
+            "end": 53436
+          }
+        },
+        {
+          "Code": {
+            "start": 53500,
+            "end": 54169
+          }
+        },
+        {
+          "Code": {
+            "start": 54220,
+            "end": 54670
+          }
+        },
+        {
+          "Code": {
+            "start": 54695,
+            "end": 54768
+          }
+        },
+        {
+          "Words": {
+            "start": 54769,
+            "end": 54776
+          }
+        },
+        {
+          "Code": {
+            "start": 54787,
+            "end": 55002
+          }
+        },
+        {
+          "Code": {
+            "start": 55007,
+            "end": 55016
+          }
+        },
+        {
+          "Code": {
+            "start": 55020,
+            "end": 55085
+          }
+        },
+        {
+          "Code": {
+            "start": 55108,
+            "end": 55119
+          }
+        },
+        {
+          "Code": {
+            "start": 55183,
+            "end": 55262
+          }
+        },
+        {
+          "Code": {
+            "start": 55265,
+            "end": 55429
+          }
+        },
+        {
+          "Code": {
+            "start": 55432,
+            "end": 55486
+          }
+        },
+        {
+          "Code": {
+            "start": 55490,
+            "end": 55805
+          }
+        },
+        {
+          "Code": {
+            "start": 55810,
+            "end": 56012
+          }
+        },
+        {
+          "Code": {
+            "start": 56015,
+            "end": 56142
+          }
+        },
+        {
+          "Code": {
+            "start": 56147,
+            "end": 56312
+          }
+        },
+        {
+          "Code": {
+            "start": 56315,
+            "end": 56388
+          }
+        },
+        {
+          "Code": {
+            "start": 56399,
+            "end": 56528
+          }
+        },
+        {
+          "Code": {
+            "start": 56539,
+            "end": 56651
+          }
+        },
+        {
+          "Code": {
+            "start": 56684,
+            "end": 56767
+          }
+        },
+        {
+          "Code": {
+            "start": 56812,
+            "end": 57181
+          }
+        },
+        {
+          "Code": {
+            "start": 57209,
+            "end": 57221
+          }
+        },
+        {
+          "Code": {
+            "start": 57227,
+            "end": 57388
+          }
+        },
+        {
+          "Code": {
+            "start": 57392,
+            "end": 57421
+          }
+        },
+        {
+          "Code": {
+            "start": 57456,
+            "end": 57816
+          }
+        },
+        {
+          "Code": {
+            "start": 57821,
+            "end": 58030
+          }
+        },
+        {
+          "Code": {
+            "start": 58095,
+            "end": 58217
+          }
+        },
+        {
+          "Code": {
+            "start": 58225,
+            "end": 58397
+          }
+        },
+        {
+          "Code": {
+            "start": 58404,
+            "end": 58414
+          }
+        },
+        {
+          "Code": {
+            "start": 58417,
+            "end": 58549
+          }
+        },
+        {
+          "Code": {
+            "start": 58552,
+            "end": 58709
+          }
+        },
+        {
+          "Code": {
+            "start": 58712,
+            "end": 58767
+          }
+        },
+        {
+          "Code": {
+            "start": 58779,
+            "end": 58779
+          }
+        },
+        {
+          "Code": {
+            "start": 58810,
+            "end": 58988
+          }
+        },
+        {
+          "Code": {
+            "start": 58999,
+            "end": 59240
+          }
+        },
+        {
+          "Code": {
+            "start": 59249,
+            "end": 59375
+          }
+        },
+        {
+          "Code": {
+            "start": 59380,
+            "end": 59503
+          }
+        },
+        {
+          "Code": {
+            "start": 59520,
+            "end": 59604
+          }
+        },
+        {
+          "Code": {
+            "start": 59627,
+            "end": 59641
+          }
+        },
+        {
+          "Code": {
+            "start": 59714,
+            "end": 59760
+          }
+        },
+        {
+          "Code": {
+            "start": 59765,
+            "end": 59803
+          }
+        },
+        {
+          "Code": {
+            "start": 59810,
+            "end": 59859
+          }
+        },
+        {
+          "Code": {
+            "start": 59864,
+            "end": 60063
+          }
+        },
+        {
+          "Code": {
+            "start": 60136,
+            "end": 60196
+          }
+        },
+        {
+          "Code": {
+            "start": 60344,
+            "end": 60791
+          }
+        },
+        {
+          "Code": {
+            "start": 60794,
+            "end": 61008
+          }
+        },
+        {
+          "Code": {
+            "start": 61106,
+            "end": 61416
+          }
+        },
+        {
+          "Code": {
+            "start": 61426,
+            "end": 61490
+          }
+        },
+        {
+          "Code": {
+            "start": 61495,
+            "end": 61707
+          }
+        },
+        {
+          "Code": {
+            "start": 61714,
+            "end": 62059
+          }
+        },
+        {
+          "Code": {
+            "start": 62077,
+            "end": 62207
+          }
+        },
+        {
+          "Code": {
+            "start": 64898,
+            "end": 64970
+          }
+        },
+        {
+          "Code": {
+            "start": 65142,
+            "end": 65147
+          }
+        },
+        {
+          "Words": {
+            "start": 65148,
+            "end": 65155
+          }
+        },
+        {
+          "Code": {
+            "start": 65159,
+            "end": 65193
+          }
+        },
+        {
+          "Code": {
+            "start": 65232,
+            "end": 65355
+          }
+        },
+        {
+          "Code": {
+            "start": 65392,
+            "end": 65503
+          }
+        },
+        {
+          "Words": {
+            "start": 65530,
+            "end": 65535
+          }
+        }
+      ],
+      "address": {
+        "49152": {
+          "symbol": "code0"
+        },
+        "49213": {
+          "symbol": "PPU_Adresses_according_to_725_as_index"
+        },
+        "49245": {
+          "symbol": "table0"
+        },
+        "49248": {
+          "symbol": "code1"
+        },
+        "49275": {
+          "symbol": "nmi",
+          "block_comment": "----------------------------------------------------------------------\nNMI entry point\n----------------------------------------------------------------------"
+        },
+        "49590": {
+          "symbol": "code2"
+        },
+        "49601": {
+          "symbol": "related_to_sound"
+        },
+        "49613": {
+          "symbol": "related_to_Pause_Pane_routine"
+        },
+        "49707": {
+          "symbol": "pointer_table0"
+        },
+        "49715": {
+          "symbol": "code3"
+        },
+        "49725": {
+          "symbol": "pointer_table1"
+        },
+        "49737": {
+          "symbol": "code4"
+        },
+        "49765": {
+          "symbol": "Pointer_table_for_Item_Presence"
+        },
+        "49797": {
+          "symbol": "Tables_for_Various_Bitmasks1"
+        },
+        "49813": {
+          "symbol": "Set_Item_RAM_bit_to_0__Bits_0_3"
+        },
+        "49824": {
+          "symbol": "Set_Item_RAM_bit_to_0__Bits_4_7"
+        },
+        "49880": {
+          "symbol": "pointer_table2"
+        },
+        "49894": {
+          "symbol": "code5"
+        },
+        "49950": {
+          "symbol": "code6"
+        },
+        "49956": {
+          "symbol": "pointer_table4"
+        },
+        "49980": {
+          "symbol": "code7"
+        },
+        "50008": {
+          "symbol": "Reset_Number_of_Lives__to_3_"
+        },
+        "50026": {
+          "symbol": "pointer_table5"
+        },
+        "50038": {
+          "symbol": "code8"
+        },
+        "50067": {
+          "symbol": "pointer_table6"
+        },
+        "50071": {
+          "symbol": "code9"
+        },
+        "50077": {
+          "symbol": "pointer_table7"
+        },
+        "50085": {
+          "symbol": "code10"
+        },
+        "50101": {
+          "symbol": "Load_Lives_Remaining_Screen"
+        },
+        "50198": {
+          "symbol": "pointer_table8"
+        },
+        "50206": {
+          "symbol": "code11"
+        },
+        "50249": {
+          "symbol": "table9"
+        },
+        "50264": {
+          "symbol": "Table_for_Overworld_Palettes"
+        },
+        "50300": {
+          "symbol": "table10"
+        },
+        "50340": {
+          "symbol": "code12"
+        },
+        "50343": {
+          "symbol": "Extra_Background_Layers__Bushes__Grass__etc"
+        },
+        "50371": {
+          "symbol": "Pointer_table_for_Area_and_Enemy_Pointers"
+        },
+        "50379": {
+          "symbol": "code13"
+        },
+        "50927": {
+          "symbol": "Related_to_Link_falling"
+        },
+        "50997": {
+          "symbol": "table_Masks_for_Floor_Ceiling_Tile_Mappings"
+        },
+        "51029": {
+          "symbol": "process_map_data"
+        },
+        "51225": {
+          "symbol": "Set_Addy_for_Area_Layer_Tiles__using_10C"
+        },
+        "51231": {
+          "symbol": "pointer_table9"
+        },
+        "51483": {
+          "symbol": "Pointer_table_for_Objects_Construction_Address"
+        },
+        "51495": {
+          "symbol": "Set_Address_for_Small_Object"
+        },
+        "51504": {
+          "symbol": "Pointer_table_for_Small_Objects_Construction_Address"
+        },
+        "51516": {
+          "symbol": "Pointer_table_for_location_of_the_4_screens_in_RAM"
+        },
+        "51527": {
+          "symbol": "Set_Ram_Addy_for_Object__0E_0F"
+        },
+        "51592": {
+          "symbol": "Check_for_Skip_Object__E0_"
+        },
+        "51690": {
+          "symbol": "table11"
+        },
+        "51697": {
+          "symbol": "code15"
+        },
+        "51742": {
+          "symbol": "pointer_table11"
+        },
+        "51748": {
+          "symbol": "code16"
+        },
+        "51934": {
+          "symbol": "restore_in_grand_palace_restore_restart_in_gp"
+        },
+        "52021": {
+          "symbol": "code17"
+        },
+        "52239": {
+          "symbol": "Determine_the_Random_Battle_according_to_Links_position_in_OW"
+        },
+        "52375": {
+          "symbol": "Get_Area_Code__Enter_Code_and_Direction"
+        },
+        "52403": {
+          "symbol": "go_outside"
+        },
+        "52511": {
+          "symbol": "pointer_table12"
+        },
+        "52515": {
+          "symbol": "Pointer_table_for_Key_Areas_Data"
+        },
+        "52527": {
+          "symbol": "Graphics_Bank_for_Palaces_Hypothetical_Palace_in_Region_1"
+        },
+        "52544": {
+          "symbol": "code18"
+        },
+        "52798": {
+          "symbol": "Load_Palace_Entrance_Palettes_into_7919_7928_10_bytes"
+        },
+        "52812": {
+          "symbol": "Recopy_the_same_set_of_Palace_Palettes_into_7929_7998"
+        },
+        "52855": {
+          "symbol": "Transfer_2A1_bytes_from_9400_or_A900_if_World_4_to_6D00"
+        },
+        "53058": {
+          "symbol": "pointer_table13"
+        },
+        "53068": {
+          "symbol": "take_side_exit"
+        },
+        "53244": {
+          "symbol": "take_door_exit"
+        },
+        "53309": {
+          "symbol": "Mute_music_when_loading_between_areas"
+        },
+        "53333": {
+          "symbol": "pointer_table14"
+        },
+        "53339": {
+          "symbol": "Set_PPU_Macro_for_Palettes"
+        },
+        "53437": {
+          "symbol": "Table_for_some_Palettes"
+        },
+        "53457": {
+          "symbol": "Tables_for_some_PPU_Command_Data"
+        },
+        "53497": {
+          "symbol": "table12"
+        },
+        "53500": {
+          "symbol": "code19"
+        },
+        "53545": {
+          "symbol": "function_find_a_free_enemy_slot__maybe"
+        },
+        "53659": {
+          "symbol": "collision_check_when_jumping_from_below_a_tile__maybe"
+        },
+        "53710": {
+          "symbol": "XY_Movements_Routine"
+        },
+        "53836": {
+          "symbol": "Remove_All_Sprites"
+        },
+        "53840": {
+          "symbol": "Remove_All_Sprites_except_Sprite0"
+        },
+        "53859": {
+          "symbol": "Erase_Name_Table_0"
+        },
+        "53862": {
+          "symbol": "Erase_Name_Tables_0and1__set_scroll_to_0_0"
+        },
+        "53889": {
+          "symbol": "Reset_Memory_Ranges"
+        },
+        "53916": {
+          "symbol": "Set_Memory_200_4FF_and_00_DF_to_Zero"
+        },
+        "53950": {
+          "symbol": "Fill_Screen_with_Tile_Code_F4_space__Starting_at_PPU_Address_A_mulipliedby_100"
+        },
+        "54086": {
+          "symbol": "Controllers_Input"
+        },
+        "54119": {
+          "symbol": "Controllers_Input_Capture"
+        },
+        "54149": {
+          "symbol": "PullAddrFromTableFollowingThisJSR_withIndexOfA_then_JMP"
+        },
+        "54170": {
+          "symbol": "UNUSED_D39A"
+        },
+        "54218": {
+          "symbol": "table13"
+        },
+        "54600": {
+          "symbol": "Flying_Blade_Disappearing__maybe"
+        },
+        "54695": {
+          "symbol": "code21"
+        },
+        "54769": {
+          "symbol": "pointer_table15"
+        },
+        "54777": {
+          "symbol": "table15"
+        },
+        "54787": {
+          "symbol": "code22"
+        },
+        "54977": {
+          "symbol": "Link_Collision_Detection"
+        },
+        "54998": {
+          "symbol": "JUMPS_TO___E_"
+        },
+        "55003": {
+          "symbol": "Table_for_Deeler"
+        },
+        "55007": {
+          "symbol": "Enemy_Routines1_Deeler"
+        },
+        "55046": {
+          "symbol": "Deeler_Red_Blue"
+        },
+        "55120": {
+          "symbol": "Enemy_Routines1_Deeler_Code"
+        },
+        "55179": {
+          "symbol": "Table_for_Bago_Bago"
+        },
+        "55183": {
+          "symbol": "Enemy_Routines1_Bago_Bago_Generator"
+        },
+        "55263": {
+          "symbol": "Table_for_Bago_Bago_X_Velocity_on_ground"
+        },
+        "55265": {
+          "symbol": "Enemy_Routines1_Bago_Bago0"
+        },
+        "55352": {
+          "symbol": "Bago_Bago_and_Octorok"
+        },
+        "55362": {
+          "symbol": "Enemy_Routines1_Bago_Bago1"
+        },
+        "55404": {
+          "symbol": "shoot_rock"
+        },
+        "55430": {
+          "symbol": "Table_for_Octorok_X_Velocity"
+        },
+        "55432": {
+          "symbol": "Enemy_Routines1_Octorok"
+        },
+        "55487": {
+          "symbol": "Table_for_Elevator_Y_Velocity"
+        },
+        "55490": {
+          "symbol": "Enemy_Routines1_Elevator"
+        },
+        "55582": {
+          "symbol": "Enemy_Routines1_Fairy"
+        },
+        "55641": {
+          "symbol": "Enemy_Routines1_Red_Jar"
+        },
+        "55697": {
+          "symbol": "Enemy_Routines1_Locked_Door"
+        },
+        "55738": {
+          "symbol": "link_door_collision_maybe"
+        },
+        "55806": {
+          "symbol": "Table_for_Bot"
+        },
+        "55810": {
+          "symbol": "Enemy_Stops_when_Hit"
+        },
+        "55820": {
+          "symbol": "Enemy_Routines1_Bot"
+        },
+        "55851": {
+          "symbol": "Enemy_Routines1_Bit"
+        },
+        "55879": {
+          "symbol": "Enemy_Routines1_Myu"
+        },
+        "56013": {
+          "symbol": "table_for_Moa"
+        },
+        "56015": {
+          "symbol": "Enemy_Routines1_Moa"
+        },
+        "56127": {
+          "symbol": "Related_to_Moa"
+        },
+        "56147": {
+          "symbol": "Enemy_Routines1_Ache_and_Acheman"
+        },
+        "56166": {
+          "symbol": "Spawn_Flame"
+        },
+        "56179": {
+          "symbol": "Go_on___"
+        },
+        "56185": {
+          "symbol": "Ache"
+        },
+        "56203": {
+          "symbol": "Ache_Acheman1"
+        },
+        "56270": {
+          "symbol": "Spawn_New_Projectile"
+        },
+        "56313": {
+          "symbol": "Table_for_Generated_Rock_X_Velocity"
+        },
+        "56315": {
+          "symbol": "spawn_new_bubble_or_rock"
+        },
+        "56327": {
+          "symbol": "Related_to_Desert_Rocks__Raising_Bubbles__projectiles__etc"
+        },
+        "56341": {
+          "symbol": "Enemy_Routines1_Raising_Bubbles"
+        },
+        "56391": {
+          "symbol": "Table_for_Rocks_possible_Y_Positions_"
+        },
+        "56399": {
+          "symbol": "Desert_Rocks_initialization_routine"
+        },
+        "56465": {
+          "symbol": "Determine_Enemy_Facing_Direction_relative_to_Link"
+        },
+        "56529": {
+          "symbol": "table17"
+        },
+        "56539": {
+          "symbol": "code29"
+        },
+        "56647": {
+          "symbol": "remove_enemy_or_item"
+        },
+        "56684": {
+          "symbol": "code30"
+        },
+        "56768": {
+          "symbol": "Experience_Table_Low_Byte"
+        },
+        "56784": {
+          "symbol": "Japanese_version_score_table"
+        },
+        "56796": {
+          "symbol": "Experience_Table_High_Byte"
+        },
+        "56812": {
+          "symbol": "monster_death_give_exp"
+        },
+        "57016": {
+          "symbol": "Simple_Horizontal_Movement"
+        },
+        "57022": {
+          "symbol": "Gravity"
+        },
+        "57032": {
+          "symbol": "Simple_Vertical_Movement"
+        },
+        "57063": {
+          "symbol": "Set_tile_and_move_right_1_column"
+        },
+        "57162": {
+          "symbol": "Set_tile_and_go_down_1_row_in_2x2_tiles_units"
+        },
+        "57190": {
+          "symbol": "table19"
+        },
+        "57194": {
+          "symbol": "PPU_Macros_for_Hidden_Palace"
+        },
+        "57209": {
+          "symbol": "forest_chop_with_hammer"
+        },
+        "57227": {
+          "symbol": "Related_to_Hidden_Town_revealed"
+        },
+        "57327": {
+          "symbol": "Overworld_Boundaries__Mountain_or_Water_Bank_1"
+        },
+        "57336": {
+          "symbol": "Check_for_Hidden_Palace_spot_Bank_1"
+        },
+        "57371": {
+          "symbol": "Turn_Palaces_into_Stone_Bank_1"
+        },
+        "57389": {
+          "symbol": "table20"
+        },
+        "57394": {
+          "symbol": "Links_initial_Y_Position_when_entering_an_area__ground_center_or_side"
+        },
+        "57422": {
+          "symbol": "table21"
+        },
+        "57456": {
+          "symbol": "code34"
+        },
+        "57465": {
+          "symbol": "Related_to_Link_falling_in_Lava_Water"
+        },
+        "57508": {
+          "symbol": "Link_touched_Lava_Water"
+        },
+        "57561": {
+          "symbol": "table22"
+        },
+        "57565": {
+          "symbol": "code35"
+        },
+        "57817": {
+          "symbol": "Related_to_Links_velocities_when_breaking_blocks_or_hitting_walls"
+        },
+        "57821": {
+          "symbol": "related_to_breakable_block"
+        },
+        "57830": {
+          "symbol": "Related_to_Breakable_Blocks"
+        },
+        "57914": {
+          "symbol": "stab_brick_at_0E_with_A_and_does_draw"
+        },
+        "58002": {
+          "symbol": "find_next_free_41A_X_or_something_and_write_to___associated"
+        },
+        "58031": {
+          "symbol": "Table_for_Enemy_Damage"
+        },
+        "58095": {
+          "symbol": "Link_Hit_Routine"
+        },
+        "58225": {
+          "symbol": "code37"
+        },
+        "58265": {
+          "symbol": "Set_Links_Recoil"
+        },
+        "58415": {
+          "symbol": "table23"
+        },
+        "58417": {
+          "symbol": "code38"
+        },
+        "58710": {
+          "symbol": "Table_for_X_Velocity_when_Link_is_hit_"
+        },
+        "58712": {
+          "symbol": "code39"
+        },
+        "58780": {
+          "symbol": "Related_to_Ironknuckle_Shield_protection"
+        },
+        "58810": {
+          "symbol": "code40"
+        },
+        "58867": {
+          "symbol": "check_if_shield_protects_from_sword_hit"
+        },
+        "58989": {
+          "symbol": "Attack_Power_for_8_Levels"
+        },
+        "58999": {
+          "symbol": "Sword_Hit_Detection_maybe__probably_part_of_it_at_least"
+        },
+        "59249": {
+          "symbol": "get_item"
+        },
+        "59376": {
+          "symbol": "table24"
+        },
+        "59380": {
+          "symbol": "code42"
+        },
+        "59504": {
+          "symbol": "Table_for_Probability_for_Item_given_by_killed_enemy"
+        },
+        "59520": {
+          "symbol": "monster_death"
+        },
+        "59537": {
+          "symbol": "Drop_Item"
+        },
+        "59627": {
+          "symbol": "Change_Enemy_Facing_Direction_and_X_Velocity"
+        },
+        "59642": {
+          "symbol": "UNKNOWN0"
+        },
+        "59765": {
+          "symbol": "code43"
+        },
+        "59804": {
+          "symbol": "table26"
+        },
+        "59810": {
+          "symbol": "code44"
+        },
+        "59860": {
+          "symbol": "table27"
+        },
+        "59864": {
+          "symbol": "code45"
+        },
+        "59897": {
+          "symbol": "idem__maybe"
+        },
+        "60064": {
+          "symbol": "table28"
+        },
+        "60128": {
+          "symbol": "Tables_for_generating_pointers_in_the_6000_7FFF_range"
+        },
+        "60136": {
+          "symbol": "Generic_Collision_Test_with_Level_Objects"
+        },
+        "60197": {
+          "symbol": "UNKNOWN1"
+        },
+        "60336": {
+          "symbol": "Table_for_Fairy_floating_movement"
+        },
+        "60344": {
+          "symbol": "code47"
+        },
+        "60400": {
+          "symbol": "Links_Display_Routine"
+        },
+        "60624": {
+          "symbol": "Strike_Ducked"
+        },
+        "60646": {
+          "symbol": "Up_Stab"
+        },
+        "60792": {
+          "symbol": "table29"
+        },
+        "60794": {
+          "symbol": "Sword_Slash_Display_maybe"
+        },
+        "61009": {
+          "symbol": "table30"
+        },
+        "61187": {
+          "symbol": "code49"
+        },
+        "61201": {
+          "symbol": "Display"
+        },
+        "61255": {
+          "symbol": "Enemy_Routines2_Elevator"
+        },
+        "61329": {
+          "symbol": "Enemy_Routines2_Bot_and_Bit"
+        },
+        "61378": {
+          "symbol": "Enemy_Routines2_Myu"
+        },
+        "61394": {
+          "symbol": "Enemy_Routines2_unknown"
+        },
+        "61426": {
+          "symbol": "Enemy_Routines2_Moa"
+        },
+        "61479": {
+          "symbol": "Enemy_Routines2_Deeler"
+        },
+        "61608": {
+          "symbol": "Enemy_Routines2_Octorok"
+        },
+        "61625": {
+          "symbol": "Enemy_Routines2_BagoBago"
+        },
+        "61661": {
+          "symbol": "Enemy_Routines2_Fairy"
+        },
+        "61708": {
+          "symbol": "table31"
+        },
+        "61714": {
+          "symbol": "Enemy_Routines2_RedJar"
+        },
+        "61754": {
+          "symbol": "Enemy_Routines2_LockedDoor"
+        },
+        "61822": {
+          "symbol": "Enemy_Routines2_Ache_and_Acheman"
+        },
+        "62060": {
+          "symbol": "Tables_for_Various_Bitmasks2"
+        },
+        "62077": {
+          "symbol": "code51"
+        },
+        "62208": {
+          "symbol": "dmc_samples"
+        },
+        "64898": {
+          "symbol": "code52"
+        },
+        "64971": {
+          "symbol": "Continue_Save_Screen_Tile_Mappings"
+        },
+        "65142": {
+          "symbol": "code53"
+        },
+        "65148": {
+          "symbol": "pointer_table"
+        },
+        "65156": {
+          "symbol": "table32"
+        },
+        "65159": {
+          "symbol": "code54"
+        },
+        "65194": {
+          "symbol": "UNUSED_FEAA"
+        },
+        "65232": {
+          "symbol": "code55"
+        },
+        "65356": {
+          "symbol": "UNUSED_FF4C"
+        },
+        "65392": {
+          "symbol": "reset",
+          "block_comment": "----------------------------------------------------------------------\nReset Vector\n----------------------------------------------------------------------"
+        },
+        "65477": {
+          "symbol": "Load_Bank_0_at_0x8000"
+        },
+        "65481": {
+          "symbol": "Load_Bank_769_at_0x8000"
+        },
+        "65520": {
+          "symbol": "irq",
+          "block_comment": "---------------------------------------------------------------------- \nIRQ entry point This isn't valid code, but this is where the irq vector points.\n----------------------------------------------------------------------"
+        },
+        "65530": {
+          "block_comment": "----------------------------------------------------------------------\nCPU interrupt and reset vectors\n----------------------------------------------------------------------"
+        }
+      },
+      "mapped_at": 49152
+    }
+  },
+  "mapper_window_size": 16
+}
