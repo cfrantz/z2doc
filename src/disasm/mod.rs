@@ -347,7 +347,8 @@ pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u1
                             let (_, target_addr) = resolve_target(Some(instr.mode), op_val, pc as u16, db, bank_id);
                             if let Some(addr) = target_addr {
                                 // If target is in this bank or fixed range, it's a candidate for auto-labeling
-                                if (addr >= base_address && addr < base_address + mapper_size as u16) || 
+                                let addr_32 = addr as u32;
+                                if (addr_32 >= base_address as u32 && addr_32 < base_address as u32 + mapper_size) || 
                                    fixed_range.map_or(false, |r| r.contains(&addr)) {
                                     all_targets.insert(addr);
                                 }
@@ -367,7 +368,8 @@ pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u1
                         let low = rom_data[offset];
                         let high = rom_data[offset + 1];
                         let val = (high as u16) << 8 | (low as u16);
-                        if (val >= base_address && val < base_address + mapper_size as u16) || 
+                        let val_32 = val as u32;
+                        if (val_32 >= base_address as u32 && val_32 < base_address as u32 + mapper_size) || 
                            fixed_range.map_or(false, |r| r.contains(&val)) {
                             all_targets.insert(val);
                         }
