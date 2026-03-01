@@ -75,7 +75,7 @@ document.addEventListener('alpine:init', () => {
 
         async changeBank() {
             await this.fetchDisassembly();
-            window.scrollTo(0, 0);
+            document.getElementById('disasm-container').scrollTop = 0;
         },
 
         async updateAnnotation(line, field, value) {
@@ -104,8 +104,6 @@ document.addEventListener('alpine:init', () => {
             });
 
             if (response.ok) {
-                // Update local state to avoid full refresh if possible, 
-                // but re-fetching ensures all references are updated.
                 await this.fetchDisassembly();
             }
         },
@@ -113,12 +111,15 @@ document.addEventListener('alpine:init', () => {
         navigate(targetBank, targetAddress) {
             if (targetBank !== null && targetBank !== this.currentBank) {
                 this.currentBank = targetBank;
-                this.fetchDisassembly();
-            }
-            // Scrolling to the specific address could be implemented by ID
-            const element = document.getElementById(`addr-${targetAddress}`);
-            if (element) {
-                element.scrollIntoView();
+                this.fetchDisassembly().then(() => {
+                    this.$nextTick(() => {
+                        const element = document.getElementById(`addr-${targetAddress}`);
+                        if (element) element.scrollIntoView();
+                    });
+                });
+            } else {
+                const element = document.getElementById(`addr-${targetAddress}`);
+                if (element) element.scrollIntoView();
             }
         },
 
