@@ -124,7 +124,7 @@
         </div>
     </div>
 
-    <div class="disassembly-container" id="disasm-container">
+    <div class="disassembly-container" id="disasm-container" @scroll.debounce.100ms="onScroll()">
         <div class="disassembly-grid" :style="gridStyles">
             <template x-for="line in disassembly" :key="line.address_label">
                 <div class="grid-row">
@@ -178,7 +178,8 @@
                     <!-- Global Symbols View (Equates) -->
                     <template x-if="line.bank === -1">
                         <div style="display: contents">
-                            <div class="grid-cell" style="grid-column: 1 / span 4; display: flex; align-items: baseline;">
+                            <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;"
+                                 :id="'addr-' + line.address">
                                 <div class="symbol editable-container" x-data="editField"
                                     :contenteditable="editing"
                                     @click="if(!editing) startEdit()"

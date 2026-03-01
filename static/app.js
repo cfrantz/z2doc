@@ -48,7 +48,48 @@ document.addEventListener('alpine:init', () => {
                 this.colWidths = JSON.parse(saved);
             }
 
-            await this.fetchDisassembly();
+            // Handle initial hash or fetch default
+            if (window.location.hash) {
+                await this.handleHash();
+            } else {
+                await this.fetchDisassembly();
+            }
+
+            // Listen for back/forward and manual hash changes
+            window.addEventListener('hashchange', () => this.handleHash());
+        },
+
+        async handleHash() {
+            const hash = window.location.hash;
+            if (!hash) return;
+
+            const bankMatch = hash.match(/bank-([0-9A-Fa-f]{2})/);
+            const addrMatch = hash.match(/addr-([0-9A-Fa-f]{4})/);
+
+            if (bankMatch) {
+                const bankId = bankMatch[1] === 'FF' ? 255 : parseInt(bankMatch[1], 16);
+                if (bankId !== parseInt(this.currentBank)) {
+                    this.currentBank = bankId;
+                    await this.fetchDisassembly();
+                }
+            }
+
+            if (addrMatch) {
+                const addr = parseInt(addrMatch[1], 16);
+                this.$nextTick(() => {
+                    this.scrolltoAddress(addr);
+                });
+            }
+        },
+
+        scrolltoAddress(addr) {
+            const symElement = document.getElementById(`sym-${addr}`);
+            if (symElement) {
+                symElement.scrollIntoView();
+            } else {
+                const addrElement = document.getElementById(`addr-${addr}`);
+                if (addrElement) addrElement.scrollIntoView();
+            }
         },
 
         async fetchThemes() {
@@ -81,8 +122,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         async changeBank() {
-            await this.fetchDisassembly();
-            document.getElementById('disasm-container').scrollTop = 0;
+            const bankHex = parseInt(this.currentBank).toString(16).toUpperCase().padStart(2, '0');
+            window.location.hash = `bank-${bankHex}`;
         },
 
         async updateAnnotation(line, field, value) {
@@ -116,23 +157,34 @@ document.addEventListener('alpine:init', () => {
         },
 
         navigate(targetBank, targetAddress) {
-            const scroll = (addr) => {
-                const symElement = document.getElementById(`sym-${addr}`);
-                if (symElement) {
-                    symElement.scrollIntoView();
-                } else {
-                    const addrElement = document.getElementById(`addr-${addr}`);
-                    if (addrElement) addrElement.scrollIntoView();
-                }
-            };
+            const bankId = targetBank === null ? 255 : targetBank;
+            const bankHex = bankId.toString(16).toUpperCase().padStart(2, '0');
+            const addrHex = targetAddress.toString(16).toUpperCase().padStart(4, '0');
+            window.location.hash = `bank-${bankHex}-addr-${addrHex}`;
+        },
 
-            if (targetBank !== null && targetBank !== this.currentBank) {
-                this.currentBank = targetBank;
-                this.fetchDisassembly().then(() => {
-                    this.$nextTick(() => scroll(targetAddress));
-                });
-            } else {
-                scroll(targetAddress);
+        onScroll() {
+            if (this.resizing) return;
+            
+            const container = document.getElementById('disasm-container');
+            const cells = container.querySelectorAll('.grid-cell.address');
+            let topAddr = null;
+            
+            const containerRect = container.getBoundingClientRect();
+            for (let cell of cells) {
+                const rect = cell.getBoundingClientRect();
+                if (rect.top >= containerRect.top) {
+                    topAddr = cell.id.replace('addr-', '');
+                    break;
+                }
+            }
+
+            if (topAddr) {
+                const bankHex = parseInt(this.currentBank).toString(16).toUpperCase().padStart(2, '0');
+                const addrHex = parseInt(topAddr).toString(16).toUpperCase().padStart(4, '0');
+                const newHash = `#bank-${bankHex}-addr-${addrHex}`;
+                // Use replaceState to update the URL as we scroll without creating history entries
+                history.replaceState(null, null, newHash);
             }
         },
 
