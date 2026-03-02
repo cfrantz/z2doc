@@ -6,9 +6,9 @@ document.addEventListener('alpine:init', () => {
         cancelled: false,
         
         init() {
-            window.addEventListener('disassembly-fetched', () => {
-                this.isPending = false;
-            });
+            const clearPending = () => { this.isPending = false; };
+            window.addEventListener('disassembly-fetched', clearPending);
+            window.addEventListener('annotation-updated', clearPending);
         },
 
         startEdit() {
@@ -45,13 +45,24 @@ document.addEventListener('alpine:init', () => {
                 this.editing = false;
                 return;
             }
+
+            const editable = this.$el.getAttribute('contenteditable') === 'true' 
+                ? this.$el 
+                : this.$el.querySelector('[contenteditable="true"]');
+            
+            const newValue = editable ? editable.innerText : this.$el.innerText;
             this.editing = false;
-            const newValue = this.$el.innerText;
+
             const processedValue = this.stripDecorations(field, newValue);
+            const oldProcessedValue = this.stripDecorations(field, this.originalValue);
+
+            if (processedValue === oldProcessedValue) {
+                return;
+            }
             
             // Update local state immediately if possible
             if (line[field] !== undefined) {
-                line[field] = processedValue;
+                line[field] = processedValue || null;
             }
             
             this.isPending = true;
@@ -263,7 +274,11 @@ document.addEventListener('alpine:init', () => {
             });
 
             if (response.ok) {
-                await this.fetchDisassembly();
+                if (field === 'comment' || field === 'block_comment') {
+                    window.dispatchEvent(new CustomEvent('annotation-updated', { detail: { line, field } }));
+                } else {
+                    await this.fetchDisassembly();
+                }
             }
         },
 
