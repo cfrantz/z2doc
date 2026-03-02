@@ -6,6 +6,10 @@
       "symbol": "frame",
       "comment": "Global frame counter"
     },
+    "23": {
+      "symbol": "link_standing",
+      "comment": "Link standing==1, crouching==0"
+    },
     "41": {
       "symbol": "link_ypos",
       "comment": "Link's Y position",
@@ -28190,7 +28194,7 @@
       "mapped_at": 32768
     },
     "7": {
-      "title": "Global Bank",
+      "title": "Fixed Bank",
       "is_fixed": true,
       "region": [
         {
@@ -33540,6 +33544,10 @@
         "57778": {
           "comment": "Game Mode"
         },
+        "57790": {
+          "symbol": "bank7_check_collision_playfield",
+          "block_comment": "----------------------------------------------------------------------\nNote(cfrantz): I think this routine is used to check enemy\n               collisions with the playfield.\n----------------------------------------------------------------------"
+        },
         "57795": {
           "comment": "Check for False Wall\twhile step on?"
         },
@@ -34120,7 +34128,8 @@
           "comment": "Enemy facing direction"
         },
         "58867": {
-          "symbol": "bank7_check_if_shield_protects_from_sword_hit"
+          "symbol": "bank7_prepare_enemy_sword_damage_box",
+          "block_comment": "----------------------------------------------------------------------\nThis used to be called bank7_check_if_shield_protects_from_sword_hit,\nbut, I think this really sets up the enemy sword damage box.\n\n----------------------------------------------------------------------"
         },
         "58898": {
           "comment": "flip all bits"
@@ -34606,8 +34615,19 @@
         "59642": {
           "symbol": "bank7_unknown0"
         },
+        "59714": {
+          "symbol": "bank7_prep_enemy_for_collision_check"
+        },
+        "59761": {
+          "symbol": "link_hitbox_y0",
+          "comment": "Link's hitbox y0 if crouching or standing."
+        },
+        "59763": {
+          "symbol": "link_hitbox_y1",
+          "comment": "Link's hitbox y1 if crouching or standing."
+        },
         "59765": {
-          "symbol": "bank7_code43",
+          "symbol": "bank7_prep_link_for_collision_check",
           "comment": "Link's X Position on Screen; Player X On Screen; Link's X Position on Screen"
         },
         "59776": {
@@ -34632,23 +34652,25 @@
           "symbol": "bank7_code44"
         },
         "59816": {
-          "comment": "Link's X Position on Screen; Player X On Screen; Link's X Position on Screen"
+          "comment": "Link's X Position on Screen"
         },
         "59834": {
           "comment": "Controller 1 Last Poll; Current Animation Frame for Link (OW and SS)\t;animation frame, powerful: can cause link to attack"
         },
         "59860": {
-          "symbol": "bank7_table27"
+          "symbol": "bank7_link_shield_x0",
+          "comment": "Link's shield x0 when facing right or left"
         },
         "59862": {
-          "symbol": "bank7_le9_d6"
+          "symbol": "bank7_link_shield_y0",
+          "comment": "Link's shield y0 when crouching or standing"
         },
         "59864": {
-          "symbol": "bank7_code45",
-          "comment": "link facedir SideScroll\t\t; Direction arrow pressed (1 = right, 2 = left)"
+          "symbol": "bank7_prep_link_shield_collision_detect",
+          "comment": "link facing direction (1 = right, 2 = left)"
         },
         "59867": {
-          "comment": "Link's X Position on Screen; Player X On Screen; Link's X Position on Screen"
+          "comment": "Link's X Position on Screen"
         },
         "59873": {
           "comment": "refer to table at $1E9D4"
@@ -34663,11 +34685,11 @@
           "comment": "refer to table at $1E9D6"
         },
         "59897": {
-          "symbol": "bank7_idem_maybe",
-          "block_comment": "------------------------------------------------------------\nThis routine performs an axis-aligned bounding box\ncollision check.\n------------------------------------------------------------"
+          "symbol": "bank7_aabb_collision_check",
+          "block_comment": "------------------------------------------------------------\nThis routine performs an axis-aligned bounding box\ncollision check.\n\nParameters:\n  $00 - First object x0 (screen coordinates obj.x0 + coll.x0)\n  $01 - First object y0 (screen coordinates obj.y0 + coll.y0)\n  $02 - First object x1 (coll.x1)\n  $03 - First object y1 (coll.y1)\n  $04 - Second object x0 (screen coordinates obj.x0 + coll.x0)\n  $05 - Second object y0 (screen coordinates obj.y0 + coll.y0)\n  $06 - Second object x1 (coll.x1)\n  $07 - Second object y1 (coll.y1)\nReturns:\n  Restores X reg to the current enemy index.\n  Carry flag clear if collision.\n------------------------------------------------------------"
         },
         "59921": {
-          "comment": "used as monster x register ;draw boss hp bar"
+          "comment": "used as monster x register"
         },
         "59934": {
           "comment": "Projectile Y Position"
@@ -34898,7 +34920,7 @@
           "block_comment": "Tile Mappings for Items (2E bytes)\n8C F5\tCandle\n8E F5\tGlove\n90 F5\tRaft\n92 F5\tBoot\n94 F5\tFlute\n96 F5\tCross\n98 F5\tHammer\n9A F5\tMagic Key\n66 F5\tKey\n00 F5\tInvalid Index\n72 F5\tExperience Bag - 50 pts\n72 F5\tExperience Bag - 100 pts\n72 F5\tExperience Bag - 200 pts\n72 F5\tExperience Bag - 500 pts\n83 83\tMagic Container\n81 81\tHeart Container\n8A F5\tBlue Jar\n8A F5\tRed Jar\nA8 F5\tLink Doll\n31 31\tMedicine\n2F 2F\tTrophy\n31 31\tKidnapped Child\n67 67\tInvalid Index ?"
         },
         "61187": {
-          "symbol": "bank7_code49"
+          "symbol": "bank7_myu_display_helper"
         },
         "61190": {
           "comment": "used as monster x register ;draw boss hp bar"
