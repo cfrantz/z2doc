@@ -1,7 +1,7 @@
-# Docusemmbler: NES Disassembly Analysis Tool
+# Docassembler: NES Disassembly Analysis Tool
 
 ## Introduction
-**Docusemmbler** is a modern, web-based disassembly analysis tool specifically designed for 8-bit Nintendo Entertainment System (NES) games. It combines a high-performance Rust backend with an interactive, Alpine.js-powered frontend to provide a seamless reverse-engineering experience.
+**Docassembler** is a modern, web-based disassembly analysis tool specifically designed for 8-bit Nintendo Entertainment System (NES) games. It combines a high-performance Rust backend with an interactive, Alpine.js-powered frontend to provide a seamless reverse-engineering experience.
 
 ### AI-assisted coding
 This is the author's first foray into AI-assisted coding.
@@ -12,7 +12,7 @@ I didn't write any of the code for this application - I delegated everything to 
 To use the tool, you must provide a NES ROM file as a command-line argument when starting the backend server:
 
 ```bash
-./docusemmbler path/to/game.nes
+./docassembler path/to/game.nes
 ```
 
 The tool will automatically create or load a project database (a `.json` file) to store your symbols and comments.

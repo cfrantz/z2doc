@@ -1,9 +1,9 @@
-# Project Docusemmbler: NES Disassembly Analysis Tool
+# Project Docassembler: NES Disassembly Analysis Tool
 
 ## 1. Project Structure
 The project is a combined Rust/Web application with a modular backend and an Alpine.js-powered frontend.
 ```text
-docusemmbler/
+docassembler/
 ├── Cargo.toml
 ├── src/
 │   ├── main.rs         // Rocket entry point and API routes
