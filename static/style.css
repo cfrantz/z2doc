@@ -73,7 +73,7 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: 
     min-height: 20px;
 }
 
-.grid-cell.operand { display: flex; align-items: baseline; gap: 4px; }
+.grid-cell.operand { display: flex; align-items: baseline; }
 .comment-cell { padding-right: 20px; }
 
 .address { user-select: none; }
