@@ -526,7 +526,7 @@ fn VirtualizedDisasm() -> impl IntoView {
         }
     });
 
-    const LINE_HEIGHT: f64 = 24.0;
+    const LINE_HEIGHT: f64 = 20.0;
 
     let offsets = Memo::new(move |_| {
         let lines = disassembly.get();

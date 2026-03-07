@@ -61,9 +61,18 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: 
 .grid-row { 
     display: grid;
     width: 100%;
+    line-height: 20px;
+    font-size: 13px;
 }
 
-.grid-cell { padding: 2px 8px; vertical-align: top; position: relative; }
+.grid-cell { 
+    padding: 0 8px; 
+    vertical-align: top; 
+    position: relative; 
+    box-sizing: border-box;
+    min-height: 20px;
+}
+
 .grid-cell.operand { display: flex; align-items: baseline; gap: 4px; }
 .comment-cell { padding-right: 20px; }
 
@@ -73,7 +82,12 @@ main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: 
 .full-width { grid-column: 1 / -1; }
 
 [contenteditable]:focus { outline: 1px solid #4a90e2; background: rgba(74, 144, 226, 0.1); }
-.editable-container { cursor: text; min-height: 1.2em; padding-left: 4px; }
+.editable-container { 
+    cursor: text; 
+    min-height: 20px; 
+    padding-left: 4px; 
+    box-sizing: border-box;
+}
 
 .setup-screen {
     display: flex;
