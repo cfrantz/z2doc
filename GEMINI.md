@@ -1,85 +1,53 @@
 # Project Docassembler: NES Disassembly Analysis Tool
 
 ## 1. Project Structure
-The project is a combined Rust/Web application with a modular backend and an Alpine.js-powered frontend.
+The project is a pure client-side Rust WebAssembly (WASM) application built with the **Leptos** framework and bundled using **Trunk**.
 ```text
 docassembler/
-├── Cargo.toml
+├── Cargo.toml          // WASM dependencies and Trunk config
+├── index.html          // Application entry point and Trunk asset link
 ├── src/
-│   ├── main.rs         // Rocket entry point and API routes
-│   ├── database.rs     // JSON5 persistence and DB management
-│   ├── models.rs       // Shared data structures (AnnotationInfo, etc.)
+│   ├── main.rs         // Leptos UI components, state management, and setup flow
+│   ├── database.rs     // JSON parsing and serialization (WASM compatible)
+│   ├── models.rs       // Shared data structures (AnnotationInfo, DisassemblyLine, etc.)
 │   └── disasm/
 │       └── mod.rs      // 6502 disassembly logic and opcode tables
 ├── static/
-│   ├── index.html      // Alpine.js UI
-│   ├── style.css       // Base styles and CSS variables for themes
-│   └── app.js          // Client-side Alpine.js logic
+│   └── style.css       // Base styles and CSS variables for themes and layout
 └── templates/
     └── default_db.json // Initial pre-populated database template
 ```
 
-## 2. Disassembly Representation
-The backend serves a JSON array of `DisassemblyLine` objects, optimized for granular rendering:
-```json
-[
-  {
-    "address_label": "$02:$8354",
-    "address": 33620,
-    "bank": 2,
-    "bytes": "4C 00 80",
-    "opcode": "JMP",
-    "operand_prefix": "",
-    "operand_main": "Reset",
-    "operand_suffix": "",
-    "operand_is_symbol": true,
-    "symbol": "Reset",
-    "comment": "Main entry point",
-    "block_comment": null,
-    "target_bank": 2,
-    "target_address": 32768
-  }
-]
-```
+## 2. Architecture & Persistence
+- **Client-Side execution:** All disassembly, logic, and rendering occur entirely within the browser via WASM. No backend server is required.
+- **File Access API:** Uses the **Browser File System Access API** to permit direct read/write access to local `.json` database files and `.nes` ROM files.
+- **State Management:** Uses Leptos **Signals** and **Memos** for fine-grained reactivity. The `AppState` struct holds global state (ROM data, database, current bank, etc.).
+- **Persistence:** 
+    - **Database:** Saved directly to the local filesystem via the file handle.
+    - **Settings:** Column widths and theme preferences are persisted in `localStorage`.
 
-## 3. Annotation & Navigation
-- **In-Place Editing:** Frontend uses Alpine.js `contentEditable` fields for symbols and comments.
-- **Synchronization:** On `blur`, a `POST` request is sent to `/api/annotation`. The backend persists changes and returns a signal to refresh the disassembly.
-- **Hash-Based Navigation:** The UI uses URL hashes (`#bank-XX-addr-XXXX`) to permit deep-linking, back/forward navigation, and synchronized scrolling.
-- **Symbol Links:** Operands resolved to symbols are hyperlinked. Clicking a link triggers a bank switch (if necessary) and scrolls the target address into view.
+## 3. Disassembly & Virtual Scrolling
+To handle large NES PRG banks (8K or 16K) which can contain thousands of lines, the application uses a **custom virtualized scrolling engine**:
+- **Variable Height Support:** Row heights are pre-calculated to account for block comments and symbols.
+- **Dynamic Rendering:** Only a small "window" of rows (plus a buffer) is rendered in the DOM at any time, maintaining 60fps performance.
+- **Binary Search Offsets:** Uses binary search on pre-calculated Y-offsets to quickly determine which instructions are visible for a given scroll position.
 
-## 4. Mapper Configuration
-- **Window Size:** Supports 8K or 16K PRG banking, stored in the database.
-- **Fixed Banks:** One or more banks can be marked as `is_fixed` (e.g., the $C000-$FFFF range in many NES mappers).
-- **Fixed Range:** The `mapper_fixed_range` field defines the CPU address space occupied by fixed banks.
+## 4. Annotation & Navigation
+- **In-Place Editing:** Uses HTML `contentEditable` fields managed by Leptos. Changes to symbols or comments reactively update the underlying database signal.
+- **Programmatic Scrolling:** Clicking a symbol link (operand) triggers a navigation signal. The virtualized list calculates the target offset and programmatically scrolls the container.
+- **Cross-Bank Links:** Navigation supports switching banks or jumping to the "Global Symbols" pseudo-bank automatically.
+- **Auto-Labeling:** Discovered branch/jump targets without user-defined symbols are automatically labeled as `LXXXX`.
 
-## 5. Core Data Structures
+## 5. Mapper & Data Model
 - **`DisassemblyInfo`**: Root database struct.
-  - `global`: `SectionInfo` (Annotations for RAM, PPU, etc.).
+  - `global`: `BTreeMap<u16, AnnotationInfo>` (Non-banked symbols like RAM/PPU).
   - `bank`: `BTreeMap<u8, BankInfo>` (Indexed by PRG bank).
   - `mapper_window_size`: `u8` (8 or 16).
   - `mapper_fixed_range`: `Option<RangeInclusive<u16>>`.
-- **`BankInfo`**:
-  - `is_fixed`: `bool` (Is this bank always mapped?).
-  - `mapped_at`: `Option<u16>` (Default CPU mapping address).
-  - `region`: `Vec<RegionInfo>` (List of Code/Data ranges).
-  - `address`: `SectionInfo` (Local annotations).
-- **`RegionInfo`**: Enum: `Code(Range)`, `Bytes(Range)`, `Words(Range)`.
+- **`RegionInfo`**: Enum defining memory ranges: `Code`, `Bytes`, or `Words`.
+- **Gap Filling:** Any address range not explicitly covered by a `RegionInfo` is automatically disassembled as a `Bytes` region.
 
-## 6. Disassembly Service
-The `disasm` module performs sophisticated linear sweep disassembly:
-- **Gap Filling:** Any address range not explicitly covered by a `RegionInfo` is automatically treated as a `Bytes` region.
-- **Auto-Labeling:** Discovered branch/jump targets without user-defined symbols are automatically labeled as `LXXXX`.
-- **Symbol Resolution Priority:**
-    1. Local bank annotations.
-    2. Fixed bank annotations (if the target address is in the fixed range).
-    3. Global annotations.
-- **Sequence Breaking:** `Bytes` and `Words` sequences are broken if a symbol or auto-label is defined at an internal address, ensuring labels always start a new line.
-
-## 7. API Endpoints
-- **`GET /api/metadata`**: Returns project title, ROM filename, bank list, and mapper configuration.
-- **`GET /api/disassembly/<bank_id>`**: Returns the disassembly for a bank (or `255` for global symbols).
-- **`POST /api/annotation`**: Updates `AnnotationInfo`. Payload: `{ bank_id, address, symbol, comment, block_comment }`.
-- **`GET /api/themes`**: Returns a list of available theme names.
-- **`POST /api/themes/active`**: Sets the active theme for the session.
-- **`GET /api/theme.css`**: Dynamically generates CSS based on the active `ThemeConfig` (colors for opcodes, symbols, comments, etc.).
+## 6. UI & Themes
+- **Column Resizing:** Interactive resizing of columns (Addr, Bytes, Op, Operand) via mouse drag, implemented using CSS variables and global mouse listeners.
+- **Reactive Theming:** Dynamic CSS injection allows switching between built-in themes (Light/Dark) or user themes instantly.
+- **Layout:** High-performance flexbox and grid layout ensures the disassembly fills the available viewport while the header remains fixed.
