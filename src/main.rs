@@ -7,6 +7,8 @@ use wasm_bindgen::prelude::*;
 use web_sys::{FileSystemFileHandle, FileSystemWritableFileStream, File, Blob};
 use js_sys::{ArrayBuffer, Uint8Array};
 
+use gloo_storage::{Storage, LocalStorage};
+
 mod models;
 mod disasm;
 mod database;
@@ -44,7 +46,12 @@ fn App() -> impl IntoView {
     let db_handle = RwSignal::new(None::<FileSystemFileHandle>);
     let rom_data = RwSignal::new(None::<Vec<u8>>);
     let current_bank = RwSignal::new(0u8);
-    let active_theme = RwSignal::new("Dark".to_string());
+    let active_theme = RwSignal::new(LocalStorage::get::<String>("activeTheme").unwrap_or_else(|_| "Dark".to_string()));
+    
+    // Effect to save theme preference
+    Effect::new(move || {
+        let _ = LocalStorage::set("activeTheme", active_theme.get());
+    });
     
     let mut default_themes = BTreeMap::new();
     // ... default_themes setup ...
@@ -106,9 +113,31 @@ fn App() -> impl IntoView {
         }
     };
 
-    let on_mouseup = move |_| {
-        resizing.set(None);
+    let on_mouseup = {
+        let state = state.clone();
+        move |_| {
+            if let Some(_) = resizing.get_untracked() {
+                if let Some(ref db) = state.db.get_untracked() {
+                    let key = format!("{}.colWidths", db.name);
+                    let _ = LocalStorage::set(&key, state.col_widths.get_untracked());
+                }
+                resizing.set(None);
+            }
+        }
     };
+
+    // Effect to load saved column widths once DB is available
+    Effect::new({
+        let state = state.clone();
+        move || {
+            if let Some(db) = state.db.get() {
+                let key = format!("{}.colWidths", db.name);
+                if let Ok(saved) = LocalStorage::get::<BTreeMap<String, i32>>(&key) {
+                    state.col_widths.set(saved);
+                }
+            }
+        }
+    });
 
     view! {
         <Router>
@@ -476,7 +505,6 @@ fn VirtualizedDisasm() -> impl IntoView {
 
     // Effect to reset scroll on bank change
     Effect::new({
-        let state = state.clone();
         move || {
             let _ = state.current_bank.get();
             if let Some(div) = container_ref.get() {
