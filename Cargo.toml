@@ -41,9 +41,11 @@ web-sys = { version = "0.3", features = [
 js-sys = "0.3"
 gloo-net = "0.6"
 gloo-storage = "0.3"
+gloo-timers = { version = "0.3", features = ["futures"] }
 console_error_panic_hook = "0.1"
 wasm-bindgen-futures = "0.4"
 getrandom = { version = "0.2", features = ["js"] }
+regex = "1.10"
 lucide-leptos = "0.1" # Optional, for icons if we want them later
 
 [profile.release]

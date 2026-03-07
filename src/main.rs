@@ -6,6 +6,7 @@ use std::collections::BTreeMap;
 use wasm_bindgen::prelude::*;
 use web_sys::{FileSystemFileHandle, FileSystemWritableFileStream, File, Blob};
 use js_sys::{ArrayBuffer, Uint8Array};
+use regex::Regex;
 
 use gloo_storage::{Storage, LocalStorage};
 
@@ -41,6 +42,7 @@ struct AppState {
     
     // Navigation state
     nav_target: RwSignal<Option<u16>>,
+    is_navigating: RwSignal<bool>,
 }
 
 #[component]
@@ -91,6 +93,7 @@ fn App() -> impl IntoView {
     let start_x = RwSignal::new(0);
     let start_width = RwSignal::new(0);
     let nav_target = RwSignal::new(None::<u16>);
+    let is_navigating = RwSignal::new(false);
 
     let state = AppState {
         db,
@@ -104,8 +107,65 @@ fn App() -> impl IntoView {
         start_x,
         start_width,
         nav_target,
+        is_navigating,
     };
     provide_context(state.clone());
+
+    // Hash handling logic
+    let handle_hash = {
+        let state = state.clone();
+        move || {
+            let window = web_sys::window().unwrap();
+            let hash = window.location().hash().unwrap_or_default();
+            if hash.is_empty() { return; }
+
+            // Patterns: #bank-XX, #bank-XX-addr-XXXX
+            let bank_re = Regex::new(r"bank-([0-9A-Fa-f]{2})").unwrap();
+            let addr_re = Regex::new(r"addr-([0-9A-Fa-f]{4})").unwrap();
+
+            let mut target_bank = None;
+            let mut target_addr = None;
+
+            if let Some(caps) = bank_re.captures(&hash) {
+                let hex = caps.get(1).unwrap().as_str();
+                let id = if hex == "FF" { 255 } else { u8::from_str_radix(hex, 16).unwrap_or(0) };
+                target_bank = Some(id);
+            }
+
+            if let Some(caps) = addr_re.captures(&hash) {
+                let hex = caps.get(1).unwrap().as_str();
+                target_addr = u16::from_str_radix(hex, 16).ok();
+            }
+
+            if let Some(bank) = target_bank {
+                if state.current_bank.get_untracked() != bank {
+                    state.is_navigating.set(true);
+                    state.current_bank.set(bank);
+                }
+            }
+
+            if let Some(addr) = target_addr {
+                state.is_navigating.set(true);
+                state.nav_target.set(Some(addr));
+            }
+        }
+    };
+
+    // Effect to set up hashchange listener
+    Effect::new({
+        let handle_hash = handle_hash.clone();
+        move || {
+            let window = web_sys::window().unwrap();
+            let closure = Closure::wrap(Box::new(move |_: web_sys::Event| {
+                handle_hash();
+            }) as Box<dyn FnMut(web_sys::Event)>);
+            window.add_event_listener_with_callback("hashchange", closure.as_ref().unchecked_ref()).unwrap();
+            closure.forget();
+            
+            // Initial hash check
+            handle_hash();
+        }
+    });
     
     let on_mousemove = move |ev: web_sys::MouseEvent| {
         if let Some(col) = resizing.get() {
@@ -381,6 +441,10 @@ fn DisasmView() -> impl IntoView {
         let val = event_target_value(&ev);
         if let Ok(id) = val.parse::<u8>() {
             state_c.current_bank.set(id);
+            let window = web_sys::window().unwrap();
+            let bank_hex = format!("{:02X}", id);
+            let hash = format!("#bank-{}", bank_hex);
+            window.location().set_hash(&hash).unwrap();
         }
     };
 
@@ -486,7 +550,6 @@ fn VirtualizedDisasm() -> impl IntoView {
 
     // Effect to initialize viewport height and handle resize
     Effect::new({
-        let state = state.clone();
         move || {
             if let Some(div) = container_ref.get() {
                 set_viewport_height.set(div.client_height() as f64);
@@ -516,6 +579,15 @@ fn VirtualizedDisasm() -> impl IntoView {
                 if let Some(div) = container_ref.get() {
                     div.set_scroll_top(0);
                     set_scroll_top.set(0.0);
+                }
+                
+                // If we were navigating to a bank (without address), reset the flag
+                if state.is_navigating.get_untracked() {
+                    let is_navigating = state.is_navigating;
+                    leptos::task::spawn_local(async move {
+                        gloo_timers::future::TimeoutFuture::new(100).await;
+                        is_navigating.set(false);
+                    });
                 }
             }
         }
@@ -597,6 +669,13 @@ fn VirtualizedDisasm() -> impl IntoView {
                         div.set_scroll_top(target_y as i32);
                         set_scroll_top.set(target_y);
                         state.nav_target.set(None); // Consume the target
+                        
+                        // Small delay to allow scroll events to settle
+                        let is_navigating = state.is_navigating;
+                        leptos::task::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(100).await;
+                            is_navigating.set(false);
+                        });
                     }
                 }
             }
@@ -626,10 +705,36 @@ fn VirtualizedDisasm() -> impl IntoView {
         (start, end, total)
     };
 
-    let on_scroll = move |ev: web_sys::Event| {
-        let div = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
-        set_scroll_top.set(div.scroll_top() as f64);
-        set_viewport_height.set(div.client_height() as f64);
+    let on_scroll = {
+        let state = state.clone();
+        move |ev: web_sys::Event| {
+            let div = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+            let top = div.scroll_top() as f64;
+            set_scroll_top.set(top);
+            set_viewport_height.set(div.client_height() as f64);
+
+            if !state.is_navigating.get_untracked() {
+                let (off, _) = offsets.get_untracked();
+                let idx = match off.binary_search_by(|v| v.partial_cmp(&top).unwrap()) {
+                    Ok(idx) => idx,
+                    Err(idx) => idx.saturating_sub(1),
+                };
+                
+                let lines = disassembly.get_untracked();
+                if let Some(line) = lines.get(idx) {
+                    let bank_id = state.current_bank.get_untracked();
+                    let bank_hex = format!("{:02X}", bank_id);
+                    let addr_hex = format!("{:04X}", line.address);
+                    let new_hash = format!("#bank-{}-addr-{}", bank_hex, addr_hex);
+                    
+                    let window = web_sys::window().unwrap();
+                    let history = window.history().unwrap();
+                    if window.location().hash().unwrap_or_default() != new_hash {
+                        let _ = history.replace_state_with_url(&JsValue::NULL, "", Some(&new_hash));
+                    }
+                }
+            }
+        }
     };
 
     view! {
@@ -821,13 +926,19 @@ fn strip_decorations(field: &str, text: &str) -> String {
 }
 
 fn navigate(state: AppState, target_bank: Option<u8>, target_address: u16) {
-    if let Some(bank) = target_bank {
-        state.current_bank.set(bank);
-    } else {
-        // Handle global symbols by switching to the "Global" view (bank 255)
-        state.current_bank.set(255);
-    }
+    let bank_id = target_bank.unwrap_or(255);
+    
+    // Update state
+    state.is_navigating.set(true);
+    state.current_bank.set(bank_id);
     state.nav_target.set(Some(target_address));
+
+    // Update URL hash to create history entry
+    let window = web_sys::window().unwrap();
+    let bank_hex = format!("{:02X}", bank_id);
+    let addr_hex = format!("{:04X}", target_address);
+    let hash = format!("#bank-{}-addr-{}", bank_hex, addr_hex);
+    window.location().set_hash(&hash).unwrap();
 }
 
 fn event_target_inner_text(ev: &web_sys::FocusEvent) -> String {
