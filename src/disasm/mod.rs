@@ -626,7 +626,12 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
     };
 
     if let Some(addr) = target_addr {
-        // If target is in the fixed range, it belongs to the fixed bank (unless local)
+        let mapper_size = db.mapper_window_size as u32 * 1024;
+        let current_bank_info = db.bank.get(&bank_id);
+        let base_address = current_bank_info.and_then(|b| b.mapped_at).unwrap_or(0x8000);
+        let bank_end = base_address as u32 + mapper_size - 1;
+
+        // 1. If target is in the fixed range, it belongs to the fixed bank (unless current is also fixed)
         if let Some(fixed_range) = &db.mapper_fixed_range {
             if fixed_range.contains(&addr) {
                 if let Some(fixed_id) = db.find_fixed_bank_id() {
@@ -635,15 +640,15 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
             }
         }
 
-        let current_fixed = db.bank.get(&bank_id).map(|b| b.is_fixed).unwrap_or(false);
-
-        // 1. Check local bank
-        if let Some(bank) = db.bank.get(&bank_id) {
+        // 2. Check local bank for user-defined symbol
+        if let Some(bank) = current_bank_info {
             if bank.address.contains_key(&addr) {
                 return (Some(bank_id), Some(addr));
             }
         }
 
+        // 3. Resolution for cross-bank symbols
+        let current_fixed = current_bank_info.map(|b| b.is_fixed).unwrap_or(false);
         if current_fixed {
             // Resolution for fixed bank: Local -> Others -> Global
             for (other_id, other_bank) in &db.bank {
@@ -660,8 +665,14 @@ fn resolve_target(mode: Option<AddressingMode>, value: u32, pc: u16, db: &Disass
             }
         }
 
+        // 4. Check global section
         if db.global.contains_key(&addr) {
              return (None, Some(addr));
+        }
+
+        // 5. Fallback for auto-labels (Lxxxx): if it's in the current bank's window
+        if addr as u32 >= base_address as u32 && addr as u32 <= bank_end {
+            return (Some(bank_id), Some(addr));
         }
 
         return (None, Some(addr));

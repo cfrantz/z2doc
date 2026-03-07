@@ -38,6 +38,9 @@ struct AppState {
     resizing: RwSignal<Option<String>>,
     start_x: RwSignal<i32>,
     start_width: RwSignal<i32>,
+    
+    // Navigation state
+    nav_target: RwSignal<Option<u16>>,
 }
 
 #[component]
@@ -54,7 +57,6 @@ fn App() -> impl IntoView {
     });
     
     let mut default_themes = BTreeMap::new();
-    // ... default_themes setup ...
     default_themes.insert("Light".to_string(), ThemeConfig {
         name: "Light".to_string(),
         background: "#FFFFFF".to_string(),
@@ -88,6 +90,7 @@ fn App() -> impl IntoView {
     let resizing = RwSignal::new(None::<String>);
     let start_x = RwSignal::new(0);
     let start_width = RwSignal::new(0);
+    let nav_target = RwSignal::new(None::<u16>);
 
     let state = AppState {
         db,
@@ -100,6 +103,7 @@ fn App() -> impl IntoView {
         resizing,
         start_x,
         start_width,
+        nav_target,
     };
     provide_context(state.clone());
     
@@ -153,7 +157,6 @@ fn App() -> impl IntoView {
 #[component]
 fn MainContent() -> impl IntoView {
     let state = use_context::<AppState>().expect("state should be provided");
-    // ... MainContent logic ...
     let query = use_query_map();
 
     // Effect to handle URL parameters
@@ -505,11 +508,15 @@ fn VirtualizedDisasm() -> impl IntoView {
 
     // Effect to reset scroll on bank change
     Effect::new({
+        let state = state.clone();
         move || {
             let _ = state.current_bank.get();
-            if let Some(div) = container_ref.get() {
-                div.set_scroll_top(0);
-                set_scroll_top.set(0.0);
+            // Only reset if we aren't handling a specific nav target
+            if state.nav_target.get_untracked().is_none() {
+                if let Some(div) = container_ref.get() {
+                    div.set_scroll_top(0);
+                    set_scroll_top.set(0.0);
+                }
             }
         }
     });
@@ -575,6 +582,25 @@ fn VirtualizedDisasm() -> impl IntoView {
             current += height;
         }
         (off, current)
+    });
+
+    // Effect to handle navigation target
+    Effect::new({
+        let state = state.clone();
+        move || {
+            if let Some(target_addr) = state.nav_target.get() {
+                let lines = disassembly.get();
+                if let Some(idx) = lines.iter().position(|l| l.address == target_addr) {
+                    let (off, _) = offsets.get();
+                    let target_y = off[idx];
+                    if let Some(div) = container_ref.get() {
+                        div.set_scroll_top(target_y as i32);
+                        set_scroll_top.set(target_y);
+                        state.nav_target.set(None); // Consume the target
+                    }
+                }
+            }
+        }
     });
 
     let visible_range = move || {
@@ -696,8 +722,11 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                         {if let Some(target_addr) = line.target_address {
                             let target_bank = line.target_bank;
                             let state_nav = state_nav.clone();
+                            let is_symbol = line.operand_is_symbol;
                             view! {
-                                <a href="#" on:click=move |e| { e.prevent_default(); navigate(state_nav.clone(), target_bank, target_addr); }>
+                                <a href="#" 
+                                   class:symbol=is_symbol
+                                   on:click=move |e| { e.prevent_default(); navigate(state_nav.clone(), target_bank, target_addr); }>
                                     {line.operand_main.clone()}
                                 </a>
                             }.into_any()
@@ -708,7 +737,7 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                     </div>
                     <div class="grid-cell comment-cell">
                         <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur>
-                            {line.comment.map(|c| format!("; {}", c)).unwrap_or_default()}
+                            {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
                         </div>
                     </div>
                 }.into_any()
@@ -717,13 +746,13 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                 view! {
                     <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;">
                         <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur>
-                            {line.symbol.unwrap_or_else(|| "???".to_string())}
+                            {line.symbol.clone().unwrap_or_else(|| "???".to_string())}
                         </div>
-                        <span style="margin-left: 8px;">" = " {line.address_label}</span>
+                        <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                     </div>
                     <div class="grid-cell comment-cell">
                         <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur>
-                            {line.comment.map(|c| format!("; {}", c)).unwrap_or_default()}
+                            {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
                         </div>
                     </div>
                 }.into_any()
@@ -791,10 +820,14 @@ fn strip_decorations(field: &str, text: &str) -> String {
     text.to_string()
 }
 
-fn navigate(state: AppState, target_bank: Option<u8>, _target_address: u16) {
+fn navigate(state: AppState, target_bank: Option<u8>, target_address: u16) {
     if let Some(bank) = target_bank {
         state.current_bank.set(bank);
+    } else {
+        // Handle global symbols by switching to the "Global" view (bank 255)
+        state.current_bank.set(255);
     }
+    state.nav_target.set(Some(target_address));
 }
 
 fn event_target_inner_text(ev: &web_sys::FocusEvent) -> String {
