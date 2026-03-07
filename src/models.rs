@@ -71,7 +71,7 @@ impl DisassemblyInfo {
 }
 
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ThemeConfig {
     pub name: String,
     pub background: String,
@@ -84,7 +84,7 @@ pub struct ThemeConfig {
     pub symbol: String,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Clone, PartialEq)]
 pub struct DisassemblyLine {
     pub address_label: String, // e.g., "$02:$8354"
     pub address: u16,
