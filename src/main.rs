@@ -642,15 +642,18 @@ fn VirtualizedDisasm() -> impl IntoView {
         for line in &lines {
             off.push(current);
             let mut height = LINE_HEIGHT;
-            if line.bank != -1 {
-                if let Some(ref bc) = line.block_comment {
-                    let count = bc.lines().count() as f64;
-                    height += count * LINE_HEIGHT;
-                }
-                if line.symbol.is_some() {
-                    height += LINE_HEIGHT;
-                }
+            
+            // Block comments add height in all views
+            if let Some(ref bc) = line.block_comment {
+                let count = bc.lines().count() as f64;
+                height += count * LINE_HEIGHT;
             }
+
+            // Symbols only add a separate line height in banked views
+            if line.bank != -1 && line.symbol.is_some() {
+                height += LINE_HEIGHT;
+            }
+            
             current += height;
         }
         (off, current)
