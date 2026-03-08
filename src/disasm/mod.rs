@@ -1,5 +1,5 @@
 use crate::models::{AnnotationInfo, DisassemblyInfo, DisassemblyLine, RegionInfo};
-use std::collections::HashSet;
+use std::collections::{HashSet, BTreeMap};
 
 #[derive(Debug, Clone, Copy)]
 pub enum AddressingMode {
@@ -311,12 +311,13 @@ pub const OPCODES: [Option<Instruction>; 256] = {
     table
 };
 
-pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u16> {
-    let mut all_targets = HashSet::new();
+pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> BTreeMap<u8, HashSet<u16>> {
+    let mut bank_targets = BTreeMap::new();
     let mapper_size = db.mapper_window_size as u32 * 1024;
     let fixed_range = db.mapper_fixed_range.as_ref();
 
     for (&bank_id, bank_info) in &db.bank {
+        let mut targets = HashSet::new();
         let base_address = bank_info.mapped_at.unwrap_or(0x8000);
         let rom_offset = 16 + (bank_id as usize * mapper_size as usize);
         let rom_end = (rom_offset + mapper_size as usize).min(rom_data.len());
@@ -350,7 +351,7 @@ pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u1
                                 let addr_32 = addr as u32;
                                 if (addr_32 >= base_address as u32 && addr_32 < base_address as u32 + mapper_size) || 
                                    fixed_range.map_or(false, |r| r.contains(&addr)) {
-                                    all_targets.insert(addr);
+                                    targets.insert(addr);
                                 }
                             }
                             pc += 1 + len;
@@ -371,7 +372,7 @@ pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u1
                         let val_32 = val as u32;
                         if (val_32 >= base_address as u32 && val_32 < base_address as u32 + mapper_size) || 
                            fixed_range.map_or(false, |r| r.contains(&val)) {
-                            all_targets.insert(val);
+                            targets.insert(val);
                         }
                         pc += 2;
                     }
@@ -379,15 +380,16 @@ pub fn discover_all_targets(db: &DisassemblyInfo, rom_data: &[u8]) -> HashSet<u1
                 _ => {}
             }
         }
+        bank_targets.insert(bank_id, targets);
     }
-    all_targets
+    bank_targets
 }
 
 pub fn disassemble_bank(
     db: &DisassemblyInfo,
     bank_id: u8,
     rom_data: &[u8],
-    global_targets: &HashSet<u16>,
+    bank_targets: &BTreeMap<u8, HashSet<u16>>,
 ) -> Vec<DisassemblyLine> {
     let mut lines = Vec::new();
     let bank_info = match db.bank.get(&bank_id) {
@@ -442,6 +444,8 @@ pub fn disassemble_bank(
         filled_regions.push(RegionInfo::Bytes((current_pc as u16)..=(bank_end as u16)));
     }
 
+    let current_targets = bank_targets.get(&bank_id);
+
     for region in filled_regions {
         match region {
             RegionInfo::Code(range) => {
@@ -467,7 +471,7 @@ pub fn disassemble_bank(
                                 }
                             }
                             
-                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id, global_targets);
+                            let (p, m, s, sym) = format_operand(i.mode, op_val, pc as u16, db, bank_id, bank_targets);
                             (b, p, m, s, sym, i.mnemonic, 1 + len)
                         }
                         None => (format!("{:02X}", opcode), String::new(), String::new(), String::new(), false, "???", 1),
@@ -477,7 +481,7 @@ pub fn disassemble_bank(
                     let (target_bank, target_addr) = resolve_target(instr.as_ref().map(|i| i.mode), op_val, pc as u16, db, bank_id);
 
                     let mut line_symbol = annotation.symbol;
-                    if line_symbol.is_none() && global_targets.contains(&(pc as u16)) {
+                    if line_symbol.is_none() && current_targets.map_or(false, |t| t.contains(&(pc as u16))) {
                         line_symbol = Some(format!("L{:04X}", pc));
                     }
 
@@ -515,7 +519,7 @@ pub fn disassemble_bank(
                             break;
                         }
                         // Break on auto-labels too
-                        if count > 0 && global_targets.contains(&(pc as u16)) {
+                        if count > 0 && current_targets.map_or(false, |t| t.contains(&(pc as u16))) {
                             break;
                         }
 
@@ -536,7 +540,7 @@ pub fn disassemble_bank(
                     if count > 0 {
                         let annotation = get_annotation(db, bank_id, start_pc as u16);
                         let mut line_symbol = annotation.symbol;
-                        if line_symbol.is_none() && global_targets.contains(&(start_pc as u16)) {
+                        if line_symbol.is_none() && current_targets.map_or(false, |t| t.contains(&(start_pc as u16))) {
                             line_symbol = Some(format!("L{:04X}", start_pc));
                         }
 
@@ -573,13 +577,13 @@ pub fn disassemble_bank(
                     let high = rom_data[offset + 1];
                     let val = (high as u16) << 8 | (low as u16);
 
-                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false, global_targets);
+                    let (main, is_sym) = resolve_symbol(val, db, bank_id, false, bank_targets);
                     let annotation = get_annotation(db, bank_id, start_pc as u16);
                     
                     let (target_bank, target_addr) = resolve_target(Some(AddressingMode::Absolute), val as u32, pc as u16, db, bank_id);
 
                     let mut line_symbol = annotation.symbol;
-                    if line_symbol.is_none() && global_targets.contains(&(start_pc as u16)) {
+                    if line_symbol.is_none() && current_targets.map_or(false, |t| t.contains(&(start_pc as u16))) {
                         line_symbol = Some(format!("L{:04X}", start_pc));
                     }
 
@@ -713,39 +717,39 @@ fn get_annotation(db: &DisassemblyInfo, bank_id: u8, address: u16) -> Annotation
     result
 }
 
-fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8, targets: &HashSet<u16>) -> (String, String, String, bool) {
+fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInfo, bank_id: u8, bank_targets: &BTreeMap<u8, HashSet<u16>>) -> (String, String, String, bool) {
     match mode {
         AddressingMode::Implied => (String::new(), String::new(), String::new(), false),
         AddressingMode::Accumulator => (String::new(), "A".to_string(), String::new(), false),
         AddressingMode::Immediate => ("#".to_string(), format!("${:02X}", value), String::new(), false),
         AddressingMode::ZeroPage => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, bank_targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::ZeroPageX => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, bank_targets);
             (String::new(), m, ",X".to_string(), sym)
         }
         AddressingMode::ZeroPageY => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, true, bank_targets);
             (String::new(), m, ",Y".to_string(), sym)
         }
         AddressingMode::Relative => {
             let offset = value as i8;
             let target = pc.wrapping_add(2).wrapping_add(offset as u16);
-            let (m, sym) = resolve_symbol(target, db, bank_id, false, targets);
+            let (m, sym) = resolve_symbol(target, db, bank_id, false, bank_targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::Absolute => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, bank_targets);
             (String::new(), m, String::new(), sym)
         }
         AddressingMode::AbsoluteX => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, bank_targets);
             (String::new(), m, ",X".to_string(), sym)
         }
         AddressingMode::AbsoluteY => {
-            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, targets);
+            let (m, sym) = resolve_symbol(value as u16, db, bank_id, false, bank_targets);
             (String::new(), m, ",Y".to_string(), sym)
         }
         AddressingMode::Indirect => {
@@ -760,11 +764,12 @@ fn format_operand(mode: AddressingMode, value: u32, pc: u16, db: &DisassemblyInf
     }
 }
 
-fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, targets: &HashSet<u16>) -> (String, bool) {
-    let current_fixed = db.bank.get(&bank_id).map(|b| b.is_fixed).unwrap_or(false);
+fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, bank_targets: &BTreeMap<u8, HashSet<u16>>) -> (String, bool) {
+    let current_bank_info = db.bank.get(&bank_id);
+    let current_fixed = current_bank_info.map(|b| b.is_fixed).unwrap_or(false);
 
-    // Rule 1: Check local bank
-    if let Some(bank) = db.bank.get(&bank_id) {
+    // Rule 1: Check local bank (Explicit)
+    if let Some(bank) = current_bank_info {
         if let Some(anno) = bank.address.get(&address) {
             if let Some(ref sym) = anno.symbol {
                 return (sym.clone(), true);
@@ -772,8 +777,9 @@ fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, 
         }
     }
 
+    // Rule 2 & 3: Check cross-bank explicit symbols
     if current_fixed {
-        // Resolution for fixed bank: Local -> Other Banks -> Global
+        // Resolution for fixed bank: Local -> Others -> Global
         for (other_id, other_bank) in &db.bank {
             if *other_id == bank_id { continue; }
             if let Some(anno) = other_bank.address.get(&address) {
@@ -794,17 +800,37 @@ fn resolve_symbol(address: u16, db: &DisassemblyInfo, bank_id: u8, is_zp: bool, 
         }
     }
 
-    // Check global address
+    // Check global address (Explicit)
     if let Some(anno) = db.global.get(&address) {
         if let Some(ref sym) = anno.symbol {
             return (sym.clone(), true);
         }
     }
     
-    // Check for auto-label in ROM region (current bank targets or fixed range)
-    let in_fixed_range = db.mapper_fixed_range.as_ref().map(|r| r.contains(&address)).unwrap_or(false);
-    if (address >= 0x8000 && targets.contains(&address)) || in_fixed_range {
-        return (format!("L{:04X}", address), true);
+    // Check for auto-label in local bank
+    if let Some(targets) = bank_targets.get(&bank_id) {
+        if targets.contains(&address) {
+            return (format!("L{:04X}", address), true);
+        }
+    }
+
+    // Check for auto-label in other banks according to user rules
+    if current_fixed {
+        // Fixed bank sees auto-labels in ALL other banks
+        for (other_id, targets) in bank_targets {
+            if *other_id != bank_id && targets.contains(&address) {
+                return (format!("L{:04X}", address), true);
+            }
+        }
+    } else {
+        // Non-fixed bank sees auto-labels only in FIXED banks
+        for (other_id, targets) in bank_targets {
+            if let Some(other_bank) = db.bank.get(other_id) {
+                if other_bank.is_fixed && targets.contains(&address) {
+                    return (format!("L{:04X}", address), true);
+                }
+            }
+        }
     }
 
     if is_zp {

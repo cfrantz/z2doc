@@ -599,7 +599,7 @@ fn VirtualizedDisasm() -> impl IntoView {
         let rom_data = state.rom_data.get();
         
         if let (Some(db), Some(rom_data)) = (db, rom_data) {
-            let global_targets = disasm::discover_all_targets(&db, &rom_data);
+            let bank_targets = disasm::discover_all_targets(&db, &rom_data);
             if bank_id == 255 {
                 let mut lines = Vec::new();
                 for (addr, anno) in &db.global {
@@ -626,7 +626,7 @@ fn VirtualizedDisasm() -> impl IntoView {
                 let rom_offset = 16 + (bank_id as usize * mapper_size);
                 let rom_end = (rom_offset + mapper_size).min(rom_data.len());
                 let bank_data = if rom_offset < rom_data.len() { &rom_data[rom_offset..rom_end] } else { &[] };
-                disasm::disassemble_bank(&db, bank_id, bank_data, &global_targets)
+                disasm::disassemble_bank(&db, bank_id, bank_data, &bank_targets)
             }
         } else {
             Vec::new()
@@ -671,13 +671,15 @@ fn VirtualizedDisasm() -> impl IntoView {
                     if let Some(div) = container_ref.get() {
                         div.set_scroll_top(target_y as i32);
                         set_scroll_top.set(target_y);
-                        state.nav_target.set(None); // Consume the target
-                        
-                        // Small delay to allow scroll events to settle
+                        // Small delay to allow scroll events to settle and avoid race with bank reset
                         let is_navigating = state.is_navigating;
+                        let nav_target = state.nav_target;
                         leptos::task::spawn_local(async move {
                             gloo_timers::future::TimeoutFuture::new(100).await;
                             is_navigating.set(false);
+                            if nav_target.get_untracked() == Some(target_addr) {
+                                nav_target.set(None);
+                            }
                         });
                     }
                 }
