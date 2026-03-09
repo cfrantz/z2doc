@@ -235,18 +235,17 @@ fn MainContent() -> impl IntoView {
         }
     });
 
-    let is_ready = move || state.db.get().is_some() && state.rom_data.get().is_some();
+    let is_ready = Memo::new(move |_| state.db.get().is_some() && state.rom_data.get().is_some());
 
     view! {
         <div class="app-container">
             <ThemeStyle />
-            {move || {
-                if !is_ready() {
-                    view! { <SetupScreen /> }.into_any()
-                } else {
-                    view! { <DisasmView /> }.into_any()
-                }
-            }}
+            <Show
+                when=move || is_ready.get()
+                fallback=|| view! { <SetupScreen /> }
+            >
+                <DisasmView />
+            </Show>
         </div>
     }
 }
@@ -407,7 +406,7 @@ fn SetupScreen() -> impl IntoView {
                 view! {
                     <div class="setup-step">
                         <p>"Please open your disassembly database (.json file)."</p>
-                        <button on:click=open_db>"Open Database"</button>
+                        <button type="button" on:click=move |e| { e.prevent_default(); open_db(e); }>"Open Database"</button>
                     </div>
                 }.into_any()
             } else {
@@ -417,7 +416,7 @@ fn SetupScreen() -> impl IntoView {
                     <div class="setup-step">
                         <p>"Database loaded: " <strong>{title}</strong></p>
                         <p>"Please provide the NES ROM file for this project."</p>
-                        <button on:click=open_rom>"Open ROM"</button>
+                        <button type="button" on:click=move |e| { e.prevent_default(); open_rom(e); }>"Open ROM"</button>
                     </div>
                 }.into_any()
             }}
@@ -491,7 +490,7 @@ fn DisasmView() -> impl IntoView {
                             }
                         </select>
                     </div>
-                    <button on:click=move |_| save_db_logic(state_c2.clone())>"Save"</button>
+                    <button type="button" on:click=move |e| { e.prevent_default(); save_db_logic(state_c2.clone()); }>"Save"</button>
                 </div>
                 <div class="grid-header">
                     <div class="grid-cell" style="width: var(--col-addr)">"Addr"</div>
@@ -802,6 +801,32 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
         }
     };
 
+    let on_keydown = {
+        let line = line.clone();
+        move |ev: web_sys::KeyboardEvent| {
+            let key = ev.key();
+            if key == "Enter" {
+                ev.prevent_default();
+                let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                let _ = target.blur();
+            } else if key == "Escape" {
+                ev.prevent_default();
+                let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                let is_symbol = target.class_list().contains("symbol");
+                if is_symbol {
+                    if line.bank != -1 {
+                        target.set_inner_text(&line.symbol.as_ref().map(|s| format!("{}:", s)).unwrap_or_else(|| "???".to_string()));
+                    } else {
+                        target.set_inner_text(&line.symbol.clone().unwrap_or_else(|| "???".to_string()));
+                    }
+                } else {
+                    target.set_inner_text(&line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default());
+                }
+                let _ = target.blur();
+            }
+        }
+    };
+
     let on_block_blur = {
         let state = state.clone();
         let line = line.clone();
@@ -831,7 +856,7 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                     {if let Some(ref sym) = line.symbol {
                         view! {
                             <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                                <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur>
+                                <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
                                     {format!("{}:", sym)}
                                 </div>
                             </div>
@@ -859,7 +884,7 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                         <span>{line.operand_suffix}</span>
                     </div>
                     <div class="grid-cell comment-cell">
-                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur>
+                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
                             {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
                         </div>
                     </div>
@@ -868,13 +893,13 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
                 // Global Equate
                 view! {
                     <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;">
-                        <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur>
+                        <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
                             {line.symbol.clone().unwrap_or_else(|| "???".to_string())}
                         </div>
                         <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                     </div>
                     <div class="grid-cell comment-cell">
-                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur>
+                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
                             {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
                         </div>
                     </div>
