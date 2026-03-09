@@ -43,6 +43,7 @@ struct AppState {
 
     // Block comment editing state
     editing_block_comment: RwSignal<Option<(u16, i16)>>,
+    editing_operand: RwSignal<Option<(u16, i16)>>,
     main_container_ref: NodeRef<Div>,
 }
 
@@ -96,6 +97,7 @@ pub fn App() -> impl IntoView {
     let nav_target = RwSignal::new(None::<u16>);
     let is_navigating = RwSignal::new(false);
     let editing_block_comment = RwSignal::new(None::<(u16, i16)>);
+    let editing_operand = RwSignal::new(None::<(u16, i16)>);
     let main_container_ref = NodeRef::<Div>::new();
 
     let state = AppState {
@@ -112,6 +114,7 @@ pub fn App() -> impl IntoView {
         nav_target,
         is_navigating,
         editing_block_comment,
+        editing_operand,
         main_container_ref,
     };
     provide_context(state.clone());
@@ -930,6 +933,37 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
         }
     };
 
+    let on_operand_blur = {
+        let state = state.clone();
+        move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
+            state.editing_operand.set(None);
+            if let Some(target_addr) = line.target_address {
+                let target_bank = line.target_bank.map(|b| b as i16).unwrap_or(-1);
+                let val = event_target_inner_text(&ev);
+                update_annotation(state.clone(), target_addr, target_bank, "symbol", val);
+            }
+        }
+    };
+
+    let on_operand_keydown = {
+        let state = state.clone();
+        move |ev: web_sys::KeyboardEvent| {
+            let key = ev.key();
+            let line = line.get_untracked();
+            if key == "Enter" {
+                ev.prevent_default();
+                let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                let _ = target.blur();
+            } else if key == "Escape" {
+                ev.prevent_default();
+                let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                target.set_inner_text(&line.operand_main.clone());
+                let _ = target.blur();
+            }
+        }
+    };
+
     let on_click_trigger = {
         let state = state.clone();
         move |ev: web_sys::MouseEvent| {
@@ -943,6 +977,19 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                     }
                 }
                 state.editing_block_comment.set(Some((line.address, line.bank)));
+            }
+        }
+    };
+
+    let on_operand_click = {
+        let state = state.clone();
+        move |ev: web_sys::MouseEvent| {
+            if ev.shift_key() {
+                ev.prevent_default();
+                let line = line.get_untracked();
+                if line.target_address.is_some() {
+                    state.editing_operand.set(Some((line.address, line.bank)));
+                }
             }
         }
     };
@@ -974,6 +1021,29 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
         }
     });
 
+    // Effect to focus the operand field when editing starts
+    let op_ref = NodeRef::<leptos::html::Span>::new();
+    Effect::new({
+        let state = state.clone();
+        move || {
+            let line = line.get();
+            if let Some((addr, bank)) = state.editing_operand.get() {
+                if addr == line.address && bank == line.bank {
+                    if let Some(div) = op_ref.get() {
+                        leptos::task::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(50).await;
+                            let _ = div.focus();
+                            let window = web_sys::window().unwrap();
+                            if let Ok(Some(sel)) = window.get_selection() {
+                                sel.select_all_children(&div).unwrap();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+
     let state_nav = state.clone();
     let on_block_blur_c = on_block_blur.clone();
     let on_block_keydown_c = on_block_keydown.clone();
@@ -982,6 +1052,10 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
     let on_comment_blur_c = on_comment_blur.clone();
     let on_keydown_c = on_keydown.clone();
     let on_click_trigger_c = on_click_trigger.clone();
+    let on_operand_click_c = on_operand_click.clone();
+    let op_ref_c = op_ref.clone();
+    let on_operand_blur_c = on_operand_blur.clone();
+    let on_operand_keydown_c = on_operand_keydown.clone();
 
     view! {
         <div class="grid-row" style=move || format!("position: absolute; top: {}px; width: 100%; display: grid; grid-template-columns: var(--col-addr) var(--col-hex) var(--col-op) var(--col-operand) 1fr;", top.get())>
@@ -1023,6 +1097,12 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                 if line.bank != -1 {
                     let state_nav = state_nav.clone();
                     let on_click_trigger = on_click_trigger.clone();
+                    let on_operand_click = on_operand_click_c.clone();
+                    let op_ref = op_ref_c.clone();
+                    let on_operand_blur = on_operand_blur_c.clone();
+                    let on_operand_keydown = on_operand_keydown_c.clone();
+                    let is_editing_op = state.editing_operand.get() == Some((line.address, line.bank));
+
                     view! {
                         {if let Some(ref sym) = line.symbol {
                             let sym_c = sym.clone();
@@ -1038,16 +1118,28 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                         <div class="grid-cell address" on:click=on_click_trigger.clone()>{line.address_label}</div>
                         <div class="grid-cell hex" on:click=on_click_trigger.clone()>{line.bytes}</div>
                         <div class="grid-cell opcode">{line.opcode}</div>
-                        <div class="grid-cell operand">
+                        <div class="grid-cell operand" on:click=on_operand_click>
                             <span>{line.operand_prefix}</span>
-                            {if let Some(target_addr) = line.target_address {
+                            {if is_editing_op {
+                                view! {
+                                    <span class="symbol editable-container" contenteditable="true" 
+                                          node_ref=op_ref on:blur=on_operand_blur on:keydown=on_operand_keydown
+                                          prop:innerText={line.operand_main.clone()}
+                                    ></span>
+                                }.into_any()
+                            } else if let Some(target_addr) = line.target_address {
                                 let target_bank = line.target_bank;
                                 let state_nav = state_nav.clone();
                                 let is_symbol = line.operand_is_symbol;
                                 view! {
                                     <a href="#" 
                                        class:symbol=is_symbol
-                                       on:click=move |e| { e.prevent_default(); navigate(state_nav.clone(), target_bank, target_addr); }>
+                                       on:click=move |e| { 
+                                           e.prevent_default(); 
+                                           if !e.shift_key() {
+                                               navigate(state_nav.clone(), target_bank, target_addr); 
+                                           }
+                                       }>
                                         {line.operand_main.clone()}
                                     </a>
                                 }.into_any()
