@@ -40,6 +40,10 @@ struct AppState {
     // Navigation state
     nav_target: RwSignal<Option<u16>>,
     is_navigating: RwSignal<bool>,
+
+    // Block comment editing state
+    editing_block_comment: RwSignal<Option<(u16, i16)>>,
+    main_container_ref: NodeRef<Div>,
 }
 
 #[component]
@@ -91,6 +95,8 @@ pub fn App() -> impl IntoView {
     let start_width = RwSignal::new(0);
     let nav_target = RwSignal::new(None::<u16>);
     let is_navigating = RwSignal::new(false);
+    let editing_block_comment = RwSignal::new(None::<(u16, i16)>);
+    let main_container_ref = NodeRef::<Div>::new();
 
     let state = AppState {
         db,
@@ -105,6 +111,8 @@ pub fn App() -> impl IntoView {
         start_width,
         nav_target,
         is_navigating,
+        editing_block_comment,
+        main_container_ref,
     };
     provide_context(state.clone());
 
@@ -555,7 +563,7 @@ fn save_db_logic(state: AppState) {
 #[component]
 fn VirtualizedDisasm() -> impl IntoView {
     let state = use_context::<AppState>().expect("state should be provided");
-    let container_ref = NodeRef::<Div>::new();
+    let container_ref = state.main_container_ref;
     let (scroll_top, set_scroll_top) = RwSignal::new(0.0).split();
     let (viewport_height, set_viewport_height) = RwSignal::new(1000.0).split();
 
@@ -646,28 +654,37 @@ fn VirtualizedDisasm() -> impl IntoView {
 
     const LINE_HEIGHT: f64 = 20.0;
 
-    let offsets = Memo::new(move |_| {
-        let lines = disassembly.get();
-        let mut current = 0.0;
-        let mut off = Vec::with_capacity(lines.len());
-        for line in &lines {
-            off.push(current);
-            let mut height = LINE_HEIGHT;
-            
-            // Block comments add height in all views
-            if let Some(ref bc) = line.block_comment {
-                let count = bc.lines().count() as f64;
-                height += count * LINE_HEIGHT;
-            }
+    let offsets = Memo::new({
+        let state = state.clone();
+        move |_| {
+            let lines = disassembly.get();
+            let editing = state.editing_block_comment.get();
+            let mut current = 0.0;
+            let mut off = Vec::with_capacity(lines.len());
+            for line in &lines {
+                off.push(current);
+                let mut height = LINE_HEIGHT;
+                
+                let is_editing_bc = editing == Some((line.address, line.bank));
 
-            // Symbols only add a separate line height in banked views
-            if line.bank != -1 && line.symbol.is_some() {
-                height += LINE_HEIGHT;
+                // Block comments add height in all views
+                if let Some(ref bc) = line.block_comment {
+                    let count = bc.lines().count() as f64;
+                    height += count * LINE_HEIGHT;
+                } else if is_editing_bc {
+                    // New block comment being edited
+                    height += LINE_HEIGHT;
+                }
+
+                // Symbols only add a separate line height in banked views
+                if line.bank != -1 && line.symbol.is_some() {
+                    height += LINE_HEIGHT;
+                }
+                
+                current += height;
             }
-            
-            current += height;
+            (off, current)
         }
-        (off, current)
     });
 
     // Effect to handle navigation target
@@ -698,28 +715,36 @@ fn VirtualizedDisasm() -> impl IntoView {
         }
     });
 
-    let visible_range = move || {
-        let (off, total) = offsets.get();
-        if off.is_empty() { return (0, 0, 0.0); }
+    let range_lines = Memo::new({
+        let disassembly = disassembly.clone();
+        move |_| {
+            let (off, total) = offsets.get();
+            if off.is_empty() { return Vec::new(); }
 
-        let start_y = scroll_top.get();
-        let end_y = start_y + viewport_height.get();
-        
-        let start_idx = match off.binary_search_by(|v| v.partial_cmp(&start_y).unwrap()) {
-            Ok(idx) => idx,
-            Err(idx) => idx.saturating_sub(1),
-        };
-        
-        let end_idx = match off.binary_search_by(|v| v.partial_cmp(&end_y).unwrap()) {
-            Ok(idx) => idx,
-            Err(idx) => idx,
-        };
-        
-        let buffer = 20;
-        let start = start_idx.saturating_sub(buffer);
-        let end = (end_idx + buffer).min(disassembly.get().len());
-        (start, end, total)
-    };
+            let start_y = scroll_top.get();
+            let end_y = start_y + viewport_height.get();
+            
+            let start_idx = match off.binary_search_by(|v| v.partial_cmp(&start_y).unwrap()) {
+                Ok(idx) => idx,
+                Err(idx) => idx.saturating_sub(1),
+            };
+            
+            let end_idx = match off.binary_search_by(|v| v.partial_cmp(&end_y).unwrap()) {
+                Ok(idx) => idx,
+                Err(idx) => idx,
+            };
+            
+            let buffer = 20;
+            let start = start_idx.saturating_sub(buffer);
+            let end = (end_idx + buffer).min(disassembly.get().len());
+            
+            let lines = disassembly.get();
+            if start >= end || start >= lines.len() {
+                return Vec::new();
+            }
+            lines[start..end].to_vec()
+        }
+    });
 
     let on_scroll = {
         let state = state.clone();
@@ -761,32 +786,53 @@ fn VirtualizedDisasm() -> impl IntoView {
             style="position: relative; overflow-y: auto; height: 100%;"
         >
             <div style=move || format!("height: {}px; position: relative;", offsets.get().1)>
-                {move || {
-                    let (start, end, _) = visible_range();
-                    let lines = disassembly.get();
-                    let (off, _) = offsets.get();
-                    if start >= end || start >= lines.len() {
-                        return view! {}.into_any();
+                <For
+                    each=move || range_lines.get()
+                    key=|line| (line.address, line.bank)
+                    children={
+                        let disassembly = disassembly.clone();
+                        let offsets = offsets.clone();
+                        move |line| {
+                            let line_id = (line.address, line.bank);
+                            let line_sig = Signal::derive({
+                                let disassembly = disassembly.clone();
+                                move || {
+                                    disassembly.get().iter()
+                                        .find(|l| (l.address, l.bank) == line_id)
+                                        .cloned()
+                                        .unwrap_or(line.clone())
+                                }
+                            });
+                            let top = Signal::derive({
+                                let offsets = offsets.clone();
+                                let disassembly = disassembly.clone();
+                                move || {
+                                    let lines = disassembly.get();
+                                    let (off, _) = offsets.get();
+                                    if let Some(idx) = lines.iter().position(|l| (l.address, l.bank) == line_id) {
+                                        off[idx]
+                                    } else {
+                                        0.0
+                                    }
+                                }
+                            });
+                            view! { <DisasmRow line=line_sig top=top /> }
+                        }
                     }
-                    lines[start..end].iter().enumerate().map(|(i, line)| {
-                        let actual_idx = start + i;
-                        let top = off[actual_idx];
-                        view! { <DisasmRow line=line.clone() top=top /> }
-                    }).collect_view().into_any()
-                }}
+                />
             </div>
         </div>
     }
 }
 
 #[component]
-fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
+fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Signal<f64>) -> impl IntoView {
     let state = use_context::<AppState>().expect("state should be provided");
 
     let on_symbol_blur = {
         let state = state.clone();
-        let line = line.clone();
         move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
             let val = event_target_inner_text(&ev);
             update_annotation(state.clone(), line.address, line.bank, "symbol", val);
         }
@@ -794,17 +840,18 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
 
     let on_comment_blur = {
         let state = state.clone();
-        let line = line.clone();
         move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
             let val = event_target_inner_text(&ev);
             update_annotation(state.clone(), line.address, line.bank, "comment", val);
         }
     };
 
     let on_keydown = {
-        let line = line.clone();
+        let state = state.clone();
         move |ev: web_sys::KeyboardEvent| {
             let key = ev.key();
+            let line = line.get_untracked();
             if key == "Enter" {
                 ev.prevent_default();
                 let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
@@ -829,81 +876,205 @@ fn DisasmRow(line: DisassemblyLine, top: f64) -> impl IntoView {
 
     let on_block_blur = {
         let state = state.clone();
-        let line = line.clone();
         move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
+            state.editing_block_comment.set(None);
             let val = event_target_inner_text(&ev);
             update_annotation(state.clone(), line.address, line.bank, "block_comment", val);
         }
     };
 
-    let state_nav = state.clone();
-    view! {
-        <div class="grid-row" style=format!("position: absolute; top: {}px; width: 100%; display: grid; grid-template-columns: var(--col-addr) var(--col-hex) var(--col-op) var(--col-operand) 1fr;", top)>
-            {if let Some(ref bc) = line.block_comment {
-                view! {
-                    <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                        <div class="comment editable-container" contenteditable="true" on:blur=on_block_blur>
-                            {bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("
-")}
-                        </div>
-                    </div>
-                }.into_any()
-            } else { view! {}.into_any() }}
+    let on_block_keydown = {
+        let state = state.clone();
+        move |ev: web_sys::KeyboardEvent| {
+            let key = ev.key();
+            let ctrl = ev.ctrl_key();
+            let line = line.get_untracked();
+            if key == "Enter" {
+                if ctrl {
+                    ev.prevent_default();
+                    ev.stop_propagation();
+                    
+                    let window = web_sys::window().expect("window not found");
+                    let document = window.document().expect("document not found").unchecked_into::<web_sys::HtmlDocument>();
+                    
+                    // execCommand is deprecated but still the most reliable way to handle 
+                    // contenteditable newlines while maintaining focus/undo history.
+                    #[allow(deprecated)]
+                    let _ = document.exec_command("insertLineBreak");
 
-            {if line.bank != -1 {
-                let state_nav = state_nav.clone();
-                view! {
-                    {if let Some(ref sym) = line.symbol {
-                        view! {
-                            <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                                <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
-                                    {format!("{}:", sym)}
-                                </div>
+                    // Scroll compensation for the new line
+                    if let Some(div) = state.main_container_ref.get() {
+                        state.is_navigating.set(true);
+                        div.set_scroll_top(div.scroll_top() + 20);
+                        
+                        let is_nav = state.is_navigating;
+                        leptos::task::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(50).await;
+                            is_nav.set(false);
+                        });
+                    }
+                } else {
+                    ev.prevent_default();
+                    let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                    let _ = target.blur();
+                }
+            } else if key == "Escape" {
+                ev.prevent_default();
+                let target = ev.target().unwrap().unchecked_into::<web_sys::HtmlElement>();
+                target.set_inner_text(&line.block_comment.as_ref().map(|bc| {
+                    bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")
+                }).unwrap_or_default());
+                let _ = target.blur();
+            }
+        }
+    };
+
+    let on_click_trigger = {
+        let state = state.clone();
+        move |ev: web_sys::MouseEvent| {
+            if ev.shift_key() {
+                ev.prevent_default();
+                let line = line.get_untracked();
+                if line.block_comment.is_none() {
+                    // Scroll down by one line height since a block comment just appeared
+                    if let Some(div) = state.main_container_ref.get() {
+                        div.set_scroll_top(div.scroll_top() + 20);
+                    }
+                }
+                state.editing_block_comment.set(Some((line.address, line.bank)));
+            }
+        }
+    };
+
+    // Effect to focus the block comment field when editing starts
+    let bc_ref = NodeRef::<Div>::new();
+    Effect::new({
+        let state = state.clone();
+        move || {
+            let line = line.get(); // Subscribe to line updates
+            if let Some((addr, bank)) = state.editing_block_comment.get() {
+                if addr == line.address && bank == line.bank {
+                    if let Some(div) = bc_ref.get() {
+                        // Use a small delay to ensure the DOM element is rendered
+                        leptos::task::spawn_local(async move {
+                            gloo_timers::future::TimeoutFuture::new(50).await;
+                            let _ = div.focus();
+                            
+                            // Move cursor to the end
+                            let window = web_sys::window().unwrap();
+                            if let Ok(Some(sel)) = window.get_selection() {
+                                sel.select_all_children(&div).unwrap();
+                                sel.collapse_to_end().unwrap();
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    });
+
+    let state_nav = state.clone();
+    let on_block_blur_c = on_block_blur.clone();
+    let on_block_keydown_c = on_block_keydown.clone();
+    let bc_ref_c = bc_ref.clone();
+    let on_symbol_blur_c = on_symbol_blur.clone();
+    let on_comment_blur_c = on_comment_blur.clone();
+    let on_keydown_c = on_keydown.clone();
+    let on_click_trigger_c = on_click_trigger.clone();
+
+    view! {
+        <div class="grid-row" style=move || format!("position: absolute; top: {}px; width: 100%; display: grid; grid-template-columns: var(--col-addr) var(--col-hex) var(--col-op) var(--col-operand) 1fr;", top.get())>
+            {move || {
+                let line = line.get();
+                let is_editing = state.editing_block_comment.get() == Some((line.address, line.bank));
+                let on_block_blur = on_block_blur_c.clone();
+                let on_block_keydown = on_block_keydown_c.clone();
+                let bc_ref = bc_ref_c.clone();
+
+                if let Some(ref bc) = line.block_comment {
+                    view! {
+                        <div class="grid-cell full-width" style="grid-column: 1 / -1;">
+                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref on:blur=on_block_blur on:keydown=on_block_keydown>
+                                {bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")}
                             </div>
-                        }.into_any()
-                    } else { view! {}.into_any() }}
-                    <div class="grid-cell address">{line.address_label}</div>
-                    <div class="grid-cell hex">{line.bytes}</div>
-                    <div class="grid-cell opcode">{line.opcode}</div>
-                    <div class="grid-cell operand">
-                        <span>{line.operand_prefix}</span>
-                        {if let Some(target_addr) = line.target_address {
-                            let target_bank = line.target_bank;
-                            let state_nav = state_nav.clone();
-                            let is_symbol = line.operand_is_symbol;
+                        </div>
+                    }.into_any()
+                } else if is_editing {
+                    view! {
+                        <div class="grid-cell full-width" style="grid-column: 1 / -1;">
+                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref on:blur=on_block_blur on:keydown=on_block_keydown>
+                                "; "
+                            </div>
+                        </div>
+                    }.into_any()
+                } else { view! {}.into_any() }
+            }}
+
+            {move || {
+                let line = line.get();
+                let on_symbol_blur = on_symbol_blur_c.clone();
+                let on_comment_blur = on_comment_blur_c.clone();
+                let on_keydown = on_keydown_c.clone();
+                let on_click_trigger = on_click_trigger_c.clone();
+                
+                if line.bank != -1 {
+                    let state_nav = state_nav.clone();
+                    let on_click_trigger = on_click_trigger.clone();
+                    view! {
+                        {if let Some(ref sym) = line.symbol {
                             view! {
-                                <a href="#" 
-                                   class:symbol=is_symbol
-                                   on:click=move |e| { e.prevent_default(); navigate(state_nav.clone(), target_bank, target_addr); }>
-                                    {line.operand_main.clone()}
-                                </a>
+                                <div class="grid-cell full-width" style="grid-column: 1 / -1;">
+                                    <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
+                                        {format!("{}:", sym)}
+                                    </div>
+                                </div>
                             }.into_any()
-                        } else {
-                            view! { <span>{line.operand_main.clone()}</span> }.into_any()
-                        }}
-                        <span>{line.operand_suffix}</span>
-                    </div>
-                    <div class="grid-cell comment-cell">
-                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
-                            {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
+                        } else { view! {}.into_any() }}
+                        <div class="grid-cell address" on:click=on_click_trigger.clone()>{line.address_label}</div>
+                        <div class="grid-cell hex" on:click=on_click_trigger.clone()>{line.bytes}</div>
+                        <div class="grid-cell opcode">{line.opcode}</div>
+                        <div class="grid-cell operand">
+                            <span>{line.operand_prefix}</span>
+                            {if let Some(target_addr) = line.target_address {
+                                let target_bank = line.target_bank;
+                                let state_nav = state_nav.clone();
+                                let is_symbol = line.operand_is_symbol;
+                                view! {
+                                    <a href="#" 
+                                       class:symbol=is_symbol
+                                       on:click=move |e| { e.prevent_default(); navigate(state_nav.clone(), target_bank, target_addr); }>
+                                        {line.operand_main.clone()}
+                                    </a>
+                                }.into_any()
+                            } else {
+                                view! { <span>{line.operand_main.clone()}</span> }.into_any()
+                            }}
+                            <span>{line.operand_suffix}</span>
                         </div>
-                    </div>
-                }.into_any()
-            } else {
-                // Global Equate
-                view! {
-                    <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;">
-                        <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
-                            {line.symbol.clone().unwrap_or_else(|| "???".to_string())}
+                        <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
+                            <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
+                                {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
+                            </div>
                         </div>
-                        <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
-                    </div>
-                    <div class="grid-cell comment-cell">
-                        <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
-                            {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
+                    }.into_any()
+                } else {
+                    // Global Equate
+                    let on_click_trigger = on_click_trigger.clone();
+                    view! {
+                        <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;" on:click=on_click_trigger.clone()>
+                            <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
+                                {line.symbol.clone().unwrap_or_else(|| "???".to_string())}
+                            </div>
+                            <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                         </div>
-                    </div>
-                }.into_any()
+                        <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
+                            <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
+                                {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
+                            </div>
+                        </div>
+                    }.into_any()
+                }
             }}
         </div>
     }
