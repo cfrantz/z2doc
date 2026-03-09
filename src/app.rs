@@ -995,17 +995,19 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                 if let Some(ref bc) = line.block_comment {
                     view! {
                         <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref on:blur=on_block_blur on:keydown=on_block_keydown>
-                                {bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")}
-                            </div>
+                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref 
+                                on:blur=on_block_blur on:keydown=on_block_keydown
+                                prop:innerText={bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")}
+                            ></div>
                         </div>
                     }.into_any()
                 } else if is_editing {
                     view! {
                         <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref on:blur=on_block_blur on:keydown=on_block_keydown>
-                                "; "
-                            </div>
+                            <div class="comment editable-container" contenteditable="true" node_ref=bc_ref 
+                                on:blur=on_block_blur on:keydown=on_block_keydown
+                                prop:innerText="; "
+                            ></div>
                         </div>
                     }.into_any()
                 } else { view! {}.into_any() }
@@ -1023,11 +1025,13 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                     let on_click_trigger = on_click_trigger.clone();
                     view! {
                         {if let Some(ref sym) = line.symbol {
+                            let sym_c = sym.clone();
                             view! {
                                 <div class="grid-cell full-width" style="grid-column: 1 / -1;">
-                                    <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
-                                        {format!("{}:", sym)}
-                                    </div>
+                                    <div class="symbol editable-container" contenteditable="true" 
+                                        on:blur=on_symbol_blur on:keydown=on_keydown.clone()
+                                        prop:innerText={format!("{}:", sym_c)}
+                                    ></div>
                                 </div>
                             }.into_any()
                         } else { view! {}.into_any() }}
@@ -1053,25 +1057,30 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                             <span>{line.operand_suffix}</span>
                         </div>
                         <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
-                            <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
-                                {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
-                            </div>
+                            <div class="comment editable-container" contenteditable="true" 
+                                on:blur=on_comment_blur on:keydown=on_keydown.clone()
+                                prop:innerText={line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
+                            ></div>
                         </div>
                     }.into_any()
                 } else {
                     // Global Equate
                     let on_click_trigger = on_click_trigger.clone();
+                    let sym_val = line.symbol.clone().unwrap_or_else(|| "???".to_string());
+                    let comm_val = line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default();
                     view! {
                         <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;" on:click=on_click_trigger.clone()>
-                            <div class="symbol editable-container" contenteditable="true" on:blur=on_symbol_blur on:keydown=on_keydown.clone()>
-                                {line.symbol.clone().unwrap_or_else(|| "???".to_string())}
-                            </div>
+                            <div class="symbol editable-container" contenteditable="true" 
+                                on:blur=on_symbol_blur on:keydown=on_keydown.clone()
+                                prop:innerText={sym_val}
+                            ></div>
                             <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                         </div>
                         <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
-                            <div class="comment editable-container" contenteditable="true" on:blur=on_comment_blur on:keydown=on_keydown.clone()>
-                                {line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
-                            </div>
+                            <div class="comment editable-container" contenteditable="true" 
+                                on:blur=on_comment_blur on:keydown=on_keydown.clone()
+                                prop:innerText={comm_val}
+                            ></div>
                         </div>
                     }.into_any()
                 }
@@ -1127,15 +1136,15 @@ fn strip_decorations(field: &str, text: &str) -> String {
         return text.to_string();
     }
     if field == "comment" || field == "block_comment" {
-        return text.lines().map(|line| {
+        let lines = text.lines().map(|line| {
             let mut l = line.trim_start();
             if l.starts_with(';') {
                 l = &l[1..];
                 if l.starts_with(' ') { l = &l[1..]; }
             }
             l
-        }).collect::<Vec<_>>().join("
-").trim_end().to_string();
+        }).collect::<Vec<_>>().join("\n").trim_end().to_string();
+        return lines;
     }
     text.to_string()
 }
