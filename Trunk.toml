@@ -1,0 +1,2 @@
+[watch]
+ignore = ["zelda2.json", "junk/", "templates/"]
