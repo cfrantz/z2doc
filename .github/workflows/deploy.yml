@@ -27,9 +27,7 @@ jobs:
 
       - name: Build
         # Note: We use the repository name for the public-url to ensure assets load correctly on GitHub Pages
-        run: |
-          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          trunk build --release --public-url "/$REPO_NAME/"
+        run: trunk build --release --public-url /${{ github.event.repository.name }}/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
