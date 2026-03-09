@@ -1,5 +1,10 @@
 # Project Docassembler: NES Disassembly Analysis Tool
 
+## 0. Interaction with the author
+
+- Do not commit changes to git unless asked to do so.
+- When making changes, execute the build, examine errors and correct them.
+
 ## 1. Project Structure
 The project is a pure client-side Rust WebAssembly (WASM) application built with the **Leptos** framework and bundled using **Trunk**.
 ```text
