@@ -83,6 +83,7 @@ pub struct ThemeConfig {
     pub comment: String,
     pub symbol: String,
     pub highlight: String,
+    pub current_highlight: String,
     pub match_cell: String,
 }
 

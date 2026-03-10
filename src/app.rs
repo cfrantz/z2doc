@@ -78,6 +78,7 @@ pub fn App() -> impl IntoView {
         comment: "#808080".to_string(),
         symbol: "#268bd2".to_string(),
         highlight: "#ffd70066".to_string(),
+        current_highlight: "#ffd700cc".to_string(),
         match_cell: "#ffd70022".to_string(),
     });
     default_themes.insert("Dark".to_string(), ThemeConfig {
@@ -91,6 +92,7 @@ pub fn App() -> impl IntoView {
         comment: "#909090".to_string(),
         symbol: "#268bd2".to_string(),
         highlight: "#ffd70066".to_string(),
+        current_highlight: "#ffd700cc".to_string(),
         match_cell: "#ffd70022".to_string(),
     });
     let themes = RwSignal::new(default_themes);
@@ -387,6 +389,7 @@ fn ThemeStyle() -> impl IntoView {
                      a:hover {{ text-decoration: underline; }}
 
                      .search-highlight {{ background-color: {}; border-radius: 2px; }}
+                     .search-highlight-active {{ background-color: {}; border-radius: 2px; }}
                      .search-match-cell {{ background-color: {}; }}
 ",
                     t.background, t.instruction,
@@ -400,7 +403,7 @@ fn ThemeStyle() -> impl IntoView {
                     t.address,
                     t.address, t.hex, t.instruction, t.opcode,
                     t.instruction, t.comment, t.symbol, t.symbol,
-                    t.highlight, t.match_cell
+                    t.highlight, t.current_highlight, t.match_cell
                 )
             }}
         </style>
@@ -912,7 +915,7 @@ fn VirtualizedDisasm() -> impl IntoView {
 }
 
 #[component]
-fn Highlight(#[prop(into)] text: String, #[prop(into)] query: String) -> impl IntoView {
+fn Highlight(#[prop(into)] text: String, #[prop(into)] query: String, #[prop(into)] active: bool) -> impl IntoView {
     if query.is_empty() || !text.to_lowercase().contains(&query.to_lowercase()) {
         return view! { <span>{text}</span> }.into_any();
     }
@@ -922,13 +925,15 @@ fn Highlight(#[prop(into)] text: String, #[prop(into)] query: String) -> impl In
     let t_low = text.to_lowercase();
     let q_low = query.to_lowercase();
     
+    let highlight_class = if active { "search-highlight-active" } else { "search-highlight" };
+
     let mut start = 0;
     while let Some(pos) = t_low[start..].find(&q_low) {
         let actual_pos = start + pos;
         let prefix = text[last_end..actual_pos].to_string();
         let match_text = text[actual_pos..actual_pos + query.len()].to_string();
         nodes.push(view! { <span>{prefix}</span> }.into_any());
-        nodes.push(view! { <span class="search-highlight">{match_text}</span> }.into_any());
+        nodes.push(view! { <span class=highlight_class>{match_text}</span> }.into_any());
         last_end = actual_pos + query.len();
         start = last_end;
     }
@@ -940,24 +945,33 @@ fn Highlight(#[prop(into)] text: String, #[prop(into)] query: String) -> impl In
 #[component]
 fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Signal<f64>) -> impl IntoView {
     let state = use_context::<AppState>().expect("state should be provided");
-let on_symbol_blur = {
-    let state = state.clone();
-    move |ev: web_sys::FocusEvent| {
-        let line = line.get_untracked();
-        let val = event_target_inner_text(&ev);
-        update_annotation(state.clone(), line.address, line.bank, "symbol", val);
-    }
-};
 
-let on_comment_blur = {
-    let state = state.clone();
-    move |ev: web_sys::FocusEvent| {
-        let line = line.get_untracked();
-        let val = event_target_inner_text(&ev);
-        update_annotation(state.clone(), line.address, line.bank, "comment", val);
-    }
-};
+    let is_active_line = Memo::new({
+        let state = state.clone();
+        move |_| {
+            let results = state.search_results.get();
+            let idx = state.search_current_idx.get();
+            results.get(idx) == Some(&line.get().address)
+        }
+    });
 
+    let on_symbol_blur = {
+        let state = state.clone();
+        move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
+            let val = event_target_inner_text(&ev);
+            update_annotation(state.clone(), line.address, line.bank, "symbol", val);
+        }
+    };
+
+    let on_comment_blur = {
+        let state = state.clone();
+        move |ev: web_sys::FocusEvent| {
+            let line = line.get_untracked();
+            let val = event_target_inner_text(&ev);
+            update_annotation(state.clone(), line.address, line.bank, "comment", val);
+        }
+    };
 
     let on_keydown = {
         let state = state.clone();
@@ -1176,14 +1190,16 @@ let on_comment_blur = {
                 let bc_ref = bc_ref_c.clone();
                 let query = state.search_query.get();
                 let is_match = !query.is_empty() && line.block_comment.as_ref().map_or(false, |bc| bc.to_lowercase().contains(&query.to_lowercase()));
+                let active = is_active_line.get();
 
                 if let Some(ref bc) = line.block_comment {
                     view! {
                         <div class="grid-cell full-width" class:search-match-cell=is_match style="grid-column: 1 / -1;">
                             <div class="comment editable-container" contenteditable="true" node_ref=bc_ref 
                                 on:blur=on_block_blur on:keydown=on_block_keydown
-                                prop:innerText={bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")}
-                            ></div>
+                            >
+                                <Highlight text={bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")} query=query.clone() active=active />
+                            </div>
                         </div>
                     }.into_any()
                 } else if is_editing {
@@ -1205,6 +1221,7 @@ let on_comment_blur = {
                 let on_keydown = on_keydown_c.clone();
                 let on_click_trigger = on_click_trigger_c.clone();
                 let query = state.search_query.get();
+                let active = is_active_line.get();
                 
                 if line.bank != -1 {
                     let state_nav = state_nav.clone();
@@ -1228,7 +1245,7 @@ let on_comment_blur = {
                                     <div class="symbol editable-container" contenteditable="true" 
                                         on:blur=on_symbol_blur on:keydown=on_keydown.clone()
                                     >
-                                        <Highlight text={format!("{}:", sym_c)} query=query_c />
+                                        <Highlight text={format!("{}:", sym_c)} query=query_c active=active />
                                     </div>
                                 </div>
                             }.into_any()
@@ -1259,12 +1276,12 @@ let on_comment_blur = {
                                                navigate(state_nav.clone(), target_bank, target_addr); 
                                            }
                                        }>
-                                        <Highlight text=line.operand_main.clone() query=query_c />
+                                        <Highlight text=line.operand_main.clone() query=query_c active=active />
                                     </a>
                                 }.into_any()
                             } else {
                                 let query_c = query.clone();
-                                view! { <Highlight text=line.operand_main.clone() query=query_c /> }.into_any()
+                                view! { <Highlight text=line.operand_main.clone() query=query_c active=active /> }.into_any()
                             }}
                             <span>{line.operand_suffix}</span>
                         </div>
@@ -1272,7 +1289,7 @@ let on_comment_blur = {
                             <div class="comment editable-container" contenteditable="true" 
                                 on:blur=on_comment_blur on:keydown=on_keydown.clone()
                             >
-                                <Highlight text={line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()} query=query.clone() />
+                                <Highlight text={line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()} query=query.clone() active=active />
                             </div>
                         </div>
                     }.into_any()
@@ -1289,7 +1306,7 @@ let on_comment_blur = {
                             <div class="symbol editable-container" contenteditable="true" 
                                 on:blur=on_symbol_blur on:keydown=on_keydown.clone()
                             >
-                                <Highlight text=sym_val query=query.clone() />
+                                <Highlight text=sym_val query=query.clone() active=active />
                             </div>
                             <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                         </div>
@@ -1297,7 +1314,7 @@ let on_comment_blur = {
                             <div class="comment editable-container" contenteditable="true" 
                                 on:blur=on_comment_blur on:keydown=on_keydown.clone()
                             >
-                                <Highlight text=comm_val query=query.clone() />
+                                <Highlight text=comm_val query=query.clone() active=active />
                             </div>
                         </div>
                     }.into_any()
