@@ -496,15 +496,55 @@ fn SetupScreen() -> impl IntoView {
         }
     };
 
+    let load_remote_db = {
+        let state = state.clone();
+        move |url: String| {
+            let state = state.clone();
+            leptos::task::spawn_local(async move {
+                if let Ok(resp) = gloo_net::http::Request::get(&url).send().await {
+                    if let Ok(text) = resp.text().await {
+                        if let Ok(parsed) = database::parse_db(&text) {
+                            state.db.set(Some(parsed));
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    let remote_dbs = move || {
+        let env_val = option_env!("DOCASSEMBLER_DB").unwrap_or("");
+        if env_val.is_empty() { return Vec::new(); }
+        env_val.split(';')
+            .filter_map(|s| {
+                let parts: Vec<&str> = s.split('=').collect();
+                if parts.len() == 2 {
+                    Some((parts[0].to_string(), parts[1].to_string()))
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
+    };
+
     view! {
         <div class="setup-screen">
             <h1>"Docassembler Setup"</h1>
             {move || if state.db.get().is_none() {
                 let open_db = open_db.clone();
+                let load_remote_db = load_remote_db.clone();
                 view! {
-                    <div class="setup-step">
-                        <p>"Please open your disassembly database (.json file)."</p>
-                        <button type="button" on:click=move |e| { e.prevent_default(); open_db(e); }>"Open Database"</button>
+                    <div class="setup-step" style="display: flex; flex-direction: column; gap: 10px;">
+                        <p>"Please open a disassembly database."</p>
+                        {remote_dbs().into_iter().map(|(name, url)| {
+                            let load_remote_db = load_remote_db.clone();
+                            view! {
+                                <button type="button" on:click=move |e| { e.prevent_default(); load_remote_db(url.clone()); }>
+                                    {format!("{}", name)}
+                                </button>
+                            }
+                        }).collect_view()}
+                        <button type="button" on:click=move |e| { e.prevent_default(); open_db(e); }>"Open Local Database"</button>
                     </div>
                 }.into_any()
             } else {
