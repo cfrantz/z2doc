@@ -632,11 +632,23 @@ fn DisasmView() -> impl IntoView {
                 <div style="display: flex; gap: 20px; align-items: center;">
                     <div>
                         "Bank: "
-                        <select on:change=on_bank_change prop:value=move || state.current_bank.get().to_string()>
-                            {move || banks().into_iter().map(|(id, title)| {
-                                view! { <option value=id.to_string()> {format!("${:02X}: {}", id, title)} </option> }
-                            }).collect_view()}
-                        </select>
+                        {
+                            let state = state.clone();
+                            view! {
+                                <select on:change=on_bank_change prop:value=move || state.current_bank.get().to_string()>
+                                    {
+                                        let state = state.clone();
+                                        move || banks().into_iter().map({
+                                            let state = state.clone();
+                                            move |(id, title)| {
+                                                let state = state.clone();
+                                                view! { <option value=id.to_string() selected=move || state.current_bank.get() == id> {format!("${:02X}: {}", id, title)} </option> }
+                                            }
+                                        }).collect_view()
+                                    }
+                                </select>
+                            }
+                        }
                     </div>
                     <div>
                         <input 
