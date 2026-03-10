@@ -28,6 +28,7 @@ jobs:
       - name: Build
         # Note: We use the repository name for the public-url to ensure assets load correctly on GitHub Pages
         run: |
+          export TRUNK_PUBLIC_URL="/${{ github.event.repository.name }}/"
           trunk build --release --public-url /${{ github.event.repository.name }}/
           touch dist/.nojekyll
 
