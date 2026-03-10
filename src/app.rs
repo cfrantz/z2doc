@@ -211,8 +211,10 @@ pub fn App() -> impl IntoView {
         }
     });
 
+    let base = option_env!("TRUNK_PUBLIC_URL").unwrap_or("/").trim_end_matches('/');
+
     view! {
-        <Router>
+        <Router base=base.to_string()>
             <main on:mousemove=on_mousemove on:mouseup=on_mouseup class=move || if resizing.get().is_some() { "resizing" } else { "" }>
                 <Routes fallback=|| view! { "Not Found" }>
                     <Route path=leptos_router::path!("/") view=MainContent />
