@@ -45,6 +45,12 @@ struct AppState {
     editing_block_comment: RwSignal<Option<(u16, i16)>>,
     editing_operand: RwSignal<Option<(u16, i16)>>,
     main_container_ref: NodeRef<Div>,
+
+    // Search state
+    search_query: RwSignal<String>,
+    search_current_idx: RwSignal<usize>,
+    disassembly: Memo<Vec<DisassemblyLine>>,
+    search_results: Memo<Vec<u16>>,
 }
 
 #[component]
@@ -71,6 +77,8 @@ pub fn App() -> impl IntoView {
         opcode: "#000000".to_string(),
         comment: "#808080".to_string(),
         symbol: "#268bd2".to_string(),
+        highlight: "#ffd70066".to_string(),
+        match_cell: "#ffd70022".to_string(),
     });
     default_themes.insert("Dark".to_string(), ThemeConfig {
         name: "Dark".to_string(),
@@ -82,6 +90,8 @@ pub fn App() -> impl IntoView {
         opcode: "#FFFFFF".to_string(),
         comment: "#909090".to_string(),
         symbol: "#268bd2".to_string(),
+        highlight: "#ffd70066".to_string(),
+        match_cell: "#ffd70022".to_string(),
     });
     let themes = RwSignal::new(default_themes);
 
@@ -100,6 +110,70 @@ pub fn App() -> impl IntoView {
     let editing_operand = RwSignal::new(None::<(u16, i16)>);
     let main_container_ref = NodeRef::<Div>::new();
 
+    let search_query = RwSignal::new(String::new());
+    let search_current_idx = RwSignal::new(0usize);
+
+    let disassembly = Memo::new(move |_| {
+        let bank_id = current_bank.get();
+        let db = db.get();
+        let rom_data = rom_data.get();
+        
+        if let (Some(db), Some(rom_data)) = (db, rom_data) {
+            let bank_targets = disasm::discover_all_targets(&db, &rom_data);
+            if bank_id == 255 {
+                let mut lines = Vec::new();
+                for (addr, anno) in &db.global {
+                    lines.push(DisassemblyLine {
+                        address: *addr,
+                        address_label: format!("${:04X}", addr),
+                        bank: -1,
+                        bytes: String::new(),
+                        opcode: String::new(),
+                        operand_prefix: String::new(),
+                        operand_main: String::new(),
+                        operand_suffix: String::new(),
+                        operand_is_symbol: false,
+                        symbol: anno.symbol.clone(),
+                        comment: anno.comment.clone(),
+                        block_comment: anno.block_comment.clone(),
+                        target_bank: None,
+                        target_address: None,
+                    });
+                }
+                lines
+            } else {
+                let mapper_size = db.mapper_window_size as usize * 1024;
+                let rom_offset = 16 + (bank_id as usize * mapper_size);
+                let rom_end = (rom_offset + mapper_size).min(rom_data.len());
+                let bank_data = if rom_offset < rom_data.len() { &rom_data[rom_offset..rom_end] } else { &[] };
+                disasm::disassemble_bank(&db, bank_id, bank_data, &bank_targets)
+            }
+        } else {
+            Vec::new()
+        }
+    });
+
+    let search_results = Memo::new(move |_| {
+        let query = search_query.get().to_lowercase();
+        if query.is_empty() { return Vec::new(); }
+        
+        disassembly.get().iter()
+            .filter(|line| {
+                line.symbol.as_ref().map_or(false, |s| s.to_lowercase().contains(&query)) ||
+                line.operand_main.to_lowercase().contains(&query) ||
+                line.comment.as_ref().map_or(false, |c| c.to_lowercase().contains(&query)) ||
+                line.block_comment.as_ref().map_or(false, |bc| bc.to_lowercase().contains(&query))
+            })
+            .map(|line| line.address)
+            .collect::<Vec<_>>()
+    });
+
+    // Reset search index when results change
+    Effect::new(move || {
+        let _ = search_results.get();
+        search_current_idx.set(0);
+    });
+
     let state = AppState {
         db,
         db_handle,
@@ -116,6 +190,10 @@ pub fn App() -> impl IntoView {
         editing_block_comment,
         editing_operand,
         main_container_ref,
+        search_query,
+        search_current_idx,
+        disassembly,
+        search_results,
     };
     provide_context(state.clone());
 
@@ -282,7 +360,7 @@ fn ThemeStyle() -> impl IntoView {
 
                      .header {{ background-color: {}; color: {}; border-bottom-color: {}; }}
 
-                     select {{ background-color: {}; color: {}; border-color: {}; }}
+                     select, input {{ background-color: {}; color: {}; border-color: {}; border-style: solid; border-width: 1px; padding: 2px 5px; }}
 
                      .grid-header {{ background-color: {}; color: {}; border-color: {}; }}
 
@@ -307,6 +385,9 @@ fn ThemeStyle() -> impl IntoView {
                      a.symbol {{ color: {}; }}
 
                      a:hover {{ text-decoration: underline; }}
+
+                     .search-highlight {{ background-color: {}; border-radius: 2px; }}
+                     .search-match-cell {{ background-color: {}; }}
 ",
                     t.background, t.instruction,
                     w.get("addr").unwrap_or(&100),
@@ -318,7 +399,8 @@ fn ThemeStyle() -> impl IntoView {
                     t.background, t.text, t.address,
                     t.address,
                     t.address, t.hex, t.instruction, t.opcode,
-                    t.instruction, t.comment, t.symbol, t.symbol
+                    t.instruction, t.comment, t.symbol, t.symbol,
+                    t.highlight, t.match_cell
                 )
             }}
         </style>
@@ -474,6 +556,25 @@ fn DisasmView() -> impl IntoView {
 
     let state_c2 = state.clone();
     let state_c3 = state.clone();
+    let state_search = state.clone();
+    
+    let on_search_keydown = move |ev: web_sys::KeyboardEvent| {
+        if ev.key() == "Enter" {
+            ev.prevent_default();
+            let results = state_search.search_results.get();
+            if results.is_empty() { return; }
+            
+            let mut idx = state_search.search_current_idx.get();
+            if ev.ctrl_key() {
+                idx = if idx == 0 { results.len() - 1 } else { idx - 1 };
+            } else {
+                idx = (idx + 1) % results.len();
+            }
+            state_search.search_current_idx.set(idx);
+            state_search.nav_target.set(Some(results[idx]));
+        }
+    };
+
     view! {
         <div class="main-view">
             <header class="header">
@@ -488,6 +589,26 @@ fn DisasmView() -> impl IntoView {
                         </select>
                     </div>
                     <div>
+                        <input 
+                            type="text" 
+                            placeholder="Search..." 
+                            style="width: 250px;"
+                            prop:value=move || state_search.search_query.get()
+                            on:input=move |ev| state_search.search_query.set(event_target_value(&ev))
+                            on:keydown=on_search_keydown
+                        />
+                        <span style="margin-left: 5px; font-size: 0.8em; opacity: 0.7;">
+                            {move || {
+                                let results = state_search.search_results.get();
+                                if results.is_empty() {
+                                    "".to_string()
+                                } else {
+                                    format!("{} / {}", state_search.search_current_idx.get() + 1, results.len())
+                                }
+                            }}
+                        </span>
+                    </div>
+                    <div style="margin-left: auto;">
                         "Theme: "
                         <select on:change={let state = state_c3.clone(); move |ev| state.active_theme.set(event_target_value(&ev))}>
                             {
@@ -617,52 +738,12 @@ fn VirtualizedDisasm() -> impl IntoView {
         }
     });
 
-    let disassembly = Memo::new(move |_| {
-        let bank_id = state.current_bank.get();
-        let db = state.db.get();
-        let rom_data = state.rom_data.get();
-        
-        if let (Some(db), Some(rom_data)) = (db, rom_data) {
-            let bank_targets = disasm::discover_all_targets(&db, &rom_data);
-            if bank_id == 255 {
-                let mut lines = Vec::new();
-                for (addr, anno) in &db.global {
-                    lines.push(DisassemblyLine {
-                        address: *addr,
-                        address_label: format!("${:04X}", addr),
-                        bank: -1,
-                        bytes: String::new(),
-                        opcode: String::new(),
-                        operand_prefix: String::new(),
-                        operand_main: String::new(),
-                        operand_suffix: String::new(),
-                        operand_is_symbol: false,
-                        symbol: anno.symbol.clone(),
-                        comment: anno.comment.clone(),
-                        block_comment: anno.block_comment.clone(),
-                        target_bank: None,
-                        target_address: None,
-                    });
-                }
-                lines
-            } else {
-                let mapper_size = db.mapper_window_size as usize * 1024;
-                let rom_offset = 16 + (bank_id as usize * mapper_size);
-                let rom_end = (rom_offset + mapper_size).min(rom_data.len());
-                let bank_data = if rom_offset < rom_data.len() { &rom_data[rom_offset..rom_end] } else { &[] };
-                disasm::disassemble_bank(&db, bank_id, bank_data, &bank_targets)
-            }
-        } else {
-            Vec::new()
-        }
-    });
-
     const LINE_HEIGHT: f64 = 20.0;
 
     let offsets = Memo::new({
         let state = state.clone();
         move |_| {
-            let lines = disassembly.get();
+            let lines = state.disassembly.get();
             let editing = state.editing_block_comment.get();
             let mut current = 0.0;
             let mut off = Vec::with_capacity(lines.len());
@@ -697,7 +778,7 @@ fn VirtualizedDisasm() -> impl IntoView {
         let state = state.clone();
         move || {
             if let Some(target_addr) = state.nav_target.get() {
-                let lines = disassembly.get();
+                let lines = state.disassembly.get();
                 if let Some(idx) = lines.iter().position(|l| l.address == target_addr) {
                     let (off, _) = offsets.get();
                     let target_y = off[idx];
@@ -721,9 +802,9 @@ fn VirtualizedDisasm() -> impl IntoView {
     });
 
     let range_lines = Memo::new({
-        let disassembly = disassembly.clone();
+        let state = state.clone();
         move |_| {
-            let (off, total) = offsets.get();
+            let (off, _) = offsets.get();
             if off.is_empty() { return Vec::new(); }
 
             let start_y = scroll_top.get();
@@ -741,9 +822,9 @@ fn VirtualizedDisasm() -> impl IntoView {
             
             let buffer = 20;
             let start = start_idx.saturating_sub(buffer);
-            let end = (end_idx + buffer).min(disassembly.get().len());
+            let end = (end_idx + buffer).min(state.disassembly.get().len());
             
-            let lines = disassembly.get();
+            let lines = state.disassembly.get();
             if start >= end || start >= lines.len() {
                 return Vec::new();
             }
@@ -766,7 +847,7 @@ fn VirtualizedDisasm() -> impl IntoView {
                     Err(idx) => idx.saturating_sub(1),
                 };
                 
-                let lines = disassembly.get_untracked();
+                let lines = state.disassembly.get_untracked();
                 if let Some(line) = lines.get(idx) {
                     let bank_id = state.current_bank.get_untracked();
                     let bank_hex = format!("{:02X}", bank_id);
@@ -795,14 +876,14 @@ fn VirtualizedDisasm() -> impl IntoView {
                     each=move || range_lines.get()
                     key=|line| (line.address, line.bank)
                     children={
-                        let disassembly = disassembly.clone();
+                        let state = state.clone();
                         let offsets = offsets.clone();
                         move |line| {
                             let line_id = (line.address, line.bank);
                             let line_sig = Signal::derive({
-                                let disassembly = disassembly.clone();
+                                let state = state.clone();
                                 move || {
-                                    disassembly.get().iter()
+                                    state.disassembly.get().iter()
                                         .find(|l| (l.address, l.bank) == line_id)
                                         .cloned()
                                         .unwrap_or(line.clone())
@@ -810,9 +891,9 @@ fn VirtualizedDisasm() -> impl IntoView {
                             });
                             let top = Signal::derive({
                                 let offsets = offsets.clone();
-                                let disassembly = disassembly.clone();
+                                let state = state.clone();
                                 move || {
-                                    let lines = disassembly.get();
+                                    let lines = state.disassembly.get();
                                     let (off, _) = offsets.get();
                                     if let Some(idx) = lines.iter().position(|l| (l.address, l.bank) == line_id) {
                                         off[idx]
@@ -831,26 +912,52 @@ fn VirtualizedDisasm() -> impl IntoView {
 }
 
 #[component]
+fn Highlight(#[prop(into)] text: String, #[prop(into)] query: String) -> impl IntoView {
+    if query.is_empty() || !text.to_lowercase().contains(&query.to_lowercase()) {
+        return view! { <span>{text}</span> }.into_any();
+    }
+
+    let mut nodes = Vec::new();
+    let mut last_end = 0;
+    let t_low = text.to_lowercase();
+    let q_low = query.to_lowercase();
+    
+    let mut start = 0;
+    while let Some(pos) = t_low[start..].find(&q_low) {
+        let actual_pos = start + pos;
+        let prefix = text[last_end..actual_pos].to_string();
+        let match_text = text[actual_pos..actual_pos + query.len()].to_string();
+        nodes.push(view! { <span>{prefix}</span> }.into_any());
+        nodes.push(view! { <span class="search-highlight">{match_text}</span> }.into_any());
+        last_end = actual_pos + query.len();
+        start = last_end;
+    }
+    let suffix = text[last_end..].to_string();
+    nodes.push(view! { <span>{suffix}</span> }.into_any());
+    nodes.collect_view().into_any()
+}
+
+#[component]
 fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Signal<f64>) -> impl IntoView {
     let state = use_context::<AppState>().expect("state should be provided");
+let on_symbol_blur = {
+    let state = state.clone();
+    move |ev: web_sys::FocusEvent| {
+        let line = line.get_untracked();
+        let val = event_target_inner_text(&ev);
+        update_annotation(state.clone(), line.address, line.bank, "symbol", val);
+    }
+};
 
-    let on_symbol_blur = {
-        let state = state.clone();
-        move |ev: web_sys::FocusEvent| {
-            let line = line.get_untracked();
-            let val = event_target_inner_text(&ev);
-            update_annotation(state.clone(), line.address, line.bank, "symbol", val);
-        }
-    };
+let on_comment_blur = {
+    let state = state.clone();
+    move |ev: web_sys::FocusEvent| {
+        let line = line.get_untracked();
+        let val = event_target_inner_text(&ev);
+        update_annotation(state.clone(), line.address, line.bank, "comment", val);
+    }
+};
 
-    let on_comment_blur = {
-        let state = state.clone();
-        move |ev: web_sys::FocusEvent| {
-            let line = line.get_untracked();
-            let val = event_target_inner_text(&ev);
-            update_annotation(state.clone(), line.address, line.bank, "comment", val);
-        }
-    };
 
     let on_keydown = {
         let state = state.clone();
@@ -1067,10 +1174,12 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                 let on_block_blur = on_block_blur_c.clone();
                 let on_block_keydown = on_block_keydown_c.clone();
                 let bc_ref = bc_ref_c.clone();
+                let query = state.search_query.get();
+                let is_match = !query.is_empty() && line.block_comment.as_ref().map_or(false, |bc| bc.to_lowercase().contains(&query.to_lowercase()));
 
                 if let Some(ref bc) = line.block_comment {
                     view! {
-                        <div class="grid-cell full-width" style="grid-column: 1 / -1;">
+                        <div class="grid-cell full-width" class:search-match-cell=is_match style="grid-column: 1 / -1;">
                             <div class="comment editable-container" contenteditable="true" node_ref=bc_ref 
                                 on:blur=on_block_blur on:keydown=on_block_keydown
                                 prop:innerText={bc.lines().map(|l| format!("; {}", l)).collect::<Vec<_>>().join("\n")}
@@ -1095,6 +1204,7 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                 let on_comment_blur = on_comment_blur_c.clone();
                 let on_keydown = on_keydown_c.clone();
                 let on_click_trigger = on_click_trigger_c.clone();
+                let query = state.search_query.get();
                 
                 if line.bank != -1 {
                     let state_nav = state_nav.clone();
@@ -1104,23 +1214,29 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                     let on_operand_blur = on_operand_blur_c.clone();
                     let on_operand_keydown = on_operand_keydown_c.clone();
                     let is_editing_op = state.editing_operand.get() == Some((line.address, line.bank));
+                    
+                    let sym_match = !query.is_empty() && line.symbol.as_ref().map_or(false, |s| s.to_lowercase().contains(&query.to_lowercase()));
+                    let op_match = !query.is_empty() && line.operand_main.to_lowercase().contains(&query.to_lowercase());
+                    let comm_match = !query.is_empty() && line.comment.as_ref().map_or(false, |c| c.to_lowercase().contains(&query.to_lowercase()));
 
                     view! {
                         {if let Some(ref sym) = line.symbol {
                             let sym_c = sym.clone();
+                            let query_c = query.clone();
                             view! {
-                                <div class="grid-cell full-width" style="grid-column: 1 / -1;">
+                                <div class="grid-cell full-width" class:search-match-cell=sym_match style="grid-column: 1 / -1;">
                                     <div class="symbol editable-container" contenteditable="true" 
                                         on:blur=on_symbol_blur on:keydown=on_keydown.clone()
-                                        prop:innerText={format!("{}:", sym_c)}
-                                    ></div>
+                                    >
+                                        <Highlight text={format!("{}:", sym_c)} query=query_c />
+                                    </div>
                                 </div>
                             }.into_any()
                         } else { view! {}.into_any() }}
                         <div class="grid-cell address" on:click=on_click_trigger.clone()>{line.address_label}</div>
                         <div class="grid-cell hex" on:click=on_click_trigger.clone()>{line.bytes}</div>
                         <div class="grid-cell opcode">{line.opcode}</div>
-                        <div class="grid-cell operand" on:click=on_operand_click>
+                        <div class="grid-cell operand" class:search-match-cell=op_match on:click=on_operand_click>
                             <span>{line.operand_prefix}</span>
                             {if is_editing_op {
                                 view! {
@@ -1133,6 +1249,7 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                                 let target_bank = line.target_bank;
                                 let state_nav = state_nav.clone();
                                 let is_symbol = line.operand_is_symbol;
+                                let query_c = query.clone();
                                 view! {
                                     <a href="#" 
                                        class:symbol=is_symbol
@@ -1142,19 +1259,21 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                                                navigate(state_nav.clone(), target_bank, target_addr); 
                                            }
                                        }>
-                                        {line.operand_main.clone()}
+                                        <Highlight text=line.operand_main.clone() query=query_c />
                                     </a>
                                 }.into_any()
                             } else {
-                                view! { <span>{line.operand_main.clone()}</span> }.into_any()
+                                let query_c = query.clone();
+                                view! { <Highlight text=line.operand_main.clone() query=query_c /> }.into_any()
                             }}
                             <span>{line.operand_suffix}</span>
                         </div>
-                        <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
+                        <div class="grid-cell comment-cell" class:search-match-cell=comm_match on:click=on_click_trigger.clone()>
                             <div class="comment editable-container" contenteditable="true" 
                                 on:blur=on_comment_blur on:keydown=on_keydown.clone()
-                                prop:innerText={line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()}
-                            ></div>
+                            >
+                                <Highlight text={line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default()} query=query.clone() />
+                            </div>
                         </div>
                     }.into_any()
                 } else {
@@ -1162,19 +1281,24 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
                     let on_click_trigger = on_click_trigger.clone();
                     let sym_val = line.symbol.clone().unwrap_or_else(|| "???".to_string());
                     let comm_val = line.comment.as_ref().map(|c| format!("; {}", c)).unwrap_or_default();
+                    let sym_match = !query.is_empty() && sym_val.to_lowercase().contains(&query.to_lowercase());
+                    let comm_match = !query.is_empty() && comm_val.to_lowercase().contains(&query.to_lowercase());
+
                     view! {
-                        <div class="grid-cell address" style="grid-column: 1 / span 4; display: flex; align-items: baseline;" on:click=on_click_trigger.clone()>
+                        <div class="grid-cell address" class:search-match-cell=sym_match style="grid-column: 1 / span 4; display: flex; align-items: baseline;" on:click=on_click_trigger.clone()>
                             <div class="symbol editable-container" contenteditable="true" 
                                 on:blur=on_symbol_blur on:keydown=on_keydown.clone()
-                                prop:innerText={sym_val}
-                            ></div>
+                            >
+                                <Highlight text=sym_val query=query.clone() />
+                            </div>
                             <span style="margin-left: 8px;">" = " {line.address_label.clone()}</span>
                         </div>
-                        <div class="grid-cell comment-cell" on:click=on_click_trigger.clone()>
+                        <div class="grid-cell comment-cell" class:search-match-cell=comm_match on:click=on_click_trigger.clone()>
                             <div class="comment editable-container" contenteditable="true" 
                                 on:blur=on_comment_blur on:keydown=on_keydown.clone()
-                                prop:innerText={comm_val}
-                            ></div>
+                            >
+                                <Highlight text=comm_val query=query.clone() />
+                            </div>
                         </div>
                     }.into_any()
                 }

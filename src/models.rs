@@ -82,6 +82,8 @@ pub struct ThemeConfig {
     pub opcode: String,
     pub comment: String,
     pub symbol: String,
+    pub highlight: String,
+    pub match_cell: String,
 }
 
 #[derive(Debug, Serialize, Clone, PartialEq)]
