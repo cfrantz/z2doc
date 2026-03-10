@@ -1021,7 +1021,7 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
     };
 
     let on_keydown = {
-        let state = state.clone();
+        let _state = state.clone();
         move |ev: web_sys::KeyboardEvent| {
             let key = ev.key();
             let line = line.get_untracked();
@@ -1117,7 +1117,7 @@ fn DisasmRow(#[prop(into)] line: Signal<DisassemblyLine>, #[prop(into)] top: Sig
     };
 
     let on_operand_keydown = {
-        let state = state.clone();
+        let _state = state.clone();
         move |ev: web_sys::KeyboardEvent| {
             let key = ev.key();
             let line = line.get_untracked();
