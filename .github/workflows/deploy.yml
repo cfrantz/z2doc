@@ -29,6 +29,7 @@ jobs:
         # Note: We use the repository name for the public-url to ensure assets load correctly on GitHub Pages
         run: |
           export TRUNK_PUBLIC_URL="/${{ github.event.repository.name }}/"
+          export DOCASSEMBLER_DB="CF207's Zelda2 Database=https://raw.githubusercontent.com/cfrantz/z2doc/refs/heads/main/zelda2.json"
           trunk build --release --public-url /${{ github.event.repository.name }}/
           touch dist/.nojekyll
 
