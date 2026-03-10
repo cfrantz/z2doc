@@ -578,10 +578,17 @@ fn DisasmView() -> impl IntoView {
         }
     };
 
+    let help_url = option_env!("DOCASSEMBLER_HELP").unwrap_or("https://github.com/cfrantz/z2doc/blob/main/README.md");
+
     view! {
         <div class="main-view">
             <header class="header">
-                <h1>"Docassembler: " {move || state.db.get().map(|d| d.title).unwrap_or_default()}</h1>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h1>"Docassembler: " {move || state.db.get().map(|d| d.title).unwrap_or_default()}</h1>
+                    <a href=help_url target="_blank">
+                        <button type="button">"Help"</button>
+                    </a>
+                </div>
                 <div style="display: flex; gap: 20px; align-items: center;">
                     <div>
                         "Bank: "
